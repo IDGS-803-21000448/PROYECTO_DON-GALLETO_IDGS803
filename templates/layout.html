@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Lateral con Bootstrap</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Estilos adicionales para el menú lateral */
+        .sidebar {
+            height: 100vh;
+            width: 210px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #f8f9fa;
+            overflow-x: hidden;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #333;
+            display: block;
+        }
+        .sidebar a:hover {
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <a  href="/dashboard">Dashboard</a>
+    <a  href="/crudUsuarios">Usuarios</a>
+    <a  href="/crudProveedores">Proveedores</a>
+    <a  href="/moduloCompras">Compras</a>
+    <a  href="/inventarioMaterias">Materias Primas</a>
+    <a  href="/crudRecetas">Recetas</a>
+    <a  href="/produccion">Producción</a>
+    <a  href="/inventarioTerminado">Producto Terminado</a>
+    <a  href="/solicitudProduccion">Solicitud</a>
+    <a  href="/costoGalleta">Costo de Galleta</a>
+    <a  href="/moduloVenta">Venta</a>
+</div>
+
+<!-- Contenido de la página -->
+<div class="container">
+     {%block content%}
+
+     {%endblock%}
+</div>
+
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
