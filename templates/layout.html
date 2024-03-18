@@ -1,62 +1,250 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú Lateral con Bootstrap</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        /* Estilos adicionales para el menú lateral */
-        .sidebar {
-            height: 100vh;
-            width: 210px;
-            position: fixed;
-            z-index: 1;
-            top: 0;
-            left: 0;
-            background-color: #f8f9fa;
-            overflow-x: hidden;
-            padding-top: 20px;
-        }
-        .sidebar a {
-            padding: 10px 15px;
-            text-decoration: none;
-            font-size: 18px;
-            color: #333;
-            display: block;
-        }
-        .sidebar a:hover {
-            color: #0056b3;
-        }
-    </style>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+
+    <title>Don Galleto</title>
+
+    <link href="{{ url_for('static', filename='fontawesome-free-6.5.1/css/all.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ url_for('static', filename='sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link rel="icon" href="{{ url_for('static', filename='src/favicon.jpeg') }}" />
+    <link href="{{ url_for('static', filename='css/dongalleto.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='google-fonts/nunito.css') }}" rel="stylesheet" />
 </head>
-<body>
 
-<div class="sidebar">
-    <a  href="/dashboard">Dashboard</a>
-    <a  href="/crudUsuarios">Usuarios</a>
-    <a  href="/crudProveedores">Proveedores</a>
-    <a  href="/moduloCompras">Compras</a>
-    <a  href="/inventarioMaterias">Materias Primas</a>
-    <a  href="/crudRecetas">Recetas</a>
-    <a  href="/produccion">Producción</a>
-    <a  href="/inventarioTerminado">Producto Terminado</a>
-    <a  href="/solicitudProduccion">Solicitud</a>
-    <a  href="/costoGalleta">Costo de Galleta</a>
-    <a  href="/moduloVenta">Venta</a>
-</div>
+<body id="page-top">
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+                <div class="sidebar-brand-icon">
+                    <img class="rounded-circle" src="{{ url_for('static', filename='src/Logo_Don_Galleto-sinfondo.png') }}" alt="" style="height: 70px" />
+                </div>
+            </a>
 
-<!-- Contenido de la página -->
-<div class="container">
-     {%block content%}
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0" />
 
-     {%endblock%}
-</div>
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item active">
+                <a class="nav-link" href="/dashboard">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span></a>
+            </li>
 
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+            <!-- Nav Item - Usuarios -->
+            <li class="nav-item">
+                <a class="nav-link" href="/crudUsuarios">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Usuarios</span></a>
+            </li>
+
+            <!-- Nav Item - Proveedores -->
+            <li class="nav-item">
+                <a class="nav-link" href="/crudProveedores">
+                    <i class="fas fa-truck"></i>
+                    <span>Proveedores</span></a>
+            </li>
+
+            <!-- Nav Item - Compras -->
+            <li class="nav-item">
+                <a class="nav-link" href="/moduloCompras">
+                    <i class="fas fa-fw fa-bag-shopping"></i>
+                    <span>Compras</span></a>
+            </li>
+
+            <!-- Nav Item - Ingredientes -->
+            <li class="nav-item">
+                <a class="nav-link" href="/inventarioMaterias">
+                    <i class="fas fa-kitchen-set"></i>
+                    <span>Materias Primas</span></a>
+            </li>
+
+            <!-- Nav Item - Ingredientes -->
+            <li class="nav-item">
+                <a class="nav-link" href="/crudRecetas">
+                    <i class="fas fa-receipt"></i>
+                    <span>Recetas</span></a>
+            </li>
+
+            <!-- Nav Item - Ingredientes -->
+            <li class="nav-item">
+                <a class="nav-link" href="/produccion">
+                    <i class="fas fa-gears"></i>
+                    <span>Producción</span></a>
+            </li>
+
+            <!-- Nav Item - Ingredientes -->
+            <li class="nav-item">
+                <a class="nav-link" href="/inventarioTerminado">
+                    <i class="fas fa-cookie-bite"></i>
+                    <span>Producto Terminado</span></a>
+            </li>
+
+            <!-- Nav Item - Ingredientes -->
+            <li class="nav-item">
+                <a class="nav-link" href="/solicitudProduccion">
+                    <i class="fas fa-bell-concierge"></i>
+                    <span>Solicitud de Producción</span></a>
+            </li>
+
+            <!-- Nav Item - Ventas -->
+            <li class="nav-item">
+                <a class="nav-link" href="/costoGalleta">
+                    <i class="fas fa-fw fa-coins"></i>
+                    <span>Costo Galletas</span></a>
+            </li>
+
+            <!-- Nav Item - Ventas -->
+            <li class="nav-item">
+                <a class="nav-link" href="/moduloVenta">
+                    <i class="fas fa-fw fa-store"></i>
+                    <span>Ventas</span></a>
+            </li>
+
+            <!-- Nav Item - Mermas -->
+            <li class="nav-item">
+                <a class="nav-link">
+                    <i class="fas fa-times-circle"></i>
+                    <span>Mermas</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block" />
+
+            <!-- Sidebar Toggler (Sidebar) -->
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main Content App-->
+            <div id="content">
+                <!-- Topbar -->
+                <nav class="navbar navbar-expand navbar-light bg-brown topbar mb-4 static-top shadow">
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <!-- Topbar Navbar -->
+                    <ul class="navbar-nav ml-auto">
+                        <!-- Nav Item - Alerts -->
+                        <li class="nav-item dropdown no-arrow mx-1">
+                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-bell fa-fw"></i>
+                                <!-- Counter - Alerts -->
+                                <span class="badge badge-danger badge-counter">3+</span>
+                            </a>
+                            <!-- Dropdown - Alerts -->
+                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="alertsDropdown">
+                                <h6 class="dropdown-header">Notificaciones</h6>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div>
+                                        <div class="small text-gray-500">Hace 2 minutos</div>
+                                        <span class="font-weight-bold">Hay ingredientes por caducar</span>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div>
+                                        <div class="small text-gray-500">Hace 2 dias</div>
+                                        Un proveedor esta por venir. Realiza tu pedido.
+                                    </div>
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div>
+                                        <div class="small text-gray-500">Hace 3 dias</div>
+                                        Hay galletas por caducar
+                                    </div>
+                                </a>
+                                <!--Mostrar Todas-->
+                                <a class="dropdown-item text-center small text-gray-500" onclick="" style="cursor: pointer;">Mostrar Todas</a>
+                            </div>
+                        </li>
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+                        <!-- Nav Item - User Information -->
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-4 d-none d-lg-inline text-white small">Usuario</span>
+                                <img class="img-profile rounded-circle" src="{{ url_for('static', filename='src/undraw_profile.svg') }}" />
+                            </a>
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Perfil
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="" onclick="" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Cerrar Sesión
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- End of Topbar -->
+
+                <!-- Begin Page Main Content -->
+                <div class="container-fluid" id="mainContent">
+                    {%block content%}
+
+                    {%endblock%}
+                </div>
+                <!-- /.container-fluid -->
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; Don Galleto 2023 - 2024</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+        </div>
+        <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+
+    <!-- Core plugin JavaScript-->
+    <script src="{{ url_for('static', filename='jquery-easing/jquery.easing.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='sweetalert2/sweetalert2.all.min.js') }}"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="{{ url_for('static', filename='js/dongalleto.min.js') }}"></script>
+
+    <!-- Page level plugins -->
+    <!--<script src="./vendor/chart.js/Chart.min.js"></script>-->
+    <!--<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
 </body>
+
 </html>

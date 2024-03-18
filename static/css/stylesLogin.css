@@ -1,0 +1,32 @@
+:root{
+    --beige: #F2EED8;
+    --rosa: #D96C89;
+    --cafe: #A64F1C;
+    --negro: #0D0000;
+    --naranja: #F2A057;
+    --blanco: #fff;
+}
+
+
+
+.card-body{
+    background-color: var(--beige);
+    font-family: 'Montserrat', sans-serif;
+
+}
+
+.card-header{
+    background-color: var(--rosa);
+    color:var(--blanco);
+    font-family: 'Courgette', sans-serif;
+    font-size: 20px;
+}
+
+.input{
+    border-color: #A64F1C;
+}
+
+#btn-inicioSesion{
+    background-color: var(--naranja) ;
+    color: var(--blanco);
+}

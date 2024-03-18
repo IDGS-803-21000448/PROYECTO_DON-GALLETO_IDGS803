@@ -1,0 +1,61 @@
+:root{
+    --beige: #F2EED8;
+    --rosa: #D96C89;
+    --cafe: #A64F1C;
+    --negro: #0D0000;
+    --naranja: #F2A057;
+    --blanco: #fff;
+}
+
+body{
+    font-family: 'Montserrat', sans-serif;
+}
+h1{
+    font-family: 'Courgette', sans-serif;
+    ;
+}
+
+nav{
+    background-color: var(--naranja);
+}
+
+#headerPrincipal{
+    background-color: var(--cafe);
+    color: var(--blanco);
+    margin: 0px;
+}
+
+h4{
+    color: var(--blanco);
+    margin-top: 10px;
+}
+
+#divNav{
+    color: var(--blanco);
+}
+
+.modulos:hover{
+    background-color: var(--rosa);
+  }
+
+#btnFinalizar{
+    background-color: var(--rosa);
+    color: var(--blanco);
+}
+
+#btnCancelar{
+    background-color: var(--cafe);
+    color: var(--blanco);
+}
+
+#btnEliminar{
+    background-color: var(--naranja);
+    color: var(--blanco);
+    display: flex;
+    justify-content: center;
+}
+
+#btnBuscar{
+    background-color: var(--naranja);
+    color: var(--blanco);
+}
