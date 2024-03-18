@@ -1,7 +1,10 @@
 from flask import Flask, render_template
 from flask_wtf import CSRFProtect
+import json
+import controller
 from config import DevelopmentConfig
 from models import db
+from controller import *
 
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
@@ -70,7 +73,10 @@ def solicitud_produccion():
     return render_template("solicitudProduccion.html")
 
 
-
+@app.route("/pruebaCaducidades", methods=["GET"])
+def pruebaCaducidades():
+    resultado = controller.verificarCaducidades()
+    return json.dumps(resultado)
 
 if __name__ == "__main__":
     csrf.init_app(app)
@@ -79,4 +85,4 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
         
-    app.run()
+    app.run(debug=True, port=8080)

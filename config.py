@@ -8,6 +8,6 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://carlos:123456@127.0.0.1/practicas'
+    FLASK_ENV = 'development'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://donGalleto:1234@127.0.0.1/proyecto_don_galleto'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
