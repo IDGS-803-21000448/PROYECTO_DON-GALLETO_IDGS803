@@ -21,6 +21,11 @@
     --danger: #e74a3b;
     --light: #f8f9fc;
     --dark: #5a5c69;
+    --azulado-1: #1C6C8C;
+    --azulado-2: #3F9BBF;
+    --azulado-3: #3FA8BF;
+    --verde: #032626;
+    --gris: #F2F2F2;
     --breakpoint-xs: 0;
     --breakpoint-sm: 576px;
     --breakpoint-md: 768px;
@@ -194,7 +199,7 @@ pre {
     margin-top: 0;
     margin-bottom: 1rem;
     overflow: auto;
-    -ms-overflow-style: scrollbar
+    -ms-overflow-style: scrollbar;
 }
 
 figure {
