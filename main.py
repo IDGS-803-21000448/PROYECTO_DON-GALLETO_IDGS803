@@ -1,7 +1,8 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_wtf import CSRFProtect
 from config import DevelopmentConfig
 from models import db
+import formUsuario
 
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
@@ -31,7 +32,13 @@ def crud_recetas():
 
 @app.route("/crudUsuarios", methods=["GET"])
 def crud_usuarios():
-    return render_template("crudUsuarios.html")
+    form_usuarios = formUsuario.UsersForm(request.form)
+    return render_template("crudUsuarios.html", form = form_usuarios)
+
+@app.route("/agregarUsuario", methods=["GET", "POST"])
+def agregar_usuarios():
+    
+    return render_template("agregarUsuario.html")
 
 @app.route("/dashboard", methods=["GET"])
 def dashboard():
