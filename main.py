@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_wtf import CSRFProtect
 import json
 import controller
@@ -37,9 +37,9 @@ def crud_recetas():
 @app.route("/crudUsuarios", methods=["GET"])
 def crud_usuarios():
     form_usuarios = formUsuario.UsersForm(request.form)
-    
-    listado_usuarios = User.query.all()
-    return render_template("crudUsuarios.html", form = form_usuarios, users = listado_usuarios)
+
+    listado_usuarios = User.query.filter_by(estatus='Activo').all()
+    return render_template("crudUsuarios.html", form=form_usuarios, users=listado_usuarios)
 
 @app.route("/agregarUsuario", methods=["GET", "POST"])
 def agregar_usuarios():
@@ -69,7 +69,7 @@ def modificar_usuarios():
                 form_usuarios.nombre.data = user1.nombre
                 form_usuarios.puesto.data = user1.puesto
                 form_usuarios.rol.data = user1.rol
-                form_usuarios.estatus.data = user1.estatus
+                # form_usuarios.estatus.data = user1.estatus
                 form_usuarios.usuario.data = user1.usuario
                 form_usuarios.contrasena.data = user1.contrasena
             else:
@@ -88,7 +88,7 @@ def modificar_usuarios():
             user1.nombre = form_usuarios.nombre.data
             user1.puesto = form_usuarios.puesto.data
             user1.rol = form_usuarios.rol.data
-            user1.estatus = form_usuarios.estatus.data
+            # user1.estatus = form_usuarios.estatus.data
             user1.usuario = form_usuarios.usuario.data
             user1.contrasena = form_usuarios.contrasena.data
             db.session.add(user1)
@@ -99,7 +99,29 @@ def modificar_usuarios():
             return "Usuario no encontrado en la base de datos"
     listado_usuarios = User.query.all()
     return render_template("modificarUsuario.html", form=form_usuarios, users=listado_usuarios)
-        
+
+from flask import redirect, url_for, flash
+
+@app.route("/borrarUsuario", methods=["GET", "POST"])
+def borrar_usuario():
+    id = request.args.get('id')
+    if id:
+        user = User.query.filter_by(id=id, estatus='Activo').first()
+        if user:
+            # Cambiar el estado del usuario a 'Inactivo' en lugar de eliminarlo físicamente
+            user.estatus = 'Inactivo'
+            db.session.commit()
+            flash('Usuario marcado como inactivo correctamente', 'success')
+            return redirect(url_for("crud_usuarios"))  # Redirigir a la página de listado de usuarios
+        else:
+            # Manejar el caso en que el usuario no existe o ya está inactivo
+            flash('Usuario no encontrado en la base de datos o ya está inactivo', 'error')
+    else:
+        flash('ID de usuario no proporcionado', 'error')
+
+    listado_usuarios = User.query.filter_by(estatus='Activo').all()
+    return render_template("crudUsuarios.html", users=listado_usuarios)
+
 @app.route("/dashboard", methods=["GET"])
 def dashboard():
     return render_template("dashboard.html")
