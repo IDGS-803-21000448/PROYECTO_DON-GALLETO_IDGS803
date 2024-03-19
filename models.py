@@ -51,3 +51,13 @@ class Produccion(db.Model):
     fecha_solicitud = db.Column(db.DateTime, default=datetime.datetime.now)
     fecha_producido = db.Column(db.DateTime, nullable=True)
     fecha_postergado = db.Column(db.DateTime, nullable=True)
+
+class User(db.Model):
+    __tablename__ = 'user'
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(80), nullable=False)
+    puesto = db.Column(db.String(80), nullable=False)
+    rol = db.Column(db.String(80), nullable=False)
+    estatus = db.Column(db.String(80), nullable=False)
+    usuario = db.Column(db.String(80), nullable=False)
+    contrasena = db.Column(db.String(80), nullable=False)

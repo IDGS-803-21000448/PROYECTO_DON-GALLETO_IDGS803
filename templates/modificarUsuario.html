@@ -6,7 +6,7 @@ render_field %}
   id="formUsuarios"
   method="POST"
   novalidate
-  action="/agregarUsuario"
+  action="/modificarUsuario"
 >
   <div class="row mb-3">
     <div class="form-group col-md-4">
@@ -35,7 +35,7 @@ render_field %}
   </div>
 
   <div class="col-md-12 text-center">
-    <button type="submit" class="btn btn-success mx-auto">Guardar</button>
+    <input type="submit" name="modificar" value="modificar" id="modificar">
   </div>
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 </form>
@@ -45,6 +45,7 @@ render_field %}
 <table class="table table-striped">
     <thead>
         <tr>
+            <th style="display: none;">ID</th>
             <th>Nombre</th>
             <th>Puesto</th>
             <th>Rol</th>
@@ -55,13 +56,14 @@ render_field %}
     <tbody>
         {% for user in users %}
         <tr>
+            <td style="display: none;">{{ user['id'] }}</td>
             <td>{{ user['nombre'] }}</td>
             <td>{{ user['puesto'] }}</td>
             <td>{{ user['rol'] }}</td>
             <td>{{ user['estatus'] }}</td>
             <td>
-                <a href="modificarUsuario?id={{ user['id'] }}">Editar</a>
-                <a href="borrarUsuario?id={{ user['id'] }}">Eliminar</a>
+                <a href="modificarUsuario?id={{ user.id }}">Editar</a>
+                <a href="borrarUsuario?id={{ user.id }}">Eliminar</a>
             </td>
         </tr>
         {% endfor %}
