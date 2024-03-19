@@ -45,14 +45,21 @@ def crud_usuarios():
 def agregar_usuarios():
     form_usuarios = formUsuario.UsersForm(request.form)
     if request.method == "POST" and form_usuarios.validate():
+        # Verificar si las contraseñas coinciden
+        contrasena = form_usuarios.contrasena.data
+        confirmar_contrasena = form_usuarios.confirmar_contrasena.data
+        if contrasena != confirmar_contrasena:
+            flash("Las contraseñas no coinciden. Inténtalo de nuevo.", "error")
+            listado_usuarios = User.query.all()
+            return render_template("crudUsuarios.html", form=form_usuarios, users=listado_usuarios)
+
         controller_usuarios.agregarUsuario(form_usuarios)
-        # Reiniciar el formulario para los inputs vacios
         form_usuarios = formUsuario.UsersForm()
         listado_usuarios = User.query.all()
-        return render_template("crudUsuarios.html", form = form_usuarios, users = listado_usuarios)
+        return render_template("crudUsuarios.html", form=form_usuarios, users=listado_usuarios)
     else:
         listado_usuarios = User.query.all()
-        return render_template("crudUsuarios.html", form = form_usuarios, users = listado_usuarios)
+        return render_template("crudUsuarios.html", form=form_usuarios, users=listado_usuarios)
     
 @app.route("/modificarUsuario", methods=["GET", "POST"])
 def modificar_usuarios():
@@ -102,9 +109,24 @@ def modificar_usuarios():
 
 from flask import redirect, url_for, flash
 
+@app.route("/confirmarEliminacion", methods=["GET", "POST"])
+def confirmarEliminacion():
+    id = request.args.get('id')
+    if id:
+        user = User.query.filter_by(id=id, estatus='Activo').first()
+        if user:
+            return render_template("confirmarBorradoUsuario.html", usuario_id=id)
+        else:
+            flash('Usuario no encontrado en la base de datos o ya está inactivo', 'error')
+    else:
+        flash('ID de usuario no proporcionado', 'error')
+
+    listado_usuarios = User.query.filter_by(estatus='Activo').all()
+    return render_template("crudUsuarios.html", users=listado_usuarios)
+
 @app.route("/borrarUsuario", methods=["GET", "POST"])
 def borrar_usuario():
-    id = request.args.get('id')
+    id = request.args['id']  # Obtener directamente el ID del usuario de la URL
     if id:
         user = User.query.filter_by(id=id, estatus='Activo').first()
         if user:

@@ -26,3 +26,7 @@ class UsersForm(Form):
         validators.DataRequired(message='El campo es requerido'),
         validators.length(min=4, max=15, message='Ingresa una contraseña valida')
     ])
+    confirmar_contrasena = PasswordField('Confirmar contraseña', [
+        validators.DataRequired(message='El campo es requerido'),
+        validators.length(min=4, max=15, message='Ambas contraseñas deben de coincidir.')
+    ])

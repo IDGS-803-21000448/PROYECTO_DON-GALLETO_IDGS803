@@ -8,17 +8,15 @@ from models import db
 def agregarUsuario(form):
     try:
         db.session.execute(
-            text("CALL agregar_usuario(:id, :nombre, :puesto, :rol, :estatus, :usuario, :contrasena)"),
-            {
-                'id': form.id.data,
-                'nombre': form.nombre.data,
-                'puesto': form.puesto.data,
-                'rol': form.rol.data,
-                'estatus': form.estatus.data,
-                'usuario': form.usuario.data,
-                'contrasena': form.contrasena.data
-            }
-        )
+        text("CALL agregar_usuario(:nombre, :puesto, :rol, :estatus, :usuario, :contrasena)"),
+        {
+            'nombre': form.nombre.data,
+            'puesto': form.puesto.data,
+            'rol': form.rol.data,
+            'estatus': 'Activo',
+            'usuario': form.usuario.data,
+            'contrasena': form.contrasena.data
+        })
         db.session.commit()  # Guarda los cambios en la base de datos
         return True  # Indica que la operación se realizó correctamente
     except Exception as e:
@@ -26,8 +24,8 @@ def agregarUsuario(form):
         # Maneja el error de alguna manera (por ejemplo, registrándolo o lanzándolo nuevamente)
         print("Error al agregar usuario:", e)
         return False  # Indica que la operación falló
-    
-    
+
+
 def modificarUsuario(form):
     try:
         db.session.execute(

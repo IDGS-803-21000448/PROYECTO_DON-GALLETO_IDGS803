@@ -1,0 +1,58 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <div class="card">
+        <div class="card-body">
+          <h1 class="card-title text-center">Confirmar Borrado de Usuario</h1>
+          <p class="card-text text-center">Estás a punto de eliminar el usuario con ID: {{ usuario_id }}</p>
+          <div class="text-center">
+            <!-- Botón para mostrar el modal de confirmación -->
+            <!-- <button type="button" class="btn btn-danger" id="btnConfirmarBorrado" data-usuario-id="{{ usuario_id }}">Eliminar Usuario</button> -->
+            <a href="{{ url_for('borrar_usuario', id=usuario_id) }}" class="btn btn-danger">Eliminar Usuario</a>
+            <a href="{{ url_for('crud_usuarios') }}" class="btn btn-success">Cancelar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación -->
+<div class="modal" id="confirmacionModal" tabindex="-1" role="dialog" aria-labelledby="confirmacionModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmacionModalLabel">Confirmar Eliminación</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que deseas eliminar este usuario?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">Confirmar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Script para controlar el modal -->
+<script>
+// Mostrar el modal cuando se haga clic en el botón de confirmación de borrado
+$('#btnConfirmarBorrado').click(function() {
+    // Obtener el ID del usuario del atributo data- del botón
+    var usuario_id = $(this).data('usuario-id');
+    $('#confirmacionModal').modal('show');
+
+    // Al hacer clic en el botón de confirmación dentro del modal
+    $('#btnConfirmarEliminar').click(function() {
+        window.location.href = "{{ url_for('borrar_usuario') }}?id=" + usuario_id;
+    });
+});
+</script>
+{% endblock %}
