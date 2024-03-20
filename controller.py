@@ -32,7 +32,6 @@ def verificarCaducidades():
                 "cantidad_discponible": materiaPrima.cantidad_disponible
             }
 
-            print(json.dumps(datos_materia_prima))
             if dias_para_caducar <= 0:
                materia_caducada.append(datos_materia_prima)
             elif dias_para_caducar <= 6:

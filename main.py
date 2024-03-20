@@ -18,7 +18,8 @@ def page_not_found(e):
  
 @app.route("/index",methods=["GET"])
 def index():
-    return render_template("index.html")
+    caducidades = controller.verificarCaducidades()
+    return render_template("index.html", caducidades= caducidades)
 
 @app.route("/costoGalleta", methods=["GET"])
 def costo_galleta():
@@ -78,11 +79,16 @@ def pruebaCaducidades():
     resultado = controller.verificarCaducidades()
     return json.dumps(resultado)
 
+@app.route('/crudMermas')
+def crud_mermas():
+    return render_template('crudMermas.html')
+
+
 if __name__ == "__main__":
     csrf.init_app(app)
     db.init_app(app)
 
     with app.app_context():
         db.create_all()
-        
-    app.run(debug=True, port=8080)
+
+    app.run(debug=False, port=8080)
