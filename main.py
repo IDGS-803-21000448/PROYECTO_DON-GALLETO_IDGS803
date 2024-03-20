@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_wtf import CSRFProtect
 import json
 import controller
@@ -107,7 +107,6 @@ def modificar_usuarios():
     listado_usuarios = User.query.all()
     return render_template("modificarUsuario.html", form=form_usuarios, users=listado_usuarios)
 
-from flask import redirect, url_for, flash
 
 @app.route("/confirmarEliminacion", methods=["GET", "POST"])
 def confirmarEliminacion():
