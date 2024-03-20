@@ -1,10 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_wtf import CSRFProtect
 import json
-import controller
 from config import DevelopmentConfig
 from models import db, User
-from controller import *
+from controllers import controller_mermas
 from controllers import controller_usuarios
 import formUsuario
 
@@ -20,7 +19,8 @@ def page_not_found(e):
  
 @app.route("/index",methods=["GET"])
 def index():
-    return render_template("index.html")
+    caducidades = controller.verificarCaducidades()
+    return render_template("index.html", caducidades= caducidades)
 
 @app.route("/costoGalleta", methods=["GET"])
 def costo_galleta():
@@ -202,8 +202,13 @@ def solicitud_produccion():
 
 @app.route("/pruebaCaducidades", methods=["GET"])
 def pruebaCaducidades():
-    resultado = controller.verificarCaducidades()
+    resultado = controller_mermas.verificarCaducidades()
     return json.dumps(resultado)
+
+@app.route('/moduloMermas')
+def crud_mermas():
+    return render_template('crudMermas.html')
+
 
 if __name__ == "__main__":
     csrf.init_app(app)
@@ -211,5 +216,5 @@ if __name__ == "__main__":
 
     with app.app_context():
         db.create_all()
-        
-    app.run(debug=True, port=8080)
+
+    app.run(debug=False, port=8080)
