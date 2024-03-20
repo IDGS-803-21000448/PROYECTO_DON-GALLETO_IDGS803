@@ -61,3 +61,11 @@ class User(db.Model):
     estatus = db.Column(db.String(80), nullable=False)
     usuario = db.Column(db.String(80), nullable=False)
     contrasena = db.Column(db.String(80), nullable=False)
+
+class Alerta(db.Model):
+    __tablename__ = 'alertas'
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100))
+    descripcion = db.Column(db.String(200))
+    fechaAlerta = db.Column(db.DateTime, default=datetime.datetime.now)
+    estatus = db.Column(db.Integer)
