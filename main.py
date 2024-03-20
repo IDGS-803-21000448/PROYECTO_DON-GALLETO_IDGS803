@@ -1,10 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_wtf import CSRFProtect
 import json
-import controller
 from config import DevelopmentConfig
 from models import db, User
-from controller import *
+from controllers import controller_mermas
 from controllers import controller_usuarios
 import formUsuario
 
@@ -184,7 +183,7 @@ def solicitud_produccion():
 
 @app.route("/pruebaCaducidades", methods=["GET"])
 def pruebaCaducidades():
-    resultado = controller.verificarCaducidades()
+    resultado = controller_mermas.verificarCaducidades()
     return json.dumps(resultado)
 
 @app.route('/moduloMermas')
