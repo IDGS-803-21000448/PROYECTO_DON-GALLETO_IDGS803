@@ -4,7 +4,7 @@ from wtforms import validators
 
 
 class UsersForm(Form):
-    id = IntegerField('id')
+    id = IntegerField('')
     nombre=StringField('Nombre', [
         validators.DataRequired(message='El campo es requerido'),
         validators.length(min=4, max=15, message='Ingresa un nombre valido')
