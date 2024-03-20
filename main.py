@@ -16,11 +16,11 @@ csrf=CSRFProtect()
 def page_not_found(e):
     return render_template('404.html'),404
 #-------------------------------
- 
+
 @app.route("/index",methods=["GET"])
 def index():
-    caducidades = controller.verificarCaducidades()
-    return render_template("index.html", caducidades= caducidades)
+    # caducidades = controller.verificarCaducidades()
+    return render_template("index.html")
 
 @app.route("/costoGalleta", methods=["GET"])
 def costo_galleta():
