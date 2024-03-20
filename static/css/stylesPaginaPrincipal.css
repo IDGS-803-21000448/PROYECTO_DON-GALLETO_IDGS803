@@ -1,35 +1,49 @@
-:root{
-    --beige: #F2EED8;
-    --rosa: #D96C89;
-    --cafe: #A64F1C;
-    --negro: #0D0000;
-    --naranja: #F2A057;
-    --blanco: #fff;
+/* stylesPaginaPrincipal.css */
+
+/* Define tus variables de color */
+:root {
+    --azulado-1: #1C6C8C;
+    --azulado-2: #3F9BBF;
+    --azulado-3: #3FA8BF;
+    --verde: #032626;
+    --gris: #F2F2F2;
 }
 
-body{
-    font-family: 'Montserrat', sans-serif;
+/* Barra lateral */
+.bg-azulado-1 {
+    background-color: var(--azulado-1);
 }
 
-nav{
-    background-color: var(--naranja);
+/* Barra superior */
+.bg-gradient-azulado {
+    background-color: var(--azulado-2);
+    background-image: linear-gradient(to right, var(--azulado-2), var(--azulado-3));
 }
 
-#headerPrincipal{
-    background-color: var(--cafe);
-    color: var(--blanco);
-    margin: 0px;
+/* Contenido principal */
+.bg-gris {
+    background-color: var(--gris);
 }
 
-h4{
-    color: var(--blanco);
-    margin-top: 10px;
+.sidebar-brand-icon {
+    position: relative;
+    overflow: hidden;
 }
 
-#divNav{
-    color: var(--blanco);
+.sidebar-brand-icon img {
+    transition: filter 0.3s ease;
 }
 
-a:hover {
-    background-color: var(--rosa);
-  }
+.sidebar-brand-icon:hover img {
+    filter: brightness(70%);
+}
+
+/* Estilo base para el texto dentro de los <li> */
+.nav-item a {
+    transition: font-size 0.3s ease;
+}
+
+/* Cambio de tamaño al pasar el cursor sobre cualquier <li> */
+.nav-item:hover a {
+    font-size: 1.5em; /* Cambia el tamaño del texto al 110% del tamaño original */
+}

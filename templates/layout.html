@@ -8,24 +8,25 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
 
-    <title>Don Galleto</title>
+    <title>GalletoSaurio</title>
 
     <link href="{{ url_for('static', filename='fontawesome-free-6.5.1/css/all.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ url_for('static', filename='sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
-    <link rel="icon" href="{{ url_for('static', filename='src/favicon.jpeg') }}" />
+    <link rel="icon" href="{{ url_for('static', filename='src/galletosaurio.jpg') }}" />
     <link href="{{ url_for('static', filename='css/dongalleto.min.css') }}" rel="stylesheet" />
     <link href="{{ url_for('static', filename='google-fonts/nunito.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='css/stylesPaginaPrincipal.css') }}" rel="stylesheet" />
 </head>
 
 <body id="page-top">
     <!-- Page Wrapper -->
     <div id="wrapper">
         <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <ul class="navbar-nav bg-azulado-1 sidebar sidebar-dark accordion" id="accordionSidebar">
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
                 <div class="sidebar-brand-icon">
-                    <img class="rounded-circle" src="{{ url_for('static', filename='src/Logo_Don_Galleto-sinfondo.png') }}" alt="" style="height: 70px" />
+                    <img class="rounded-circle" src="{{ url_for('static', filename='src/galletosaurio.jpg') }}" alt="" style="height: 70px" />
                 </div>
             </a>
 
@@ -111,7 +112,7 @@
 
             <!-- Nav Item - Mermas -->
             <li class="nav-item">
-                <a class="nav-link" href="/crudMermas">
+                <a class="nav-link" href="/moduloMermas">
                     <i class="fas fa-times-circle"></i>
                     <span>Mermas</span></a>
             </li>
@@ -131,7 +132,7 @@
             <!-- Main Content App-->
             <div id="content">
                 <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-brown topbar mb-4 static-top shadow">
+                <nav class="navbar navbar-expand navbar-light bg-gradient-azulado topbar mb-4 static-top shadow">
                     <!-- Sidebar Toggle (Topbar) -->
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                         <i class="fa fa-bars"></i>
@@ -212,10 +213,10 @@
             <!-- End of Main Content -->
 
             <!-- Footer -->
-            <footer class="sticky-footer bg-white">
+            <footer class="sticky-footer bg-gris">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Don Galleto 2023 - 2024</span>
+                        <span>Copyright &copy; GalletoSaurio 2024</span>
                     </div>
                 </div>
             </footer>
@@ -241,6 +242,7 @@
 
     <!-- Custom scripts for all pages-->
     <script src="{{ url_for('static', filename='js/dongalleto.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/controllerUsuarios.js') }}"></script>
 
     <!-- Page level plugins -->
     <!--<script src="./vendor/chart.js/Chart.min.js"></script>-->
