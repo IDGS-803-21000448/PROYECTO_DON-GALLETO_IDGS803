@@ -1,10 +1,11 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_wtf import CSRFProtect
 import json
 import controller
 from config import DevelopmentConfig
 from models import db
 from controller import *
+import forms
 
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
@@ -30,7 +31,13 @@ def crud_proveedores():
 
 @app.route("/crudRecetas", methods=["GET"])
 def crud_recetas():
-    return render_template("crudRecetas.html")
+    return render_template("moduloRecetas/crudRecetas.html")
+
+@app.route("/detalleReceta", methods=["GET"])
+def detalle_recetas():
+    formReceta = forms.RecetaForm(request.form)
+    formDetalle = forms.RecetaDetalleForm(request.form)
+    return render_template("moduloRecetas/detalleReceta.html", formReceta = formReceta, formDetalle = formDetalle)
 
 @app.route("/crudUsuarios", methods=["GET"])
 def crud_usuarios():
@@ -71,7 +78,6 @@ def produccion():
 @app.route("/solicitudProduccion", methods=["GET"])
 def solicitud_produccion():
     return render_template("solicitudProduccion.html")
-
 
 @app.route("/pruebaCaducidades", methods=["GET"])
 def pruebaCaducidades():
