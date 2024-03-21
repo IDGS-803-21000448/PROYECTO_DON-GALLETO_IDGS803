@@ -33,6 +33,10 @@ def crud_proveedores():
     return render_template("moduloProveedores/crudProveedores.html")
 #-------------------------------
 #Modulo Recetas
+@app.route("/vistaRecetas", methods=["GET"])
+def vista_reectas():
+    return render_template("moduloRecetas/vistaRecetas.html")
+
 @app.route("/crudRecetas", methods=["GET"])
 def crud_recetas():
     return render_template("moduloRecetas/crudRecetas.html")
