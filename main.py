@@ -251,23 +251,15 @@ def alertas():
 
 @app.route('/actualizar_alerta', methods=['POST'])
 def actualizar_alerta():
-    # Obtener todos los datos del formulario
-    form_data = request.form.to_dict(flat=False)
-
-    # Iterar sobre los datos para actualizar las alertas
-    for key, value in form_data.items():
-        if key.startswith('completada_'):
-            alerta_id = key.split('_')[1]
-            completada = value[0] 
-            print(completada)
-            alerta = Alerta.query.get(alerta_id)
-            if alerta:
-                alerta.estatus = 1 if completada == '1' else 0
-
-    # Guardar los cambios en la base de datos
-    db.session.commit()
-
-    return redirect(url_for('alertas'))
+    alerta_id = request.form.get('alerta_id')  # Obtener el ID de la alerta
+    alerta = Alerta.query.get(alerta_id)  # Obtener la alerta de la base de datos
+    
+    if alerta:
+        nuevo_estado = 0 if alerta.estatus == 1 else 1  # Cambiar el estado
+        alerta.estatus = nuevo_estado  # Actualizar el estado en la base de datos
+        db.session.commit()  # Guardar los cambios
+    
+    return redirect(url_for('alertas'))  # Redireccionar a la página de alertas
 
 # Iniciar la aplicación
 if __name__ == "__main__":
