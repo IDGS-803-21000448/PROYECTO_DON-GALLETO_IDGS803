@@ -4,7 +4,7 @@ from wtforms import validators
 
 
 class UsersForm(Form):
-    id = IntegerField('id')
+    id = IntegerField('')
     nombre=StringField('Nombre', [
         validators.DataRequired(message='El campo es requerido'),
         validators.length(min=4, max=15, message='Ingresa un nombre valido')
@@ -22,11 +22,11 @@ class UsersForm(Form):
         validators.DataRequired(message='El campo es requerido'),
         validators.length(min=4, max=15, message='Ingresa un usuario valido')
     ])
-    contrasena = PasswordField('Contraseña', [
+    contrasena = StringField('Contraseña', [
         validators.DataRequired(message='El campo es requerido'),
         validators.length(min=4, max=15, message='Ingresa una contraseña valida')
     ])
-    confirmar_contrasena = PasswordField('Confirmar contraseña', [
+    confirmar_contrasena = StringField('Confirmar contraseña', [
         validators.DataRequired(message='El campo es requerido'),
         validators.length(min=4, max=15, message='Ambas contraseñas deben de coincidir.')
     ])

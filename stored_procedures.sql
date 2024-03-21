@@ -17,25 +17,26 @@ DELIMITER ;
 
 
 -- Crear store procedure para modificar usuarios
+DROP procedure IF EXISTS modificar_usuario;
 DELIMITER //
 CREATE PROCEDURE modificar_usuario(
-    IN id_user INT,
-    IN nombre VARCHAR(80),
-    IN puesto VARCHAR(80),
-    IN rol VARCHAR(80),
-    IN estatus VARCHAR(80),
-    IN usuario VARCHAR(80),
-    IN contrasena VARCHAR(80)
+    IN p_id INT,
+    IN p_nombre VARCHAR(50),
+    IN p_puesto VARCHAR(50),
+    IN p_rol VARCHAR(50),
+    IN p_estatus VARCHAR(50),
+    IN p_usuario VARCHAR(50),
+    IN p_contrasena VARCHAR(50)
 )
 BEGIN
-    UPDATE user SET
-        nombre = nombre,
-        puesto = puesto,
-        rol = rol,
-        estatus = estatus,
-        usuario = usuario,
-        contrasena = contrasena
-    WHERE id_user = id_user;
-END //
+    UPDATE user
+    SET
+        nombre = p_nombre,
+        puesto = p_puesto,
+        rol = p_rol,
+        estatus = p_estatus,
+        usuario = p_usuario,
+        contrasena = p_contrasena
+    WHERE id = p_id;
+END//
 DELIMITER ;
-

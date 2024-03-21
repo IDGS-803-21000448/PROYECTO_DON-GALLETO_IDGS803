@@ -17,3 +17,8 @@ VALUES (1, 1, 2.5, 0.05),
 
 INSERT INTO mermas (materia_prima_id, tipo, cantidad, descripcion, fecha)
 VALUES (1, 'Daño', 5, 'Paquete roto', NOW());
+
+INSERT INTO alertas (nombre, descripcion, fechaAlerta, estatus) VALUES ('Alerta 1', 'Descripción de la alerta 1', '2024-03-18 10:00:00', 1);
+INSERT INTO alertas (nombre, descripcion, fechaAlerta, estatus) VALUES ('Alerta 2', 'Descripción de la alerta 2', '2024-03-19 12:00:00', 0);
+INSERT INTO alertas (nombre, descripcion, fechaAlerta, estatus) VALUES ('Alerta 3', 'Descripción de la alerta 3', '2024-03-20 15:00:00', 1);
+INSERT INTO alertas (nombre, descripcion, fechaAlerta, estatus) VALUES ('Alerta 4', 'Descripción de la alerta 4', '2024-03-21 17:00:00', 0);

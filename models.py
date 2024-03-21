@@ -31,8 +31,8 @@ class RecetaDetalle(db.Model):
     receta = db.relationship('Receta', backref=db.backref('detalles', lazy=True))
     materia_prima = db.relationship('MateriaPrima', backref=db.backref('usos', lazy=True))
 
-class Merma(db.Model):
-    __tablename__ = 'mermas'
+class MermaMateriaPrima(db.Model):
+    __tablename__ = 'mermaMateriaPrima'
     id = db.Column(db.Integer, primary_key=True)
     materia_prima_id = db.Column(db.Integer, db.ForeignKey('materias_primas.id'))
     tipo = db.Column(db.String(50))
@@ -51,6 +51,7 @@ class Produccion(db.Model):
     fecha_solicitud = db.Column(db.DateTime, default=datetime.datetime.now)
     fecha_producido = db.Column(db.DateTime, nullable=True)
     fecha_postergado = db.Column(db.DateTime, nullable=True)
+
 
 class User(db.Model):
     __tablename__ = 'user'
