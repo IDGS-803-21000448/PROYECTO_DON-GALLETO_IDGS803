@@ -5,48 +5,51 @@ from config import DevelopmentConfig
 from models import db, User, Alerta
 from controllers import controller_mermas
 from controllers import controller_usuarios
-import formUsuario, formAlerta
-import forms
+from formularios import formUsuario, formAlerta, formsReceta
 
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
 csrf=CSRFProtect()
 
-
+# Manejo de Errores
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'),404
 #-------------------------------
-
+#index
 @app.route("/index",methods=["GET"])
 def index():
     # caducidades = controller.verificarCaducidades()
     return render_template("index.html")
-
+#-------------------------------
+#Modulo Galletas
 @app.route("/costoGalleta", methods=["GET"])
 def costo_galleta():
-    return render_template("costoGalleta.html")
-
+    return render_template("moduloGalletas/costoGalleta.html")
+#-------------------------------
+#Modulo Proveedores
 @app.route("/crudProveedores", methods=["GET"])
 def crud_proveedores():
-    return render_template("crudProveedores.html")
-
+    return render_template("moduloProveedores/crudProveedores.html")
+#-------------------------------
+#Modulo Recetas
 @app.route("/crudRecetas", methods=["GET"])
 def crud_recetas():
     return render_template("moduloRecetas/crudRecetas.html")
 
 @app.route("/detalleReceta", methods=["GET"])
 def detalle_recetas():
-    formReceta = forms.RecetaForm(request.form)
-    formDetalle = forms.RecetaDetalleForm(request.form)
+    formReceta = formsReceta.RecetaForm(request.form)
+    formDetalle = formsReceta.RecetaDetalleForm(request.form)
     return render_template("moduloRecetas/detalleReceta.html", formReceta = formReceta, formDetalle = formDetalle)
-
+#-------------------------------
+#Modulo Usuarios
 @app.route("/crudUsuarios", methods=["GET"])
 def crud_usuarios():
     form_usuarios = formUsuario.UsersForm(request.form)
 
     listado_usuarios = User.query.filter_by(estatus='Activo').all()
-    return render_template("crudUsuarios.html", form=form_usuarios, users=listado_usuarios)
+    return render_template("moduloUsuarios/crudUsuarios.html", form=form_usuarios, users=listado_usuarios)
 
 @app.route("/agregarUsuario", methods=["GET", "POST"])
 def agregar_usuarios():
@@ -58,15 +61,15 @@ def agregar_usuarios():
         if contrasena != confirmar_contrasena:
             flash("Las contraseñas no coinciden. Inténtalo de nuevo.", "error")
             listado_usuarios = User.query.all()
-            return render_template("crudUsuarios.html", form=form_usuarios, users=listado_usuarios)
+            return render_template("moduloUsuarios/crudUsuarios.html", form=form_usuarios, users=listado_usuarios)
 
         controller_usuarios.agregarUsuario(form_usuarios)
         form_usuarios = formUsuario.UsersForm()
         listado_usuarios = User.query.filter_by(estatus='Activo').all()
-        return render_template("crudUsuarios.html", form=form_usuarios, users=listado_usuarios)
+        return render_template("moduloUsuarios/crudUsuarios.html", form=form_usuarios, users=listado_usuarios)
     else:
         listado_usuarios = User.query.filter_by(estatus='Activo').all()
-        return render_template("crudUsuarios.html", form=form_usuarios, users=listado_usuarios)
+        return render_template("moduloUsuarios/crudUsuarios.html", form=form_usuarios, users=listado_usuarios)
     
 @app.route("/modificarUsuario", methods=["GET", "POST"])
 def modificar_usuarios():
@@ -102,7 +105,7 @@ def modificar_usuarios():
     listado_usuarios = User.query.filter_by(estatus='Activo').all()
     
     # Renderizar el template con el formulario y el listado de usuarios
-    return render_template("modificarUsuario.html", form=form_usuarios, users=listado_usuarios)
+    return render_template("moduloUsuarios/modificarUsuario.html", form=form_usuarios, users=listado_usuarios)
 
 @app.route("/confirmarModificacion", methods=["POST"])
 def confirmar_modificacion():
@@ -143,14 +146,14 @@ def confirmarEliminacion():
     if id:
         user = User.query.filter_by(id=id, estatus='Activo').first()
         if user:
-            return render_template("confirmarBorradoUsuario.html", usuario_id=id)
+            return render_template("moduloUsuarios/confirmarBorradoUsuario.html", usuario_id=id)
         else:
             flash('Usuario no encontrado en la base de datos o ya está inactivo', 'error')
     else:
         flash('ID de usuario no proporcionado', 'error')
 
     listado_usuarios = User.query.filter_by(estatus='Activo').all()
-    return render_template("crudUsuarios.html", users=listado_usuarios)
+    return render_template("moduloUsuarios/crudUsuarios.html", users=listado_usuarios)
 
 @app.route("/borrarUsuario", methods=["GET", "POST"])
 def borrar_usuario():
@@ -170,53 +173,63 @@ def borrar_usuario():
         flash('ID de usuario no proporcionado', 'error')
 
     listado_usuarios = User.query.filter_by(estatus='Activo').all()
-    return render_template("crudUsuarios.html", users=listado_usuarios)
-
+    return render_template("moduloUsuarios/crudUsuarios.html", users=listado_usuarios)
+# FIN CRUD DE USUARIOS
+#------------------------------------------------------
+#dashboard
 @app.route("/dashboard", methods=["GET"])
 def dashboard():
-    return render_template("dashboard.html")
-
+    return render_template("moduloDashboard/dashboard.html")
+#------------------------------------------------------
+#inventarios
 @app.route("/inventarioMaterias", methods=["GET"])
 def inventario_materias():
-    return render_template("inventarioMaterias.html")
+    return render_template("moduloInventarios/inventarioMaterias.html")
 
 @app.route("/inventarioTerminado", methods=["GET"])
 def inventario_terminado():
-    return render_template("inventarioTerminado.html")
-
+    return render_template("moduloInventarios/inventarioTerminado.html")
+#------------------------------------------------------
+#layout
 @app.route("/layout", methods=["GET"])
 def layout():
-    return render_template("layout.html")
-
+    return render_template("moduloLayout/layout.html")
+#------------------------------------------------------
+#login
 @app.route("/login", methods=["GET"])
 def login():
-    return render_template("login.html")
-
+    return render_template("moduloLogin/login.html")
+#------------------------------------------------------
+#moduloCompras
 @app.route("/moduloCompras", methods=["GET"])
 def modulo_compras():
-    return render_template("moduloCompras.html")
-
+    return render_template("moduloCompras/moduloCompras.html")
+#------------------------------------------------------
+#moduloVentas
 @app.route("/moduloVenta", methods=["GET"])
 def modulo_venta():
-    return render_template("moduloVenta.html")
-
+    return render_template("moduloVentas/moduloVenta.html")
+#------------------------------------------------------
+#produccion
 @app.route("/produccion", methods=["GET"])
 def produccion():
-    return render_template("produccion.html")
+    return render_template("moduloProduccion/produccion.html")
 
 @app.route("/solicitudProduccion", methods=["GET"])
 def solicitud_produccion():
-    return render_template("solicitudProduccion.html")
+    return render_template("moduloProduccion/solicitudProduccion.html")
 
 @app.route("/pruebaCaducidades", methods=["GET"])
 def pruebaCaducidades():
     resultado = controller_mermas.verificarCaducidades()
     return json.dumps(resultado)
-
+#------------------------------------------------------
+#moduloMermas
 @app.route('/moduloMermas')
 def crud_mermas():
-    return render_template('crudMermas.html')
-
+    return render_template('moduloMermas/crudMermas.html')
+#------------------------------------------------------
+#alertas
 @app.route('/alertas', methods=['GET', 'POST'])
 def alertas():
     form_alerta = formAlerta.FormAlerta(request.form)
@@ -234,7 +247,7 @@ def alertas():
     else:
         listado_alertas = Alerta.query.all()
 
-    return render_template("alertas.html", alertas=listado_alertas, form=form_alerta)
+    return render_template("moduloAlertas/alertas.html", alertas=listado_alertas, form=form_alerta)
 
 @app.route('/actualizar_alerta', methods=['POST'])
 def actualizar_alerta():
@@ -256,7 +269,7 @@ def actualizar_alerta():
 
     return redirect(url_for('alertas'))
 
-
+# Iniciar la aplicación
 if __name__ == "__main__":
     csrf.init_app(app)
     db.init_app(app)
