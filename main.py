@@ -2,10 +2,11 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_wtf import CSRFProtect
 import json
 from config import DevelopmentConfig
-from models import db, User
+from models import db, User, Alerta
 from controllers import controller_mermas
 from controllers import controller_usuarios
-import formUsuario
+import formUsuario, formAlerta
+
 
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
@@ -209,6 +210,45 @@ def pruebaCaducidades():
 def crud_mermas():
     return render_template('crudMermas.html')
 
+@app.route('/alertas', methods=['GET', 'POST'])
+def alertas():
+    form_alerta = formAlerta.FormAlerta(request.form)
+    listado_alertas = []
+
+    if request.method == 'POST' and form_alerta.validate():
+        filtro = form_alerta.filtroAlerta.data
+
+        if filtro == 'todas':
+            listado_alertas = Alerta.query.all()
+        elif filtro == 'cumplidas':
+            listado_alertas = Alerta.query.filter_by(estatus=1).all()
+        elif filtro == 'incumplidas':
+            listado_alertas = Alerta.query.filter_by(estatus=0).all()
+    else:
+        listado_alertas = Alerta.query.all()
+
+    return render_template("alertas.html", alertas=listado_alertas, form=form_alerta)
+
+@app.route('/actualizar_alerta', methods=['POST'])
+def actualizar_alerta():
+    # Obtener todos los datos del formulario
+    form_data = request.form.to_dict(flat=False)
+
+    # Iterar sobre los datos para actualizar las alertas
+    for key, value in form_data.items():
+        if key.startswith('completada_'):
+            alerta_id = key.split('_')[1]
+            completada = value[0] 
+            print(completada)
+            alerta = Alerta.query.get(alerta_id)
+            if alerta:
+                alerta.estatus = 1 if completada == '1' else 0
+
+    # Guardar los cambios en la base de datos
+    db.session.commit()
+
+    return redirect(url_for('alertas'))
+
 
 if __name__ == "__main__":
     csrf.init_app(app)
@@ -217,4 +257,4 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
 
-    app.run(debug=False, port=8080)
+    app.run(debug=True, port=8080)
