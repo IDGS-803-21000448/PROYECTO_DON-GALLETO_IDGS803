@@ -11,7 +11,7 @@
         </div>
     
         <div class="col-md-6 my-3 d-flex justify-content-end">
-            <button type="button" id="btnInteraccion" class="btn btn-primary" onclick="window.location.href='/crudRecetas'"><i class="fas fa-arrow-left"></i> Regresar
+            <button type="button" id="btnInteraccion" class="btn btn-primary" onclick="window.location.href='/vistaRecetas'"><i class="fas fa-arrow-left"></i> Regresar
             </button>
         </div>
     </div>
@@ -46,12 +46,9 @@
                                 {{ render_field(formReceta.ingredientes, class="form-control") }}
                             </div>
                         </div>
-            
-                        
                     </div>
                 </div>
                 <br>
-            
                 <!-- Datos de Redes -->
                 <div class="card">
                     <div class="card-header">
@@ -59,9 +56,7 @@
                             <i class="fas fa-solid fa-receipt"></i> Detalle Receta
                         </div>
                     </div>
-            
                     <div class="card-body">
-
                         <div class="row">
                             <div class="card col-6">
                                 <div class="card-header">
@@ -69,7 +64,6 @@
                                         <i class="fas fa-solid fa-kitchen-set"></i> Pasos de la Receta
                                     </div>
                                 </div>
-    
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-sm-12 form-group">
@@ -85,10 +79,8 @@
                                         <i class="fas fa-solid fa-wheat-awn"></i> Ingredientes
                                     </div>
                                 </div>
-    
                                 <div class="card-body">
                                     <div class="row">
-
                                         <div class="row">
                                             <div class="col-sm-6 form-group">
                                                 {{ render_field(formDetalle.ingrediente, class="form-control") }}
@@ -106,9 +98,6 @@
                                                 <button type="button" class="btn btn-success"><i class="fas fa-solid fa-plus"></i> Agregar</button>
                                             </div>
                                         </div>
-
-                                        
-
                                         <div class="table-responsive">
                                             <table class="table table-bordered" id="dataTable" width="150%" cellspacing="0">
                                                 <thead>
