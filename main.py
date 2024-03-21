@@ -56,10 +56,10 @@ def agregar_usuarios():
 
         controller_usuarios.agregarUsuario(form_usuarios)
         form_usuarios = formUsuario.UsersForm()
-        listado_usuarios = User.query.all()
+        listado_usuarios = User.query.filter_by(estatus='Activo').all()
         return render_template("crudUsuarios.html", form=form_usuarios, users=listado_usuarios)
     else:
-        listado_usuarios = User.query.all()
+        listado_usuarios = User.query.filter_by(estatus='Activo').all()
         return render_template("crudUsuarios.html", form=form_usuarios, users=listado_usuarios)
     
 @app.route("/modificarUsuario", methods=["GET", "POST"])
@@ -77,6 +77,8 @@ def modificar_usuarios():
             if request.method == "GET":
                 # Poblar el formulario con los datos del usuario
                 form_usuarios = formUsuario.UsersForm(obj=user1)
+                # Asegurarse de que el campo confirmar_contrasena tenga los mismos datos que contrasena
+                form_usuarios.confirmar_contrasena.data = user1.contrasena
             elif request.method == "POST":
                 # Solo llenar los campos del formulario sin modificar el usuario en la base de datos
                 form_usuarios.populate_obj(user1)
