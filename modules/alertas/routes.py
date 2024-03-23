@@ -6,7 +6,7 @@ from models import db, Alerta
 from formularios import formAlerta
 
 @alertas.route('/alertas', methods=['GET', 'POST'])
-def alertas():
+def alertas_main():
     form_alerta = formAlerta.FormAlerta(request.form)
     listado_alertas = []
 

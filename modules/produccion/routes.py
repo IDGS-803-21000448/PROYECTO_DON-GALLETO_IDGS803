@@ -3,7 +3,7 @@ from flask import render_template
 from . import produccion
 
 @produccion.route("/produccion", methods=["GET"])
-def produccion():
+def produccion_main():
     return render_template("moduloProduccion/produccion.html")
 
 @produccion.route("/solicitudProduccion", methods=["GET"])
