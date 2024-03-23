@@ -1,5 +1,5 @@
-{% extends 'layout.html' %} 
-{% block content %} 
+{% extends 'layout.html' %}
+{% block content %}
 {% from "_macros.html" import render_field %}
 
 <form name="formUsuarios" id="formUsuarios" method="POST" novalidate action="/confirmarModificacion">
@@ -17,15 +17,15 @@
   </div>
   <div class="row mb-2 justify-content-center">
     <div class="form-group col-md-4">
-        {{ render_field(form.usuario, class="form-control", placeholder="Usuario") }}
+      {{ render_field(form.usuario, class="form-control", placeholder="Usuario") }}
     </div>
     <div class="form-group col-md-4">
-        {{ render_field(form.contrasena, class="form-control", placeholder="Contraseña") }}
+      {{ render_field(form.contrasena, class="form-control", placeholder="Contraseña") }}
     </div>
     <div class="form-group col-md-4">
-        {{ render_field(form.confirmar_contrasena, class="form-control", placeholder="Confirmar Contraseña") }}
-    </div>    
-</div>
+      {{ render_field(form.confirmar_contrasena, class="form-control", placeholder="Confirmar Contraseña") }}
+    </div>
+  </div>
 
   <div class="col-md-12 text-center">
     <button type="submit" class="btn btn-success mx-auto">Guardar</button>
@@ -35,7 +35,8 @@
 
 <div class="row mb-3">
   <h1 class="text-center">Listado de usuarios</h1>
-  <table class="table table-striped">
+  <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar...">
+  <table id="userTable" class="table table-striped">
     <thead>
       <tr>
         <th>Nombre</th>
@@ -53,13 +54,42 @@
         <td>{{ user['rol'] }}</td>
         <!-- <td>{{ user['estatus'] }}</td> -->
         <td>
-            <a href="modificarUsuario?id={{ user['id'] }}" class="btn btn-warning btn-sm">Editar</a>
-            <a href="confirmarEliminacion?id={{ user['id'] }}" class="btn btn-danger btn-sm">Eliminar</a>
+          <a href="modificarUsuario?id={{ user['id'] }}" class="btn btn-warning btn-sm">Editar</a>
+          <a href="confirmarEliminacion?id={{ user['id'] }}" class="btn btn-danger btn-sm">Eliminar</a>
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const searchInput = document.getElementById('searchInput');
+    const userTable = document.getElementById('userTable');
+    const rows = userTable.getElementsByTagName('tr');
+
+    searchInput.addEventListener('input', function() {
+      const searchText = this.value.toLowerCase();
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        const cells = row.getElementsByTagName('td');
+        let found = false;
+        for (let j = 0; j < cells.length; j++) {
+          const cell = cells[j];
+          if (cell.textContent.toLowerCase().indexOf(searchText) > -1) {
+            found = true;
+            break;
+          }
+        }
+        if (found) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      }
+    });
+  });
+</script>
 
 {% endblock %}
