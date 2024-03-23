@@ -19082,7 +19082,7 @@ figma:
   label: Figma
   search:
     terms:
-      - app
+      - modules
       - design
       - interface
   unicode: f799
@@ -27523,7 +27523,7 @@ intercom:
   label: Intercom
   search:
     terms:
-      - app
+      - modules
       - customer
       - messenger
   unicode: f7af
@@ -27559,7 +27559,7 @@ invision:
   label: InVision
   search:
     terms:
-      - app
+      - modules
       - design
       - interface
   unicode: f7b0
@@ -39306,7 +39306,7 @@ rocket:
   search:
     terms:
       - aircraft
-      - app
+      - modules
       - jet
       - launch
       - nasa
@@ -41816,7 +41816,7 @@ sketch:
   label: Sketch
   search:
     terms:
-      - app
+      - modules
       - design
       - interface
   unicode: f7c6

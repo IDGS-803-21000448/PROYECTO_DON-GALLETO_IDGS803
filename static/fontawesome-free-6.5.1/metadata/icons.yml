@@ -15621,7 +15621,7 @@ figma:
   label: Figma
   search:
     terms:
-      - app
+      - modules
       - design
       - interface
   styles:
@@ -22479,7 +22479,7 @@ intercom:
   label: Intercom
   search:
     terms:
-      - app
+      - modules
       - customer
       - messenger
   styles:
@@ -22505,7 +22505,7 @@ invision:
   label: InVision
   search:
     terms:
-      - app
+      - modules
       - design
       - interface
   styles:
@@ -32063,7 +32063,7 @@ rocket:
   search:
     terms:
       - aircraft
-      - app
+      - modules
       - jet
       - launch
       - nasa
@@ -34125,7 +34125,7 @@ sketch:
   label: Sketch
   search:
     terms:
-      - app
+      - modules
       - design
       - interface
   styles:
