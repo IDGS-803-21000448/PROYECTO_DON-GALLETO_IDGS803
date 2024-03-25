@@ -10,7 +10,10 @@ class MateriaPrima(db.Model):
     nombre = db.Column(db.String(100))
     fecha_caducidad = db.Column(db.Date)
     cantidad_disponible = db.Column(db.Float)
+    tipo = db.Column(db.String(50))
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
+    estatus = db.Column(db.Integer, default=1)
+
 
 class Receta(db.Model):
     __tablename__ = 'recetas'
@@ -35,11 +38,11 @@ class MermaMateriaPrima(db.Model):
     __tablename__ = 'mermaMateriaPrima'
     id = db.Column(db.Integer, primary_key=True)
     materia_prima_id = db.Column(db.Integer, db.ForeignKey('materias_primas.id'))
-    tipo = db.Column(db.String(50))
     cantidad = db.Column(db.Float)
     descripcion = db.Column(db.String(200), nullable=True)
+    tipo = db.Column(db.String(50))
     fecha = db.Column(db.DateTime, default=datetime.datetime.now)
-
+    estatus = db.Column(db.Integer, default=1)
     materia_prima = db.relationship('MateriaPrima', backref=db.backref('mermas', lazy=True))
 
 class Produccion(db.Model):
@@ -69,4 +72,16 @@ class Alerta(db.Model):
     nombre = db.Column(db.String(100))
     descripcion = db.Column(db.String(200))
     fechaAlerta = db.Column(db.DateTime, default=datetime.datetime.now)
-    estatus = db.Column(db.Integer)
+    estatus = db.Column(db.Integer, default=1)
+
+
+class MemraGalleta(db.Model):
+    __tablename__ = 'mermaGalletas'
+    id = db.Column(db.Integer, primary_key=True)
+    receta_id = db.Column(db.Integer, db.ForeignKey('recetas.id'))
+    cantidad = db.Column(db.Float)
+    descripcion = db.Column(db.String(200), nullable=True)
+    fecha = db.Column(db.DateTime, default=datetime.datetime.now)
+    tipo = db.Column(db.String(50))
+    estatus = db.Column(db.Integer, default=1)
+    materia_prima = db.relationship('Receta', backref=db.backref('mermas', lazy=True))

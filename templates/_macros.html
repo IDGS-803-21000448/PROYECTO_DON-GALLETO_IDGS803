@@ -4,9 +4,21 @@
 {%endmacro%}
 
 {%macro render_field(field)%}
-
-    <td>{{field.label}}</td>
+    {%if not field.widget%}
+        <td>{{field.label}}</td>
+    {%endif%}
     <dd>{{field(**kwargs)|safe}}</dd>
+    {%if field.errors%}
+        <ul>
+            {%for error in field.errors%}
+            <li style="color: red">{{error}}</li>
+            {%endfor%}
+        </ul>
+    {%endif%}
+
+{%endmacro%}
+
+{%macro render_errors(field)%}
     {%if field.errors%}
         <ul>
             {%for error in field.errors%}

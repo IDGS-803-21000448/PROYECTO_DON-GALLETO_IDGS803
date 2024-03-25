@@ -1,8 +1,207 @@
-{%extends 'layout.html' %}
+<!-- listarMermas.html -->
+{% extends 'layout.html' %}
+{% block content %}
+    {% from "_macros.html" import render_field, render_errors %}
 
-{%block content %}
-{% from "_macros.html" import render_field %}
+     <h1>Agregar Merma de Materia Prima</h1>
+    <form action="{{ url_for('mermas.modulo_mermas') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="form-group col-md-4">
+            {{ render_field(formTipo.tipo_merma, class="form-control", placeholder="Tipo de Merma") }}
+        </div>
+        <button type="submit" class="btn btn-success">Cambiar Merma</button>
+    </form>
+    <form action="/agregarMerma" method="post" class=mt-3"">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <div class="row mb-3 mt-4">
+            {{ render_field(form.id, class="form-control", placeholder="Tipo de Merma") }}
+           <div class="form-group col-3">
+               {% if form.tipo_merma.data == 'materiaPrima' %}
+                  <input type="hidden" id="materia_prima_id" name="materia_prima_id" value="{{ form.materia_prima_id.data }}">
+                  <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#materiaPrimaModal">
+                    Seleccionar Materia Prima
+                  </button>
+                   {{  render_errors(form.materia_prima_id) }}
+
+               {% endif %}
+               {% if form.tipo_merma.data == 'galletas' %}
+                  <input type="hidden" id="materia_prima_id" name="materia_prima_id" value="{{ form.materia_prima_id.data }}">
+                  <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#galletaModal">
+                    Seleccionar Galleta
+                  </button>
+                   {{  render_errors(form.materia_prima_id) }}
+               {% endif %}
+           </div>
+             <div class="form-group col-3">
+               <label for="cantidad">
+                    {{ form.cantidad.label }}
+                </label>
+                <input type="text" id="cantidad" readonly required name="cantidad" placeholder="Cantidad" class="form-control" value="{{ form.cantidad.data or '' }}">
+                 {{  render_errors(form.cantidad) }}
+           </div>
+            <div class="form-group col-3">
+                <label for="tipo">
+                    {{ form.tipo.label }}
+                </label>
+                <input type="text" id="tipo" name="tipo" readonly required placeholder="Tipo de medida" class="form-control" value="{{ form.tipo.data or '' }}">
+                {{  render_errors(form.tipo) }}
+            </div>
+          <div class="form-group col-3">
+                {{ render_field(form.fecha, class="form-control", type="datetime-local", placeholder="Fecha y Hora") }}
+           </div>
+        </div>
+        <div class="row mb-3">
+          <div class="form-group col-md-12">
+                {{ render_field(form.descripcion, class="form-control", placeholder="Descripción") }}
+          </div>
+        </div>
+        <div class="row mb-3" style="
+            visibility: hidden;
+            width: 0;
+            height: 0;
+            margin: 0;
+            padding: 0;
+        ">
+          <div class="form-group col-md-12">
+                {{ render_field(form.tipo_merma, style="display: hidden;", class="form-control", placeholder="Descripción") }}
+          </div>
+        </div>
+        {% if form.id.data == 0 %}
+            <button type="submit" class="btn btn-success">Guardar Merma</button>
+        {% endif %}
+        {% if form.id.data != 0 %}
+            <button type="submit" class="btn btn-success">Modificar Merma</button>
+        {% endif %}
+
+    </form>
+
+  <h1>Listado de Mermas de Materias Primas</h1>
+  <a href="{{ url_for('mermas.agregar_merma') }}" class="btn btn-primary">Agregar Merma</a>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Materia Prima</th>
+        <th>Tipo</th>
+        <th>Cantidad</th>
+        <th>Descripción</th>
+        <th>Fecha</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for merma in mermas %}
+      <tr>
+        <td>{{ merma.id }}</td>
+        <td>{{ merma.materia_prima.nombre }}</td>
+        <td>{{ merma.tipo }}</td>
+        <td>{{ merma.cantidad }}</td>
+        <td>{{ merma.descripcion }}</td>
+        <td>{{ merma.fecha.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+         <td>
+            <form action="{{ url_for('mermas.seleccionar_merma')}}" method="post" class="d-inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <input type="hidden" name="id" value="{{ merma.id }}">
+                 <input type="hidden" name="tipo_merma" value="materiaPrima">
+                <button type="submit" class="btn btn-warning">Editar</button>
+            </form>
+            <button type="button" id="eliminarMerma"  data-id = "{{ merma.id }}" class="btn btn-danger" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table><!-- Modal -->
+<div class="modal fade" id="materiaPrimaModal" tabindex="-1" aria-labelledby="materiaPrimaModalLabel" aria-hidden="true" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="materiaPrimaModalLabel">Seleccionar Materia Prima</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Tipo</th>
+              <th>Cantidad Disponible</th>
+              <th>Seleccionar</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for materia in materiasPrimas %}
+            <tr>
+              <td>{{ materia.nombre }}</td>
+              <td>{{ materia.tipo }}</td>
+              <td>{{ materia.cantidad_disponible }}</td>
+              <td>
+                <button type="button" class="btn btn-success select-materia" data-id="{{ materia.id }}"
+                        data-tipo="{{ materia.tipo }}"
+                        data-cantidad-disponible="{{ materia.cantidad_disponible }}" data-bs-dismiss="modal">
+                  Seleccionar
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="materiaPrimaModalLabel" aria-hidden="true" role="dialog">
+   <div class="container mt-5">
+       <div class="row">
+            <div class="col-md-6 offset-md-3">
+              <div class="card">
+                <div class="card-body">
+                  <h1 class="card-title text-center">Confirmar Borrado de Merma</h1>
+                  <p class="card-text text-center">Estás a punto de eliminar la merma</p>
+                  <div class="text-center">
+                      <form action="{{ url_for('mermas.eliminar_merma')}}" method="post" class="d-inline">
+                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                         <input type="hidden" name="id" id="idEliminar">
+                         <button type="submit" class="btn btn-danger">Eliminar</button>
+                      </form>
+                      <button type="button" id="closeModalConfirmacion" class="closeModalConfirmacion btn btn-success">
+                         Cancelar
+                      </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+       </div>
+   </div>
+</div>
 
 
 
+<script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
+
+
+<script>
+$(document).ready(function() {
+  $('.select-materia').click(function() {
+    var materiaPrimaId = $(this).data('id');
+    var tipo = $(this).data('tipo');
+    var cantidadDisponible = $(this).data('cantidad-disponible');
+
+    $('#materia_prima_id').val(materiaPrimaId);
+    $('#tipo').val(tipo);
+    $('#cantidad').val(cantidadDisponible);
+    $('#materiaPrimaModal').modal('hide')
+  });
+
+  $('#eliminarMerma').click(function() {
+    var mermaId = $(this).data('id');
+    $('#idEliminar').val(mermaId);
+  });
+  $('#closeModalConfirmacion').click(function() {
+      $('#modalConfirmacion').modal('hide')
+  });
+});
+</script>
 {% endblock %}

@@ -21,7 +21,7 @@ def verificarCaducidades():
 
                 datos = {
                     "materia_prima": materiaPrima.id,
-                    "tipo": 1,
+                    "tipo": materiaPrima.tipo,
                     "cantidad": materiaPrima.cantidad_disponible,
                     "descripcion": "Materia Prima a Merma Por Caducidad"
                 }
@@ -50,3 +50,13 @@ def insertarMermaMateriaPrima(datos: dict):
 
     db.session.add(nuevaMerma)
     db.session.commit()
+
+
+def getMateriasPrimasSinMerma():
+    mermas = db.session.query(
+        models.MermaMateriaPrima.materia_prima_id).distinct()  # Obtiene las Mermas de Materia Prima
+    ids_con_merma = [merma.materia_prima_id for merma in mermas]
+
+    materiasPrimas = MateriaPrima.query.filter_by(estatus=1).filter(~MateriaPrima.id.in_(ids_con_merma)).all()
+
+    return materiasPrimas

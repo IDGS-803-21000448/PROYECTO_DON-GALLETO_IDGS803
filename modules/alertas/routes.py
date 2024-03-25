@@ -35,4 +35,4 @@ def actualizar_alerta():
         alerta.estatus = nuevo_estado  # Actualizar el estado en la base de datos
         db.session.commit()  # Guardar los cambios
 
-    return redirect(url_for('alertas'))  # Redireccionar a la página de alertas
+    return redirect(url_for('alertas.alertas_main'))  # Redireccionar a la página de alertas
