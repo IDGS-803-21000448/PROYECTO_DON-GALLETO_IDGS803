@@ -30,6 +30,7 @@ class RecetaDetalle(db.Model):
     receta_id = db.Column(db.Integer, db.ForeignKey('recetas.id'))
     materia_prima_id = db.Column(db.Integer, db.ForeignKey('materias_primas.id'))
     cantidad_necesaria = db.Column(db.Float)
+    unidad_medida = db.Column(db.String(10))
     merma_porcentaje = db.Column(db.Float)
     receta = db.relationship('Receta', backref=db.backref('detalles', lazy=True))
     materia_prima = db.relationship('MateriaPrima', backref=db.backref('usos', lazy=True))

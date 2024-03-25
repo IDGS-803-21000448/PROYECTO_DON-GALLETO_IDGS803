@@ -1,5 +1,5 @@
 from . import recetas
-from models import Receta, MateriaPrima
+from models import Receta, MateriaPrima, RecetaDetalle
 from flask import render_template, request, jsonify
 from formularios import formsReceta
 
@@ -61,7 +61,7 @@ def detalle_recetas():
         formReceta.num_galletas.data = ''
         formReceta.fecha.data = None
         formReceta.descripcion.data = ''
-        return render_template("moduloRecetas/detalleReceta.html", receta=None, formReceta=formReceta, formDetalle=formDetalle)
+        return render_template("moduloRecetas/detalleReceta.html", receta=None, formReceta=formReceta, formDetalle=formDetalle, ingredientes=[])
     
     # Resto de tu lógica para manejar el formulario cuando no se presiona "Limpiar Campos"
     if request.method == "POST":
@@ -72,8 +72,25 @@ def detalle_recetas():
         formReceta.fecha.data = receta.create_date
         formReceta.descripcion.data = receta.descripcion
 
+        ingredientesReceta = RecetaDetalle.query.filter_by(receta_id=receta_id).all()
+        
+        ingredientes = []
+
+        for ingrediente in ingredientesReceta:
+            materia_prima = MateriaPrima.query.filter_by(id=ingrediente.materia_prima_id).first()
+
+            ingredientes.append({
+                'ingrediente_id': materia_prima.id,
+                'ingrediente': materia_prima.nombre,
+                'cantidad': ingrediente.cantidad_necesaria,
+                'unidad_medida': ingrediente.unidad_medida,
+                'porcentaje_merma': float(ingrediente.merma_porcentaje)
+            })
+
+        print(ingredientes)
+
         # Pasa la receta y los formularios a la plantilla HTML para mostrarlos
-        return render_template("moduloRecetas/detalleReceta.html", receta=receta, formReceta=formReceta, formDetalle=formDetalle)
+        return render_template("moduloRecetas/detalleReceta.html", receta=receta, formReceta=formReceta, formDetalle=formDetalle, ingredientes=ingredientes)
     
     return render_template("404.html"), 404
 
