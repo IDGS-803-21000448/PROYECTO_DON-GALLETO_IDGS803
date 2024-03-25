@@ -30,16 +30,18 @@
                             <i class="fas fa-solid fa-receipt"></i> Datos Receta
                         </div>
                     </div>
-            
                     <div class="card-body">
                         <div class="row">
                             <div class="col-sm-4 form-group">
-                                {{ render_field(formReceta.nombre, class="form-control") }}
+                                {{ formReceta.nombre.label(class="form-label") }} 
+                                {{ render_field(formReceta.nombre, class="form-control",) }}
                             </div>
                             <div class="col-sm-4 form-group">
+                                {{ formReceta.num_galletas.label(class="form-label") }} 
                                 {{ render_field(formReceta.num_galletas, class="form-control") }}
                             </div>
                             <div class="col-sm-4 form-group">
+                                {{ formReceta.fecha.label(class="form-label") }} 
                                 {{ render_field(formReceta.fecha, class="form-control") }}
                             </div>
                             <div class="col-sm-4 form-group" style="display: none;">
@@ -83,43 +85,53 @@
                                     <div class="row">
                                         <div class="row">
                                             <div class="col-sm-6 form-group">
-                                                {{ render_field(formDetalle.ingrediente, class="form-control") }}
+                                                {{ formDetalle.ingrediente.label(class="form-label", id="ingrediente_label") }}
+                                                <select name="ingrediente" id="ingrediente_input" class="form-control">
+                                                    {% for materia_prima in materias_primas %}
+                                                        <option value="{{ materia_prima.id }}">{{ materia_prima.nombre }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                {% for error in formDetalle.ingrediente.errors %}
+                                                    <span class="text-danger">{{ error }}</span>
+                                                {% endfor %}
                                             </div>
                                             <div class="col-sm-6 form-group">
-                                                {{ render_field(formDetalle.cantidad, class="form-control") }}
+                                                {{ formDetalle.cantidad.label(class="form-label", id="cantidad_label") }}
+                                                {{ render_field(formDetalle.cantidad, class="form-control", id="cantidad_input") }}
                                             </div>
                                             <div class="col-sm-6 form-group">
-                                                {{ render_field(formDetalle.unidad_medida, class="form-control") }}
+                                                {{ formDetalle.unidad_medida.label(class="form-label", id="unidad_medida_label") }}
+                                                {{ render_field(formDetalle.unidad_medida, class="form-control", id="unidad_medida_input") }}
                                             </div>
                                             <div class="col-sm-6 form-group">
-                                                {{ render_field(formDetalle.porcentaje_merma, class="form-control") }}
+                                                {{ formDetalle.porcentaje_merma.label(class="form-label", id="porcentaje_merma_label") }}
+                                                {{ render_field(formDetalle.porcentaje_merma, class="form-control", id="porcentaje_merma_input") }}
                                             </div>
-                                            <div class="col-sm-12 form-group">
-                                                <button type="button" class="btn btn-success"><i class="fas fa-solid fa-plus"></i> Agregar</button>
-                                            </div>
+                                            <input type="submit" id="agregar" name="agregar" value="Agregar" class="btn btn-success mb-3" />
                                         </div>
                                         <div class="table-responsive">
-                                            <table class="table table-bordered" id="dataTable" width="150%" cellspacing="0">
+                                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                                 <thead>
                                                     <tr>
-                                                        <th>ID</th>
                                                         <th>Ingrediente</th>
                                                         <th>Cantidad</th>
-                                                        <th>Merma</th>
-                                                        <th>Acciones</th>
+                                                        <th>Unidad de Medida</th>
+                                                        <th>Porcentaje de Merma</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    {% for ingrediente_data in ingredientes_data %}
                                                     <tr>
-                                                        <td>1</td>
-                                                        <td>Azucar</td>
-                                                        <td>10 kg</td>
-                                                        <td>10</td>
-                                                        <td>Accion</td>
+                                                        <td>{{ ingrediente_data.ingrediente }}</td>
+                                                        <td>{{ ingrediente_data.cantidad }}</td>
+                                                        <td>{{ ingrediente_data.unidad_medida }}</td>
+                                                        <td>{{ ingrediente_data.porcentaje_merma }}</td>
                                                     </tr>
+                                                    {% endfor %}
                                                 </tbody>
                                             </table>
                                         </div>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -128,16 +140,15 @@
                     </div>
                 </div>
                 <br>
-                <div class="text-center">
+                <!-- <div class="text-center">
                     <button type="submit" class="btn btn-success"><i class="fas fa-solid fa-save"></i> Guardar Receta</button>
                     <button type="button" class="btn btn-danger"><i class="fas fa-solid fa-trash"></i> Eliminar Receta</button>
-                    <button type="button" class="btn btn-primary"><i class="fas fa-solid fa-eraser" action="{{ url_for('recetas.detalle_recetas') }}"></i> Limpiar Campos</button>
+                    <button type="button" class="btn btn-primary"><i class="fas fa-solid fa-eraser"></i> Limpiar Campos</button>
                     <button type="button" class="btn btn-warning"><i class="fas fa-solid fa-ban"></i> Cancelar</button>
-                </div>
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                </div> -->
             </form>
         </div>
     </div>
 
-
 {% endblock %}
+

@@ -5,11 +5,11 @@ from wtforms import validators
 
 
 class RecetaForm(Form):
-    nombre = StringField('Nombre', [
+    nombre = StringField('Nombre receta', [
         validators.DataRequired(message='El campo es requerido'),
-        validators.length(min=4, max=10, message='Ingresa un nombre valido')
+        validators.length(min=4, max=30, message='Ingresa un nombre valido')
     ])
-    descripcion = TextAreaField('Descripcion', [
+    descripcion = TextAreaField('Pasos de receta', [
         validators.DataRequired(message='El campo es requerido')
     ])
     num_galletas = IntegerField('Numero de Galletas', [

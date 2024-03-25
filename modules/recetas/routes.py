@@ -1,19 +1,79 @@
 from . import recetas
-
-from flask import render_template, request
+from models import Receta, MateriaPrima
+from flask import render_template, request, jsonify
 from formularios import formsReceta
 
 
 @recetas.route("/vistaRecetas", methods=["GET"])
-def vista_reectas():
-    return render_template("moduloRecetas/vistaRecetas.html")
+def vista_recetas():
+    recetas = Receta.query.all()
+    return render_template("moduloRecetas/vistaRecetas.html", recetas=recetas)
 
 @recetas.route("/crudRecetas", methods=["GET"])
 def crud_recetas():
     return render_template("moduloRecetas/crudRecetas.html")
 
-@recetas.route("/detalleReceta", methods=["GET"])
+@recetas.route('/nuevaReceta', methods=['GET', 'POST'])
+def nueva_receta():
+    formReceta = formsReceta.RecetaForm(request.form)
+    formDetalle = formsReceta.RecetaDetalleForm()
+
+    # Obtén la lista de ingredientes desde la tabla MateriaPrima
+    materias_primas = MateriaPrima.query.all()
+
+    if request.method == 'POST' and formDetalle.validate():
+        ingrediente_nombre = request.form['ingrediente']
+        cantidad = request.form['cantidad']
+        unidad_medida = request.form['unidad_medida']
+        porcentaje_merma = request.form['porcentaje_merma']
+
+        # Verificar que los campos no estén vacíos
+        if ingrediente_nombre and cantidad and unidad_medida and porcentaje_merma:
+            # Agregar los datos al arreglo ingredientes_data
+            ingredientes_data = {
+                'ingrediente': ingrediente_nombre,
+                'cantidad': cantidad,
+                'unidad_medida': unidad_medida,
+                'porcentaje_merma': porcentaje_merma
+            }
+
+            # Devolver los datos actualizados como respuesta JSON
+            return jsonify({'success': True, 'ingredientes_data': ingredientes_data})
+
+    # Si no se pudo agregar o validar los datos, se renderiza la plantilla con el formulario vacío
+    return render_template('moduloRecetas/nuevaReceta.html', formDetalle=formDetalle, formReceta=formReceta, materias_primas=materias_primas)
+
+
+# @recetas.route("/detalleReceta", methods=["GET"])
+# def detalle_recetas():
+#     formReceta = formsReceta.RecetaForm(request.form)
+#     formDetalle = formsReceta.RecetaDetalleForm(request.form)
+#     return render_template("moduloRecetas/detalleReceta.html", formReceta = formReceta, formDetalle = formDetalle)
+
+@recetas.route("/detalleReceta", methods=["GET", "POST"])
 def detalle_recetas():
     formReceta = formsReceta.RecetaForm(request.form)
     formDetalle = formsReceta.RecetaDetalleForm(request.form)
-    return render_template("moduloRecetas/detalleReceta.html", formReceta = formReceta, formDetalle = formDetalle)
+    
+    # Verificar si se envió el formulario y se presionó el botón "Limpiar Campos"
+    if request.method == "POST" and request.form.get("limpiar_campos"):
+        formReceta.nombre.data = ''
+        formReceta.num_galletas.data = ''
+        formReceta.fecha.data = None
+        formReceta.descripcion.data = ''
+        return render_template("moduloRecetas/detalleReceta.html", receta=None, formReceta=formReceta, formDetalle=formDetalle)
+    
+    # Resto de tu lógica para manejar el formulario cuando no se presiona "Limpiar Campos"
+    if request.method == "POST":
+        receta_id = request.form.get("receta_id")
+        receta = Receta.query.filter_by(id=receta_id).first()
+        formReceta.nombre.data = receta.nombre
+        formReceta.num_galletas.data = receta.num_galletas
+        formReceta.fecha.data = receta.create_date
+        formReceta.descripcion.data = receta.descripcion
+
+        # Pasa la receta y los formularios a la plantilla HTML para mostrarlos
+        return render_template("moduloRecetas/detalleReceta.html", receta=receta, formReceta=formReceta, formDetalle=formDetalle)
+    
+    return render_template("404.html"), 404
+
