@@ -75,26 +75,26 @@ def modificar_usuarios():
 
 @usuarios.route("/confirmarModificacion", methods=["POST"])
 def confirmar_modificacion():
-    form_usuarios = formUsuario.UsersForm(request.form)
+    form_usuarios = formUsuario.UsersFormModificar(request.form)
 
     id = request.form.get('id')
     user1 = User.query.filter_by(id=id, estatus='Activo').first()
 
-    if request.method == "POST" and form_usuarios.validate():
+    if request.method == "POST":
         try:
             # Actualizar los datos del usuario con los del formulario
             form_usuarios.populate_obj(user1)
-
+            
             # Modificar el usuario en la base de datos
             controller_usuarios.modificarUsuario(form_usuarios, id)
-
+            
             # Confirmar los cambios en la base de datos
-            db.session.commit()
-
+            #db.session.commit()
+            
             # Redireccionar y mostrar mensaje de éxito
             flash("Usuario modificado correctamente", "success")
             return redirect(url_for("crud_usuarios"))
-
+        
         except Exception as e:
             # Manejar el caso en que ocurra un error al modificar el usuario
             db.session.rollback()
