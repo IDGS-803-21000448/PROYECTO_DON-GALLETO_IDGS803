@@ -1,8 +1,90 @@
-{%extends 'layout.html' %}
+<!DOCTYPE html>
+<html lang="en">
 
-{%block content %}
-{% from "_macros.html" import render_field %}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Iniciar Sesión</title>
+
+    <link href="{{ url_for('static', filename='fontawesome-free-6.5.1/css/all.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ url_for('static', filename='sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link rel="icon" href="{{ url_for('static', filename='src/galletosaurio1.png') }}" />
+    <link href="{{ url_for('static', filename='css/dongalleto.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='bootstrap-5.0.2/css/bootstrap.min.css') }}" rel="stylesheet" />
+</head>
+
+<body class="bg-gradient-primary">
+
+    <section class="text-center text-lg-start">
+        <style>
+          .cascading-right {
+            background: hsla(0, 0%, 100%, 0.55);
+            backdrop-filter: blur(30px);
+          }
+      
+          .card-shadow {
+            box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.1);
+          }
+      
+          @media (max-width: 991.98px) {
+            .margin-adjust {
+              margin-right: 0;
+            }
+          }
+        </style>
+      
+        <!-- Jumbotron -->
+        <div class="container py-4">
+          <div class="row g-0 align-items-center">
+            <div class="col-lg-6 mb-5 mb-lg-0">
+              <div class="card cascading-right margin-adjust card-shadow p-5 text-center">
+                <!-- Titulo de color blanco en negritas -->
+                <h2 class="fw-bold mb-5 text-white">Bienvenido de Vuelta</h2>
+                <form>      
+                  <!-- Email input -->
+                  <div class="form-outline mb-4">
+                    <input type="email" id="form3Example3" class="form-control" />
+                    <label class="form-label" for="form3Example3">Usuario</label>
+                  </div>
+      
+                  <!-- Password input -->
+                  <div class="form-outline mb-4">
+                    <input type="password" id="form3Example4" class="form-control" />
+                    <label class="form-label" for="form3Example4">Contraseña</label>
+                  </div>
+      
+                  <!-- Submit button -->
+                  <button type="submit" class="btn btn-primary btn-block mb-4">
+                    Iniciar Sesión
+                  </button>
+                </form>
+              </div>
+            </div>
+      
+            <div class="col-lg-6 mb-5 mb-lg-0">
+              <img src="{{ url_for('static', filename='src/galletosautio-login.webp') }}" class="w-100 rounded-4 shadow-4" alt="" />
+            </div>
+          </div>
+        </div>
+        <!-- Jumbotron -->
+      </section>
+      
+  <!-- Section: Design Block -->
+</body>
+<!-- Bootstrap core JavaScript-->
+<script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
 
+<!-- Core plugin JavaScript-->
+<script src="{{ url_for('static', filename='jquery-easing/jquery.easing.min.js') }}"></script>
+<script src="{{ url_for('static', filename='sweetalert2/sweetalert2.all.min.js') }}"></script>
 
-{% endblock %}
+<!-- Custom scripts for all pages-->
+<script src="{{ url_for('static', filename='js/dongalleto.min.js') }}"></script>
+
+</html>

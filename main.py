@@ -7,11 +7,16 @@ from models import db
 from modules import (galletas, index, proveedores, usuarios, recetas, dashboard, inventarios, alertas, produccion,
                      mermas, ventas, compras, login)
 from models import Alerta, User, MateriaPrima, MermaMateriaPrima, Produccion, Receta, RecetaDetalle
+import flask_login as fl
 
 
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
 csrf=CSRFProtect()
+app.secret_key = 'llavesecreta1234'
+
+login_manager = fl.LoginManager()
+login_manager.init_app(app)
 
 admin = Admin(app)
 admin.add_view(ModelView(User, db.session))
@@ -42,6 +47,10 @@ app.register_blueprint(login.login)
 def page_not_found(e):
     return render_template('404.html'),404
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id)) 
+
 # Iniciar la aplicación
 if __name__ == "__main__":
     csrf.init_app(app)
@@ -50,4 +59,4 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
 
-    app.run(debug=False, port=8080)
+    app.run(debug=True, port=8080)

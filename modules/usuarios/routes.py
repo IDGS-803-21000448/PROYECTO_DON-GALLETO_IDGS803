@@ -3,11 +3,15 @@ from . import usuarios
 from flask import render_template, request, redirect, url_for, flash
 from models import db, User
 from controllers import controller_usuarios
+from controllers.controller_login import requiere_rol
 from formularios import formUsuario
+from main import login_required
 
 
 
 @usuarios.route("/crudUsuarios", methods=["GET"])
+@login_required
+@requiere_rol("admin")
 def crud_usuarios():
     form_usuarios = formUsuario.UsersForm(request.form)
 
