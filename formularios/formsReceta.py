@@ -1,7 +1,7 @@
 from wtforms import Form
-from wtforms import StringField, EmailField, IntegerField, TextAreaField, DateField, SearchField, FloatField, SelectField
+from wtforms import StringField, EmailField, IntegerField, TextAreaField, DateField, SearchField, FloatField, SelectField, FileField
 from wtforms import validators
-
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 
 
 class RecetaForm(Form):
@@ -19,6 +19,7 @@ class RecetaForm(Form):
     fecha = DateField('Fecha de Registro', [
         validators.DataRequired(message='El campo es requerido'),
     ], format='%Y-%m-%d')
+    imagen = FileField('Imagen de la receta', validators=[FileAllowed(['png'], 'Solo se permiten archivos PNG')])
     ingredientes = StringField('ingredientes_array', [validators.DataRequired(message='El campo es requerido')])
 
 class RecetaDetalleForm(Form):
