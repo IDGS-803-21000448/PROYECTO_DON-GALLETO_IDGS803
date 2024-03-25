@@ -27,12 +27,12 @@ def alertas_main():
 
 @alertas.route('/actualizar_alerta', methods=['POST'])
 def actualizar_alerta():
-    alerta_id = request.form.get('alerta_id')  # Obtener el ID de la alerta
-    alerta = Alerta.query.get(alerta_id)  # Obtener la alerta de la base de datos
+    alerta_id = request.form.get('alerta_id')  
+    alerta = Alerta.query.get(alerta_id)  
 
     if alerta:
-        nuevo_estado = 0 if alerta.estatus == 1 else 1  # Cambiar el estado
-        alerta.estatus = nuevo_estado  # Actualizar el estado en la base de datos
-        db.session.commit()  # Guardar los cambios
+        nuevo_estado = 0 if alerta.estatus == 1 else 1  
+        alerta.estatus = nuevo_estado  
+        db.session.commit()  
 
-    return redirect(url_for('alertas.alertas_main'))  # Redireccionar a la página de alertas
+    return redirect(url_for('alertas.alertas_main'))  
