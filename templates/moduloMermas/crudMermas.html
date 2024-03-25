@@ -3,7 +3,7 @@
 {% block content %}
     {% from "_macros.html" import render_field, render_errors %}
 
-     <h1>Agregar Merma de Materia Prima</h1>
+     <h1>Agregar Merma</h1>
     <form action="{{ url_for('mermas.modulo_mermas') }}" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="form-group col-md-4">
@@ -75,8 +75,7 @@
 
     </form>
 
-  <h1>Listado de Mermas de Materias Primas</h1>
-  <a href="{{ url_for('mermas.agregar_merma') }}" class="btn btn-primary">Agregar Merma</a>
+  <h1>Listado de Mermas</h1>
   <table class="table">
     <thead>
       <tr>

@@ -16,6 +16,7 @@ def merma_galletas():
     originalForm = MermaMateriaPrimaForm()
     mermas = MemraGalleta.query.filter_by(estatus=1)
     originalForm.tipo_merma.data = "galletas"
+    form.tipo_merma.data = "galletas"
     recetas = []
     materiasPrimas = []
 
@@ -29,6 +30,7 @@ def merma_materia_prima():
     originalForm = MermaMateriaPrimaForm()
     mermas = MermaMateriaPrima.query.filter_by(estatus=1)
     originalForm.tipo_merma.data = "materiaPrima"
+    form.tipo_merma.data = "materiaPrima"
     materiasPrimas = controller_mermas.getMateriasPrimasSinMerma()
     recetas = []
 
