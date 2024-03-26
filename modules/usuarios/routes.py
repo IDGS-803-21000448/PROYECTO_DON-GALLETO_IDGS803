@@ -5,13 +5,13 @@ from models import db, User
 from controllers import controller_usuarios
 from controllers.controller_login import requiere_rol
 from formularios import formUsuario
-from main import login_required
+from flask_login import login_required
 
 
 
 @usuarios.route("/crudUsuarios", methods=["GET"])
 @login_required
-@requiere_rol("admin")
+@requiere_rol("Administrador")
 def crud_usuarios():
     form_usuarios = formUsuario.UsersForm(request.form)
 
@@ -103,11 +103,11 @@ def confirmar_modificacion():
             # Manejar el caso en que ocurra un error al modificar el usuario
             db.session.rollback()
             flash(f"Error al modificar usuario: {str(e)}", "error")
-            return redirect(url_for("crud_usuarios"))
+            return redirect(url_for("usuarios.crud_usuarios"))
 
     # Si la validación del formulario falla o no se envía una solicitud POST,
     # redireccionar de vuelta a la página de administración de usuarios
-    return redirect(url_for("crud_usuarios"))
+    return redirect(url_for("usuarios.crud_usuarios"))
 
 
 @usuarios.route("/confirmarEliminacion", methods=["GET", "POST"])

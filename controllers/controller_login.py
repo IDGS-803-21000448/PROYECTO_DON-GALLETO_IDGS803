@@ -7,10 +7,10 @@ def requiere_rol(*roles_permitidos):
         @wraps(f)
         def decorado(*args, **kwargs):
             if not current_user.is_authenticated:
-                return redirect(url_for('login'))
+                return redirect(url_for('login.login'))
             if current_user.rol not in roles_permitidos:
                 flash('No tienes permiso para acceder a esta página.')
-                return redirect(url_for('index'))  # Asume que existe una ruta 'index'
+                return redirect(url_for('index.index'))  # Asume que existe una ruta 'index'
             return f(*args, **kwargs)
         return decorado
     return decorador

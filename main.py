@@ -13,7 +13,7 @@ import flask_login as fl
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
 csrf=CSRFProtect()
-app.secret_key = 'llavesecreta1234'
+app.config['SECRET_KEY'] = 'llavesecreta1234'
 
 login_manager = fl.LoginManager()
 login_manager.init_app(app)

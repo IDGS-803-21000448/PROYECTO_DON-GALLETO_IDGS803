@@ -23,112 +23,14 @@
 
 </head>
 
+{% from "_macros.html" import render_menu with context%}
 <body id="page-top">
     <!-- Page Wrapper -->
     <div id="wrapper">
         <!-- Sidebar -->
         <ul class="navbar-nav bg-azulado-1 sidebar sidebar-dark accordion" id="accordionSidebar">
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
-                <div class="sidebar-brand-icon">
-                    <img class="rounded-circle" src="{{ url_for('static', filename='src/galletosaurio.jpg') }}" alt="" style="height: 50px"/>
-                </div>
-            </a>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider my-0" />
-
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item active">
-                <a class="nav-link" href="/dashboard">
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Dashboard</span></a>
-            </li>
-
-            <!-- Nav Item - Usuarios -->
-            <li class="nav-item">
-                <a class="nav-link" href="/crudUsuarios">
-                    <i class="fas fa-fw fa-users"></i>
-                    <span>Usuarios</span></a>
-            </li>
-
-            <!-- Nav Item - Proveedores -->
-            <li class="nav-item">
-                <a class="nav-link" href="/crudProveedores">
-                    <i class="fas fa-truck"></i>
-                    <span>Proveedores</span></a>
-            </li>
-
-            <!-- Nav Item - Compras -->
-            <li class="nav-item">
-                <a class="nav-link" href="/moduloCompras">
-                    <i class="fas fa-fw fa-bag-shopping"></i>
-                    <span>Compras</span></a>
-            </li>
-
-            <!-- Nav Item - Ingredientes -->
-            <li class="nav-item">
-                <a class="nav-link" href="/inventarioMaterias">
-                    <i class="fas fa-kitchen-set"></i>
-                    <span>Materias Primas</span></a>
-            </li>
-
-            <!-- Nav Item - Ingredientes -->
-            <li class="nav-item">
-                <a class="nav-link" href="/vistaRecetas">
-                    <i class="fas fa-receipt"></i>
-                    <span>Recetas</span></a>
-            </li>
-
-            <!-- Nav Item - Ingredientes -->
-            <li class="nav-item">
-                <a class="nav-link" href="/produccion">
-                    <i class="fas fa-gears"></i>
-                    <span>Producción</span></a>
-            </li>
-
-            <!-- Nav Item - Ingredientes -->
-            <li class="nav-item">
-                <a class="nav-link" href="/inventarioTerminado">
-                    <i class="fas fa-cookie-bite"></i>
-                    <span>Producto Terminado</span></a>
-            </li>
-
-            <!-- Nav Item - Ingredientes -->
-            <li class="nav-item">
-                <a class="nav-link" href="/solicitudProduccion">
-                    <i class="fas fa-bell-concierge"></i>
-                    <span>Solicitud de Producción</span></a>
-            </li>
-
-            <!-- Nav Item - Ventas -->
-            <li class="nav-item">
-                <a class="nav-link" href="/costoGalleta">
-                    <i class="fas fa-fw fa-coins"></i>
-                    <span>Costo Galletas</span></a>
-            </li>
-
-            <!-- Nav Item - Ventas -->
-            <li class="nav-item">
-                <a class="nav-link" href="/moduloVenta">
-                    <i class="fas fa-fw fa-store"></i>
-                    <span>Ventas</span></a>
-            </li>
-
-            <!-- Nav Item - Mermas -->
-            <li class="nav-item">
-                <a class="nav-link" href="/moduloMermas">
-                    <i class="fas fa-times-circle"></i>
-                    <span>Mermas</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider d-none d-md-block" />
-
-            <!-- Sidebar Toggler (Sidebar) -->
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div>
+            
+            {{ render_menu() }}
         </ul>
         <!-- End of Sidebar -->
 
@@ -184,7 +86,7 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-4 d-none d-lg-inline text-white small">Usuario</span>
+                                <span class="mr-4 d-none d-lg-inline text-white small">{{ current_user.nombre }}</span>
                                 <img class="img-profile rounded-circle" src="{{ url_for('static', filename='src/undraw_profile.svg') }}" />
                             </a>
                             <!-- Dropdown - User Information -->
@@ -195,7 +97,7 @@
                                     Perfil
                                 </a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="" onclick="" data-toggle="modal" data-target="#logoutModal">
+                                <a class="dropdown-item" href="" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Cerrar Sesión
                                 </a>
@@ -233,6 +135,30 @@
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h3>¿Seguro que deseas cerrar sesion?</h3>
+                    <hr>
+                    <p>Se cerrara la sesión actual</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <a class="btn btn-primary" href="/logout">Cerrar Sesión</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Bootstrap core JavaScript-->
     <script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>

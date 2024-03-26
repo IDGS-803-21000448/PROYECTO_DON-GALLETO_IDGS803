@@ -44,19 +44,22 @@
               <div class="card cascading-right margin-adjust card-shadow p-5 text-center">
                 <!-- Titulo de color blanco en negritas -->
                 <h2 class="fw-bold mb-5 text-white">Bienvenido de Vuelta</h2>
-                <form>      
+
+                {% from "_macros.html" import render_field %}
+
+                <form action="/login" method="POST">      
                   <!-- Email input -->
                   <div class="form-outline mb-4">
-                    <input type="email" id="form3Example3" class="form-control" />
+                    {{ render_field(form.usuario, class="form-control") }}
                     <label class="form-label" for="form3Example3">Usuario</label>
                   </div>
       
                   <!-- Password input -->
                   <div class="form-outline mb-4">
-                    <input type="password" id="form3Example4" class="form-control" />
+                    {{ render_field(form.contrasena, class="form-control") }}
                     <label class="form-label" for="form3Example4">Contraseña</label>
                   </div>
-      
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                   <!-- Submit button -->
                   <button type="submit" class="btn btn-primary btn-block mb-4">
                     Iniciar Sesión
