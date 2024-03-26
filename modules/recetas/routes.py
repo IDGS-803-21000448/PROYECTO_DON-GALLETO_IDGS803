@@ -2,6 +2,8 @@ from . import recetas
 from models import Receta, MateriaPrima, RecetaDetalle
 from flask import render_template, request, jsonify, url_for, redirect, flash
 from formularios import formsReceta
+from controllers.controller_login import requiere_rol
+from flask_login import login_required
 
 from werkzeug.utils import secure_filename
 import base64
@@ -10,6 +12,8 @@ import json
 
 
 @recetas.route("/vistaRecetas", methods=["GET"])
+@login_required
+@requiere_rol("admin")
 def vista_recetas():
     recetas = Receta.query.filter_by(estatus=1).all()
     return render_template("moduloRecetas/vistaRecetas.html", recetas=recetas)
@@ -19,6 +23,8 @@ def crud_recetas():
     return render_template("moduloRecetas/crudRecetas.html")
 
 @recetas.route('/nuevaReceta', methods=['GET', 'POST'])
+@login_required
+@requiere_rol("admin")
 def nueva_receta():
     formReceta = formsReceta.RecetaForm(request.form)
     #formDetalle = formsReceta.RecetaDetalleForm()
@@ -32,6 +38,8 @@ def nueva_receta():
     return render_template('moduloRecetas/nuevaReceta.html', formReceta=formReceta, materias_primas=materias_primas)
 
 @recetas.route("/guardarReceta", methods=["POST"])
+@login_required
+@requiere_rol("admin")
 def guardar_receta():
     if request.method == "POST":
         # Obtener los datos del formulario de la receta
@@ -41,6 +49,10 @@ def guardar_receta():
         # Obtener la imagen (en base64 o como prefieras manejarla)
         imagen = request.files['imagen']
         descripcion = request.form['descripcion']
+        # Obtener los ingredientes
+        ingredientesRaw = request.form['ingredientes']
+        ingredientesJson = json.loads(ingredientesRaw)
+        print(ingredientesJson)
 
         if imagen and allowed_file(imagen.filename):
             filename = secure_filename(imagen.filename)
@@ -53,6 +65,45 @@ def guardar_receta():
         db.session.add(nueva_receta)
         db.session.commit()
 
+        last_receta = Receta.query.order_by(Receta.id.desc()).first()
+
+        # Obtener el detalle de la receta guardada
+        lastDetalles = RecetaDetalle.query.filter_by(receta_id=last_receta.id).all()
+
+        #verificar si lastDetalles tiene elementos, si tiene datos realizar lo siguiente
+        if lastDetalles:
+            # Verificar si en el ingredientesJson no hay un id de ingrediente registrado en el lastDetalles, si es asi debe eliminarlo de la base de datos donde el id de receta y el id de materia prima coincidan
+            for detalle in lastDetalles:
+                if not any(ingrediente['id'] == detalle.materia_prima_id for ingrediente in ingredientesJson):
+                    db.session.delete(detalle)
+                    db.session.commit()        
+
+        # Crear los detalles de la receta
+        for ingrediente in ingredientesJson:
+            detalle = RecetaDetalle(
+                receta_id=last_receta.id,
+                materia_prima_id=ingrediente['ingrediente_id'],
+                cantidad_necesaria=ingrediente['cantidad'],
+                unidad_medida=ingrediente['unidad_medida'],
+                merma_porcentaje=ingrediente['porcentaje_merma']
+            )
+            # Verificar si la receta ya tiene detalles
+            if lastDetalles:                
+                # Verificar si el detalle ya existe en la base de datos
+                existe = next((x for x in lastDetalles if x.materia_prima_id == ingrediente['id']), None)
+
+                # Si el detalle ya existe solo modificar datos en la base de datos donde el id de ingrediente y el id de receta coincidan
+                if existe:
+                    existe.cantidad_necesaria = ingrediente['cantidad']
+                    existe.unidad_medida = ingrediente['unidaddemedida']
+                    existe.merma_porcentaje = ingrediente['mermaporcentaje']
+                    db.session.commit()
+                # Si el detalle no existe, agregarlo a la base de datos
+                else:
+                    db.session.add(detalle)                    
+            else:
+                db.session.add(detalle)
+                db.session.commit()
         # Redirigir a la página de vista de recetas después de guardar la receta
         return redirect(url_for('recetas.vista_recetas'))
 
@@ -63,12 +114,13 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @recetas.route("/detalleReceta", methods=["GET", "POST"])
+@login_required
+@requiere_rol("admin")
 def detalle_recetas():
     formReceta = formsReceta.RecetaForm(request.form)
     #formDetalle = formsReceta.RecetaDetalleForm(request.form)
 
     materias_primas = MateriaPrima.query.all()
-    print(materias_primas)
     
     # Verificar si se envió el formulario y se presionó el botón "Limpiar Campos"
     if request.method == "POST" and request.form.get("limpiar_campos"):
@@ -103,7 +155,6 @@ def detalle_recetas():
                 'porcentaje_merma': float(ingrediente.merma_porcentaje)
             })
 
-        print(ingredientes)
         formReceta.ingredientes.data = json.dumps(ingredientes) # Serializa los ingredientes
 
         # Pasa la receta y los formularios a la plantilla HTML para mostrarlos
@@ -112,6 +163,8 @@ def detalle_recetas():
     return render_template("404.html"), 404
 
 @recetas.route("/editarReceta", methods=["POST"])
+@login_required
+@requiere_rol("admin")
 def editar_receta():
     if request.method == "POST":
         if 'guardar_receta_btn' in request.form:
@@ -121,6 +174,9 @@ def editar_receta():
             num_galletas = request.form['num_galletas']
             fecha = request.form['fecha']
             descripcion = request.form['descripcion']
+            ingredientesRaw = request.form['ingredientes']
+            ingredientesJson = json.loads(ingredientesRaw)
+            print(f'ingredientes json  {ingredientesJson} ')
 
             # Verificar si se seleccionó una nueva imagen
             if 'imagen' in request.files:
@@ -149,10 +205,55 @@ def editar_receta():
             receta.create_date = fecha
             receta.descripcion = descripcion
             db.session.commit()
+
+            last_receta = Receta.query.order_by(Receta.id.desc()).first()
+
+            # Obtener el detalle de la receta guardada
+            lastDetalles = RecetaDetalle.query.filter_by(receta_id=last_receta.id).all()
+
+            #verificar si lastDetalles tiene elementos, si tiene datos realizar lo siguiente
+            if lastDetalles:
+                # Verificar si en el ingredientesJson no hay un id de ingrediente registrado en el lastDetalles, si es asi debe eliminarlo de la base de datos donde el id de receta y el id de materia prima coincidan
+                for detalle in lastDetalles:
+                    if not any(int(ingrediente['ingrediente_id']) == int(detalle.materia_prima_id) for ingrediente in ingredientesJson):
+                            db.session.delete(detalle)
+                            db.session.commit()        
+
+            # Crear los detalles de la receta
+            for ingrediente in ingredientesJson:
+                detalle = RecetaDetalle(
+                    receta_id=last_receta.id,
+                    materia_prima_id=ingrediente['ingrediente_id'],
+                    cantidad_necesaria=ingrediente['cantidad'],
+                    unidad_medida=ingrediente['unidad_medida'],
+                    merma_porcentaje=ingrediente['porcentaje_merma']
+                )
+                # Verificar si la receta ya tiene detalles
+                if lastDetalles:                
+                    # Verificar si el detalle ya existe en la base de datos
+                    existe = next((x for x in lastDetalles if x.materia_prima_id == ingrediente['ingrediente_id']), None)
+
+                    # Si el detalle ya existe solo modificar datos en la base de datos donde el id de ingrediente y el id de receta coincidan
+                    if existe:
+                        existe.cantidad_necesaria = ingrediente['cantidad']
+                        existe.unidad_medida = ingrediente['unidad_medida']
+                        existe.merma_porcentaje = ingrediente['porcentaje_merma']
+                        db.session.commit()
+                    # Si el detalle no existe, agregarlo a la base de datos
+                    else:
+                        db.session.add(detalle)     
+                        db.session.commit()
+                else:
+                    db.session.add(detalle)
+                    db.session.commit()
+
+
         return redirect(url_for('recetas.vista_recetas'))
     return render_template("404.html"), 404
 
 @recetas.route("/eliminarReceta", methods=["POST"])
+@login_required
+@requiere_rol("admin")
 def eliminar_receta():
     if request.method == "POST":
         print(request.form)

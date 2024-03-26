@@ -6,11 +6,15 @@ from controllers import controller_mermas
 from models import MermaMateriaPrima, db, MemraGalleta, MateriaPrima
 from . import mermas
 from formularios.formsMerma import MermaMateriaPrimaForm, tipoMermaForm
+from controllers.controller_login import requiere_rol
+from flask_login import login_required
 
 
 # /mermas
 
 @mermas.route("/merma_galletas", methods=["GET"])
+@login_required
+@requiere_rol("admin")
 def merma_galletas():
     form = tipoMermaForm()
     originalForm = MermaMateriaPrimaForm()
@@ -25,6 +29,8 @@ def merma_galletas():
 
 
 @mermas.route("/merma_materia_prima", methods=["GET"])
+@login_required
+@requiere_rol("admin")
 def merma_materia_prima():
     form = tipoMermaForm()
     originalForm = MermaMateriaPrimaForm()
@@ -38,6 +44,8 @@ def merma_materia_prima():
                            formTipo=form, materiasPrimas=materiasPrimas, recetas=recetas)
 
 @mermas.route("/moduloMermas", methods=["POST", "GET"])
+@login_required
+@requiere_rol("admin")
 def modulo_mermas():
     form = tipoMermaForm(request.form)
     if request.method == "POST" and form.validate():
@@ -51,6 +59,8 @@ def modulo_mermas():
 
 
 @mermas.route("/agregarMerma", methods=["GET", "POST"])
+@login_required
+@requiere_rol("admin")
 def agregar_merma():
     form = MermaMateriaPrimaForm(request.form)
     if request.method == "POST" and form.validate():
@@ -97,6 +107,8 @@ def agregar_merma():
         return redirect(url_for('mermas.merma_galletas'))
 
 @mermas.route("/seleccionar_merma", methods=["GET", "POST"])
+@login_required
+@requiere_rol("admin")
 def seleccionar_merma():
     id = request.form.get('id')
     tipo_merma = request.form.get('tipo_merma')
@@ -130,6 +142,8 @@ def seleccionar_merma():
 
 
 @mermas.route("/eliminarMerma", methods=["POST"])
+@login_required
+@requiere_rol("admin")
 def eliminar_merma():
     id = request.form.get('id')
     merma = MermaMateriaPrima.query.get_or_404(id)
@@ -140,6 +154,8 @@ def eliminar_merma():
 
 
 @mermas.route("/pruebaCaducidades", methods=["GET"])
+@login_required
+@requiere_rol("admin")
 def pruebaCaducidades():
     resultado = controller_mermas.verificarCaducidades()
     return json.dumps(resultado)

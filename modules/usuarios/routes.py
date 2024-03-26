@@ -3,11 +3,15 @@ from . import usuarios
 from flask import render_template, request, redirect, url_for, flash
 from models import db, User
 from controllers import controller_usuarios
+from controllers.controller_login import requiere_rol
 from formularios import formUsuario
+from flask_login import login_required
 
 
 
 @usuarios.route("/crudUsuarios", methods=["GET"])
+@login_required
+@requiere_rol("admin")
 def crud_usuarios():
     form_usuarios = formUsuario.UsersForm(request.form)
 
@@ -36,7 +40,10 @@ def agregar_usuarios():
         return render_template("moduloUsuarios/crudUsuarios.html", form=form_usuarios, users=listado_usuarios)
 
 
+
 @usuarios.route("/modificarUsuario", methods=["GET", "POST"])
+@login_required
+@requiere_rol("admin")
 def modificar_usuarios():
     form_usuarios = formUsuario.UsersForm(request.form)
 
@@ -74,6 +81,8 @@ def modificar_usuarios():
 
 
 @usuarios.route("/confirmarModificacion", methods=["POST"])
+@login_required
+@requiere_rol("admin")
 def confirmar_modificacion():
     form_usuarios = formUsuario.UsersFormModificar(request.form)
 
@@ -99,14 +108,16 @@ def confirmar_modificacion():
             # Manejar el caso en que ocurra un error al modificar el usuario
             db.session.rollback()
             flash(f"Error al modificar usuario: {str(e)}", "error")
-            return redirect(url_for("crud_usuarios"))
+            return redirect(url_for("usuarios.crud_usuarios"))
 
     # Si la validación del formulario falla o no se envía una solicitud POST,
     # redireccionar de vuelta a la página de administración de usuarios
-    return redirect(url_for("crud_usuarios"))
+    return redirect(url_for("usuarios.crud_usuarios"))
 
 
 @usuarios.route("/confirmarEliminacion", methods=["GET", "POST"])
+@login_required
+@requiere_rol("admin")
 def confirmarEliminacion():
     id = request.args.get('id')
     if id:
@@ -123,6 +134,8 @@ def confirmarEliminacion():
 
 
 @usuarios.route("/borrarUsuario", methods=["GET", "POST"])
+@login_required
+@requiere_rol("admin")
 def borrar_usuario():
     id = request.args['id']  # Obtener directamente el ID del usuario de la URL
     if id:

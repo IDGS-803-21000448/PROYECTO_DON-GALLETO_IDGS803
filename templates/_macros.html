@@ -28,3 +28,168 @@
     {%endif%}
 
 {%endmacro%}
+
+
+{%macro render_menu()%}
+
+    {%if current_user.is_authenticated%}
+
+        <!-- Sidebar - Brand -->
+     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+        <div class="sidebar-brand-icon">
+            <img class="rounded-circle" src="{{ url_for('static', filename='src/galletosaurio.jpg') }}" alt="" style="height: 50px"/>
+        </div>
+    </a>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0" />
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item active">
+        <a class="nav-link" href="/dashboard">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span></a>
+    </li>
+
+    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador'%}
+    <!-- Nav Item - Usuarios -->
+    <li class="nav-item">
+        <a class="nav-link" href="/crudUsuarios">
+            <i class="fas fa-fw fa-users"></i>
+            <span>Usuarios</span></a>
+    </li>
+
+    {%endif%}
+
+    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'inventario'%}
+
+    <!-- Nav Item - Proveedores -->
+    <li class="nav-item">
+        <a class="nav-link" href="/crudProveedores">
+            <i class="fas fa-truck"></i>
+            <span>Proveedores</span></a>
+    </li>
+
+    {%endif%}
+
+    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'inventario'%}
+
+    <!-- Nav Item - Compras -->
+    <li class="nav-item">
+        <a class="nav-link" href="/moduloCompras">
+            <i class="fas fa-fw fa-bag-shopping"></i>
+            <span>Compras</span></a>
+    </li>
+
+    {%endif%}
+
+    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'inventario'%}
+
+    <!-- Nav Item - Compras -->
+    <li class="nav-item">
+        <a class="nav-link" href="/moduloCompras">
+            <i class="fas fa-fw fa-bag-shopping"></i>
+            <span>Compras</span></a>
+    </li>
+
+    {%endif%}
+
+    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'inventario'%}
+
+    <!-- Nav Item - Ingredientes -->
+    <li class="nav-item">
+        <a class="nav-link" href="/inventarioMaterias">
+            <i class="fas fa-kitchen-set"></i>
+            <span>Materias Primas</span></a>
+    </li>
+
+    {%endif%}
+
+    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'produccion'%}
+
+    <!-- Nav Item - Ingredientes -->
+    <li class="nav-item">
+        <a class="nav-link" href="/vistaRecetas">
+            <i class="fas fa-receipt"></i>
+            <span>Recetas</span></a>
+    </li>
+
+    {%endif%}
+
+    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'produccion'%}
+
+    <!-- Nav Item - Ingredientes -->
+    <li class="nav-item">
+        <a class="nav-link" href="/produccion">
+            <i class="fas fa-gears"></i>
+            <span>Producción</span></a>
+    </li>
+
+    {%endif%}
+
+    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'inventario'%}
+
+    <!-- Nav Item - Ingredientes -->
+    <li class="nav-item">
+        <a class="nav-link" href="/inventarioTerminado">
+            <i class="fas fa-cookie-bite"></i>
+            <span>Producto Terminado</span></a>
+    </li>
+
+    {%endif%}
+
+    {%if current_user.rol == 'admin' or current_user.rol == 'venta' or current_user.rol == 'inventario'%}
+
+    <!-- Nav Item - Ingredientes -->
+    <li class="nav-item">
+        <a class="nav-link" href="/solicitudProduccion">
+            <i class="fas fa-bell-concierge"></i>
+            <span>Solicitud de Producción</span></a>
+    </li>
+
+    {%endif%}
+
+    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'venta'%}
+
+    <!-- Nav Item - Ventas -->
+    <li class="nav-item">
+        <a class="nav-link" href="/costoGalleta">
+            <i class="fas fa-fw fa-coins"></i>
+            <span>Costo Galletas</span></a>
+    </li>
+
+    {%endif%}
+
+    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'venta'%}
+
+    <!-- Nav Item - Ventas -->
+    <li class="nav-item">
+        <a class="nav-link" href="/moduloVenta">
+            <i class="fas fa-fw fa-store"></i>
+            <span>Ventas</span></a>
+    </li>
+
+    {%endif%}
+
+    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'inventario' or current_user.rol == 'produccion'%}
+
+    <!-- Nav Item - Mermas -->
+    <li class="nav-item">
+        <a class="nav-link" href="/moduloMermas">
+            <i class="fas fa-times-circle"></i>
+            <span>Mermas</span></a>
+    </li>
+
+    {%endif%}
+
+    {%endif%}
+        
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block" />
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+{%endmacro%}

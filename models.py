@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import datetime
+from flask_login import UserMixin
 
 db = SQLAlchemy()
 
@@ -58,7 +59,7 @@ class Produccion(db.Model):
     fecha_postergado = db.Column(db.DateTime, nullable=True)
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(80), nullable=False)
@@ -67,6 +68,26 @@ class User(db.Model):
     estatus = db.Column(db.String(80), nullable=False)
     usuario = db.Column(db.String(80), nullable=False)
     contrasena = db.Column(db.String(80), nullable=False)
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        # Aquí puedes agregar lógica para deshabilitar usuarios si es necesario
+        if self.estatus == "Activo":
+            return True
+        else:
+            return False
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        # Flask-Login espera que el identificador sea una cadena, por eso la conversión
+        return str(self.id)
 
 class Alerta(db.Model):
     __tablename__ = 'alertas'

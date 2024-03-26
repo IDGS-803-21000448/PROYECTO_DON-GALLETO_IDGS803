@@ -154,6 +154,56 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/controllerRecetas.js') }}"></script>
+    <script>
+        function mostrarImagenSeleccionada(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    var imagenPreview = document.querySelector('#imagen_preview');
+                    if (imagenPreview) {
+                        imagenPreview.src = e.target.result;
+                    }
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        function mostrarNombreImagen(input) {
+            var nombreImagen = input.files[0].name;
+            var labelImagen = document.querySelector('#nombre_imagen_label');
+            if (labelImagen) {
+                labelImagen.innerHTML = nombreImagen;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var imagenInput = document.querySelector('#imagen_input');
+            if (imagenInput) {
+                imagenInput.addEventListener('change', function () {
+                    mostrarImagenSeleccionada(this);
+                });
+            }
+            var recetaId = document.getElementById('receta_id').value;
+            var eliminarRecetaBtn = document.getElementById('eliminarRecetaBtn');
+            var modalConfirmacion = document.getElementById('modalConfirmacion');
+            var closeModalConfirmacion = document.getElementById('closeModalConfirmacion');
+            var confirmarEliminarBtn = document.getElementById('confirmarEliminarBtn');
+
+            eliminarRecetaBtn.addEventListener('click', function () {
+                document.getElementById('idEliminar').value = recetaId;
+                modalConfirmacion.classList.add('show');
+                modalConfirmacion.style.display = 'block';
+                modalConfirmacion.setAttribute('aria-modal', 'true');
+            });
+
+            closeModalConfirmacion.addEventListener('click', function () {
+                modalConfirmacion.classList.remove('show');
+                modalConfirmacion.style.display = 'none';
+                modalConfirmacion.removeAttribute('aria-modal');
+            });
+        });
+    </script>
 
 {% endblock %}
 
