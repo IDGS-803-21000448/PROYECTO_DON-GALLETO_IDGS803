@@ -1,8 +1,217 @@
-{%extends 'layout.html' %}
+{% extends 'layout.html' %}
 
-{%block content %}
+{% block content %}
 {% from "_macros.html" import render_field %}
 
+<form action="/realizarVenta" method="POST" id="form_venta">
+    <div class="row">
+        <div class="col-md-6">
+            <h1 class="h3 mb-2 text-gray"><i class="fas fa-solid fa-cart-plus"></i> Ventas</h1>
+        </div>
+    </div>
 
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold">Agregar Producto</h6>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="form-group col-md-4">
+                    {{ form.nombre.label(class="form-label", id="nombre_label") }}
+                    {{ render_field(form.nombre, class="form-control", placeholder="Nombre cliente") }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ form.tipo_venta.label(class="form-label", id="tipo_venta_label") }}
+                    {{ render_field(form.tipo_venta, class="form-control", placeholder="Tipo de venta") }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ form.cantidad.label(class="form-label", id="cantidad_label") }}
+                    {{ render_field(form.cantidad, class="form-control", placeholder="Cantidad") }}
+                </div>
+                <div class="form-group col-md-2"></div>
+                <div class="form-group col-md-4">
+                    {{ form.sabor.label(class="form-label", id="sabor_label") }}
+                    {{ render_field(form.sabor, class="form-control", placeholder="Sabor") }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ form.fecha.label(class="form-label", id="fecha_label") }}
+                    {{ render_field(form.fecha, class="form-control", placeholder="Fecga") }}
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 text-center">
+                    <button type="button" class="btn btn-primary" id="agregar_producto" name="agregar_producto">Agregar Producto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold">Productos</h6>
+        </div>
+        <div class="card-body">
+            <table class="table" id="tabla_productos">
+                <thead>
+                    <tr>
+                        <th>Tipo de venta</th>
+                        <th>Cantidad</th>
+                        <th>Sabor</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for venta in ventas %}
+                    <tr>
+                        <td>{{ venta.tipo_venta }}</td>
+                        <td>{{ venta.cantidad }}</td>
+                        <td>{{ venta.sabor }}</td>
+                        <td><button type="submit" class="btn btn-danger">Eliminar</button></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="row justify-content-center">
+                <div class="col-md-6 text-center">
+                    <h3><b>TOTAL: $ 500</b></h3>
+                    <button type="submit" class="btn btn-success" id="realizar_venta" name="realizar_venta">Realizar Venta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        /// --------Capturar evento clic en botón Realizar Venta-------------
+        document.getElementById('realizar_venta').addEventListener('click', function (e) {
+            e.preventDefault();
+        
+            var tabla = document.getElementById('tabla_productos');
+            var filas = tabla.getElementsByTagName('tr');
+            var datosVenta = [];
+            var nombre = document.getElementById('nombre').value.trim();
+            var fechaInput = document.getElementById('fecha').value.trim();
+
+            if (filas.length <= 1) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'La tabla de productos está vacía.'
+                });
+                return;
+            }
+
+            for (var i = 1; i < filas.length; i++) { 
+                var celdas = filas[i].getElementsByTagName('td');
+                var tipoVenta = celdas[0].textContent.trim();
+                var cantidad = celdas[1].innerText;
+                var sabor = celdas[2].innerText;
+
+                if (nombre === ''|| fechaInput === '') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Es necesario llenar el campo de Nombre y Fecha.'
+                    });
+                    return;
+                }
+
+                datosVenta.push({ nombre: nombre, tipoVenta: tipoVenta, cantidad: cantidad, sabor: sabor, fecha: fechaInput });
+            }
+        
+            // Obtener el token CSRF del formulario
+            var csrfToken = document.querySelector('input[name="csrf_token"]').value;
+        
+            fetch('/realizarVenta', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ ventas: datosVenta })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.mensaje === 'Correcto') {
+                    //Limpiar los campos
+                    document.getElementById('nombre').value = '';
+                    document.getElementById('tipo_venta').value = '';
+                    document.getElementById('cantidad').value = '';
+                    document.getElementById('sabor').value = '';
+                    document.getElementById('fecha').value = '';
+
+                    // Limpiar la tabla
+                    var tabla = document.getElementById('tabla_productos');
+                    tabla.innerHTML = '<tr><th>Tipo de Venta</th><th>Cantidad</th><th>Sabor</th></tr>';
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: 'La venta fue realizada correctamente.'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Ocurrió un error al insertar los datos de venta.'
+                    });
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        //-------------- Capturar evento clic en botón Agregar Producto------------
+        document.getElementById('agregar_producto').addEventListener('click', function (e) {
+            e.preventDefault();
+
+            // Obtener valores de los campos
+            var tipoVenta = document.getElementById('tipo_venta').value.trim();
+            var cantidad = document.getElementById('cantidad').value.trim();
+            var sabor = document.getElementById('sabor').value.trim();
+
+            // Verificar que todos los campos estén completos
+            if (tipoVenta === '' || cantidad === '' || sabor === '') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Por favor completa todos los campos.'
+                });
+                return; // Detener la ejecución si falta algún campo
+            }
+
+            // Crear nueva fila en la tabla
+            var tabla = document.getElementById('tabla_productos').getElementsByTagName('tbody')[0];
+            var nuevaFila = tabla.insertRow();
+
+            // Insertar celdas en la nueva fila
+            var celdaTipoVenta = nuevaFila.insertCell(0);
+            var celdaCantidad = nuevaFila.insertCell(1);
+            var celdaSabor = nuevaFila.insertCell(2);
+            var celdaAcciones = nuevaFila.insertCell(3);
+
+            // Agregar valores a las celdas
+            celdaTipoVenta.innerHTML = tipoVenta;
+            celdaCantidad.innerHTML = cantidad;
+            celdaSabor.innerHTML = sabor;
+            celdaAcciones.innerHTML = '<button type="button" class="btn btn-danger eliminar-fila">Eliminar</button>';
+
+            // Limpiar campos del formulario
+            document.getElementById('tipo_venta').value = '';
+            document.getElementById('cantidad').value = '';
+            document.getElementById('sabor').value = '';
+        });
+
+        // Capturar evento clic en botón Eliminar
+        document.getElementById('tabla_productos').addEventListener('click', function (e) {
+            if (e.target.classList.contains('eliminar-fila')) {
+                e.preventDefault();
+                var fila = e.target.closest('tr');
+                fila.remove();
+            }
+        });
+    });
+</script>
 
 {% endblock %}
