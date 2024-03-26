@@ -1,6 +1,6 @@
 from . import recetas
 from models import Receta, MateriaPrima, RecetaDetalle
-from flask import render_template, request, jsonify, url_for, redirect
+from flask import render_template, request, jsonify, url_for, redirect, flash
 from formularios import formsReceta
 from werkzeug.utils import secure_filename
 import base64
@@ -9,7 +9,7 @@ from models import db
 
 @recetas.route("/vistaRecetas", methods=["GET"])
 def vista_recetas():
-    recetas = Receta.query.all()
+    recetas = Receta.query.filter_by(estatus=1).all()
     return render_template("moduloRecetas/vistaRecetas.html", recetas=recetas)
 
 @recetas.route("/crudRecetas", methods=["GET"])
@@ -62,15 +62,7 @@ def allowed_file(filename):
 def detalle_recetas():
     formReceta = formsReceta.RecetaForm(request.form)
     formDetalle = formsReceta.RecetaDetalleForm(request.form)
-    
-    # Verificar si se envió el formulario y se presionó el botón "Limpiar Campos"
-    if request.method == "POST" and request.form.get("limpiar_campos"):
-        formReceta.nombre.data = ''
-        formReceta.num_galletas.data = ''
-        formReceta.fecha.data = None
-        formReceta.descripcion.data = ''
-        return render_template("moduloRecetas/detalleReceta.html", receta=None, formReceta=formReceta, formDetalle=formDetalle, ingredientes=[])
-    
+
     # Resto de tu lógica para manejar el formulario cuando no se presiona "Limpiar Campos"
     if request.method == "POST":
         receta_id = request.form.get("receta_id")
@@ -89,43 +81,57 @@ def detalle_recetas():
 @recetas.route("/editarReceta", methods=["POST"])
 def editar_receta():
     if request.method == "POST":
-        # Obtener los datos del formulario de la receta
-        receta_id = request.form['receta_id']
-        nombre = request.form['nombre']
-        num_galletas = request.form['num_galletas']
-        fecha = request.form['fecha']
-        descripcion = request.form['descripcion']
+        if 'guardar_receta_btn' in request.form:
+            # Obtener los datos del formulario de la receta
+            receta_id = request.form['receta_id']
+            nombre = request.form['nombre']
+            num_galletas = request.form['num_galletas']
+            fecha = request.form['fecha']
+            descripcion = request.form['descripcion']
 
-        # Verificar si se seleccionó una nueva imagen
-        if 'imagen' in request.files:
-            imagen = request.files['imagen']
-            if imagen and allowed_file(imagen.filename):
-                filename = secure_filename(imagen.filename)
-                imagen_base64 = base64.b64encode(imagen.read()).decode('utf-8')
+            # Verificar si se seleccionó una nueva imagen
+            if 'imagen' in request.files:
+                imagen = request.files['imagen']
+                if imagen and allowed_file(imagen.filename):
+                    filename = secure_filename(imagen.filename)
+                    imagen_base64 = base64.b64encode(imagen.read()).decode('utf-8')
 
-                # Actualizar la receta con la nueva imagen
-                receta = Receta.query.get(receta_id)
-                receta.nombre = nombre
-                receta.num_galletas = num_galletas
-                receta.create_date = fecha
-                receta.imagen = imagen_base64
-                receta.descripcion = descripcion
+                    # Actualizar la receta con la nueva imagen
+                    receta = Receta.query.get(receta_id)
+                    receta.nombre = nombre
+                    receta.num_galletas = num_galletas
+                    receta.create_date = fecha
+                    receta.imagen = imagen_base64
+                    receta.descripcion = descripcion
 
-                db.session.commit()
+                    db.session.commit()
 
-                # Redirigir a la página de vista de recetas después de guardar la receta
-                return redirect(url_for('recetas.vista_recetas'))
+                    # Redirigir a la página de vista de recetas después de guardar la receta
+                    return redirect(url_for('recetas.vista_recetas'))
 
-        # Si no se seleccionó una nueva imagen, actualizar solo los otros campos
-        receta = Receta.query.get(receta_id)
-        receta.nombre = nombre
-        receta.num_galletas = num_galletas
-        receta.create_date = fecha
-        receta.descripcion = descripcion
-
-        db.session.commit()
-
-        # Redirigir a la página de vista de recetas después de guardar la receta
+            # Si no se seleccionó una nueva imagen, actualizar solo los otros campos
+            receta = Receta.query.get(receta_id)
+            receta.nombre = nombre
+            receta.num_galletas = num_galletas
+            receta.create_date = fecha
+            receta.descripcion = descripcion
+            db.session.commit()
         return redirect(url_for('recetas.vista_recetas'))
+    return render_template("404.html"), 404
+
+@recetas.route("/eliminarReceta", methods=["POST"])
+def eliminar_receta():
+    if request.method == "POST":
+        print(request.form)
+        id = request.form['id'] 
+        receta = Receta.query.get(id)  
+        if receta:
+            receta.estatus = 0 
+            db.session.commit() 
+            flash('Receta eliminada exitosamente', 'success')
+            return redirect(url_for('recetas.vista_recetas'))
+        else:
+            flash('Receta no encontrada', 'error')
+            return redirect(url_for('recetas.vista_recetas'))
 
     return render_template("404.html"), 404

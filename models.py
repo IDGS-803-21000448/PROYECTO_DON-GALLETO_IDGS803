@@ -23,6 +23,7 @@ class Receta(db.Model):
     num_galletas = db.Column(db.Integer)
     imagen = db.Column(db.Text)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
+    estatus = db.Column(db.Integer, default=1)
 
 class RecetaDetalle(db.Model):
     __tablename__ = 'receta_detalle'
