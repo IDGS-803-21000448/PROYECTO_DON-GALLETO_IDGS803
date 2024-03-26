@@ -1,0 +1,19 @@
+
+{%extends 'layout.html' %}
+
+{%block content %}
+{% from "_macros.html" import render_field %}
+
+<div class="container text-center">
+  <h1>Error interno del servidor</h1>
+  <p>Lo sentimos, hemos experimentado un problema inesperado. Vuelva más tarde.</p>
+</div>
+
+<div class="text-center">
+  <img src="/static/src/galletosaurio1.png" alt="Error interno del servidor" class="img-fluid" />
+  <br />
+  <a href="http://127.0.0.1:8080/index" class="btn btn-primary">Volver al inicio</a>
+</div>
+
+
+{% endblock %}

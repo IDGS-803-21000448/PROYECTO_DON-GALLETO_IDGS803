@@ -6,7 +6,7 @@ from config import DevelopmentConfig
 from models import db
 from modules import (galletas, index, proveedores, usuarios, recetas, dashboard, inventarios, alertas, produccion,
                      mermas, ventas, compras, login)
-from models import Alerta, User, MateriaPrima, MermaMateriaPrima, Produccion, Receta, RecetaDetalle
+from models import Alerta, User, MateriaPrima, MermaMateriaPrima, Produccion, Receta, RecetaDetalle, Proveedor
 
 
 app = Flask(__name__)
@@ -21,6 +21,7 @@ admin.add_view(ModelView(Produccion, db.session))
 admin.add_view(ModelView(Receta, db.session))
 admin.add_view(ModelView(MermaMateriaPrima, db.session))
 admin.add_view(ModelView(RecetaDetalle, db.session))
+admin.add_view(ModelView(Proveedor, db.session))
 
 
 app.register_blueprint(index.index)

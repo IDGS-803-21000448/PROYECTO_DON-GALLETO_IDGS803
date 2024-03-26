@@ -87,3 +87,15 @@ class MemraGalleta(db.Model):
     tipo = db.Column(db.String(50))
     estatus = db.Column(db.Integer, default=1)
     materia_prima = db.relationship('Receta', backref=db.backref('mermas', lazy=True))
+    
+
+#-------PROVEEDORES--------
+class Proveedor(db.Model):
+    __tablename__ = 'proveedores'
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100))
+    direccion = db.Column(db.String(255))
+    telefono = db.Column(db.String(15))
+    nombre_vendedor = db.Column(db.String(100))
+    estatus = db.Column(db.Integer, default=1)
+    
