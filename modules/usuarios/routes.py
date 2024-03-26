@@ -11,7 +11,7 @@ from flask_login import login_required
 
 @usuarios.route("/crudUsuarios", methods=["GET"])
 @login_required
-@requiere_rol("Administrador")
+@requiere_rol("admin")
 def crud_usuarios():
     form_usuarios = formUsuario.UsersForm(request.form)
 
@@ -40,7 +40,10 @@ def agregar_usuarios():
         return render_template("moduloUsuarios/crudUsuarios.html", form=form_usuarios, users=listado_usuarios)
 
 
+
 @usuarios.route("/modificarUsuario", methods=["GET", "POST"])
+@login_required
+@requiere_rol("admin")
 def modificar_usuarios():
     form_usuarios = formUsuario.UsersForm(request.form)
 
@@ -78,6 +81,8 @@ def modificar_usuarios():
 
 
 @usuarios.route("/confirmarModificacion", methods=["POST"])
+@login_required
+@requiere_rol("admin")
 def confirmar_modificacion():
     form_usuarios = formUsuario.UsersFormModificar(request.form)
 
@@ -111,6 +116,8 @@ def confirmar_modificacion():
 
 
 @usuarios.route("/confirmarEliminacion", methods=["GET", "POST"])
+@login_required
+@requiere_rol("admin")
 def confirmarEliminacion():
     id = request.args.get('id')
     if id:
@@ -127,6 +134,8 @@ def confirmarEliminacion():
 
 
 @usuarios.route("/borrarUsuario", methods=["GET", "POST"])
+@login_required
+@requiere_rol("admin")
 def borrar_usuario():
     id = request.args['id']  # Obtener directamente el ID del usuario de la URL
     if id:

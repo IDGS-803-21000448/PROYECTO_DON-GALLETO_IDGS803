@@ -32,7 +32,7 @@ function loadIngredientes() {
         deleteButton.class = 'btn btn-danger';
         deleteButton.addEventListener('click', () => {
             eliminarIngrediente(ingrediente);
-            document.getElementById('ingredientes').value = JSON.stringify(ingrediente);
+            document.getElementById('ingredientes').value = JSON.stringify(ingredientes);
         });
         row.insertCell(4).appendChild(deleteButton);
     });
@@ -42,6 +42,8 @@ function eliminarIngrediente(ingrediente) {
     const index = ingredientes.indexOf(ingrediente);
     if (index !== -1) {
         ingredientes.splice(index, 1);
+        console.log(ingredientes);
+        console.log(document.getElementById('ingredientes').value);
         loadIngredientes();
     }
 }

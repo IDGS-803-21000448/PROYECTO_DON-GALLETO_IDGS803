@@ -7,7 +7,6 @@ from . import index
 
 @index.route('/index', methods=["GET"])
 @login_required
-@requiere_rol("Administrador", "venta", )
 def index():
     controller_mermas.verificarCaducidades()
     return render_template("index.html")
