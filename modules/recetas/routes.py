@@ -1,13 +1,17 @@
 from . import recetas
 from models import Receta, MateriaPrima, RecetaDetalle
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, url_for, redirect, flash
 from formularios import formsReceta
+
+from werkzeug.utils import secure_filename
+import base64
+from models import db
 import json
 
 
 @recetas.route("/vistaRecetas", methods=["GET"])
 def vista_recetas():
-    recetas = Receta.query.all()
+    recetas = Receta.query.filter_by(estatus=1).all()
     return render_template("moduloRecetas/vistaRecetas.html", recetas=recetas)
 
 @recetas.route("/crudRecetas", methods=["GET"])
@@ -23,33 +27,40 @@ def nueva_receta():
     materias_primas = MateriaPrima.query.all()
 
     if request.method == 'POST' and formReceta.validate():
-        ingrediente_nombre = request.form['ingrediente']
-        cantidad = request.form['cantidad']
-        unidad_medida = request.form['unidad_medida']
-        porcentaje_merma = request.form['porcentaje_merma']
+        return redirect(url_for('recetas.detalle_recetas'))
 
-        # Verificar que los campos no estén vacíos
-        if ingrediente_nombre and cantidad and unidad_medida and porcentaje_merma:
-            # Agregar los datos al arreglo ingredientes_data
-            ingredientes_data = {
-                'ingrediente': ingrediente_nombre,
-                'cantidad': cantidad,
-                'unidad_medida': unidad_medida,
-                'porcentaje_merma': porcentaje_merma
-            }
-
-            # Devolver los datos actualizados como respuesta JSON
-            return jsonify({'success': True, 'ingredientes_data': ingredientes_data})
-
-    # Si no se pudo agregar o validar los datos, se renderiza la plantilla con el formulario vacío
     return render_template('moduloRecetas/nuevaReceta.html', formReceta=formReceta, materias_primas=materias_primas)
 
+@recetas.route("/guardarReceta", methods=["POST"])
+def guardar_receta():
+    if request.method == "POST":
+        # Obtener los datos del formulario de la receta
+        nombre = request.form['nombre']
+        num_galletas = request.form['num_galletas']
+        fecha = request.form['fecha']
+        # Obtener la imagen (en base64 o como prefieras manejarla)
+        imagen = request.files['imagen']
+        descripcion = request.form['descripcion']
 
-# @recetas.route("/detalleReceta", methods=["GET"])
-# def detalle_recetas():
-#     formReceta = formsReceta.RecetaForm(request.form)
-#     formDetalle = formsReceta.RecetaDetalleForm(request.form)
-#     return render_template("moduloRecetas/detalleReceta.html", formReceta = formReceta, formDetalle = formDetalle)
+        if imagen and allowed_file(imagen.filename):
+            filename = secure_filename(imagen.filename)
+
+            imagen_base64 = base64.b64encode(imagen.read()).decode('utf-8')
+
+        # Aquí puedes realizar la lógica para guardar la receta en la base de datos
+        # Por ejemplo:
+        nueva_receta = Receta(nombre=nombre, num_galletas=num_galletas, create_date=fecha, imagen=imagen_base64, descripcion=descripcion)
+        db.session.add(nueva_receta)
+        db.session.commit()
+
+        # Redirigir a la página de vista de recetas después de guardar la receta
+        return redirect(url_for('recetas.vista_recetas'))
+
+    return render_template("404.html"), 404
+
+def allowed_file(filename):
+    ALLOWED_EXTENSIONS = {'png'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @recetas.route("/detalleReceta", methods=["GET", "POST"])
 def detalle_recetas():
@@ -75,6 +86,7 @@ def detalle_recetas():
         formReceta.num_galletas.data = receta.num_galletas
         formReceta.fecha.data = receta.create_date
         formReceta.descripcion.data = receta.descripcion
+        formReceta.imagen.data = receta.imagen
 
         ingredientesReceta = RecetaDetalle.query.filter_by(receta_id=receta_id).all()
         
@@ -91,10 +103,68 @@ def detalle_recetas():
                 'porcentaje_merma': float(ingrediente.merma_porcentaje)
             })
 
-        formReceta.ingredientes.data = json.dumps(ingredientes) # Almacena los datos de ingredientes
+        print(ingredientes)
+        formReceta.ingredientes.data = json.dumps(ingredientes) # Serializa los ingredientes
 
         # Pasa la receta y los formularios a la plantilla HTML para mostrarlos
-        return render_template("moduloRecetas/detalleReceta.html", receta=receta, formReceta=formReceta, ingredientes=ingredientes, materias_primas=materias_primas)
+        return render_template("moduloRecetas/detalleReceta.html", receta=receta, formReceta=formReceta, materias_primas=materias_primas, ingredientes=ingredientes)
     
     return render_template("404.html"), 404
 
+@recetas.route("/editarReceta", methods=["POST"])
+def editar_receta():
+    if request.method == "POST":
+        if 'guardar_receta_btn' in request.form:
+            # Obtener los datos del formulario de la receta
+            receta_id = request.form['receta_id']
+            nombre = request.form['nombre']
+            num_galletas = request.form['num_galletas']
+            fecha = request.form['fecha']
+            descripcion = request.form['descripcion']
+
+            # Verificar si se seleccionó una nueva imagen
+            if 'imagen' in request.files:
+                imagen = request.files['imagen']
+                if imagen and allowed_file(imagen.filename):
+                    filename = secure_filename(imagen.filename)
+                    imagen_base64 = base64.b64encode(imagen.read()).decode('utf-8')
+
+                    # Actualizar la receta con la nueva imagen
+                    receta = Receta.query.get(receta_id)
+                    receta.nombre = nombre
+                    receta.num_galletas = num_galletas
+                    receta.create_date = fecha
+                    receta.imagen = imagen_base64
+                    receta.descripcion = descripcion
+
+                    db.session.commit()
+
+                    # Redirigir a la página de vista de recetas después de guardar la receta
+                    return redirect(url_for('recetas.vista_recetas'))
+
+            # Si no se seleccionó una nueva imagen, actualizar solo los otros campos
+            receta = Receta.query.get(receta_id)
+            receta.nombre = nombre
+            receta.num_galletas = num_galletas
+            receta.create_date = fecha
+            receta.descripcion = descripcion
+            db.session.commit()
+        return redirect(url_for('recetas.vista_recetas'))
+    return render_template("404.html"), 404
+
+@recetas.route("/eliminarReceta", methods=["POST"])
+def eliminar_receta():
+    if request.method == "POST":
+        print(request.form)
+        id = request.form['id'] 
+        receta = Receta.query.get(id)  
+        if receta:
+            receta.estatus = 0 
+            db.session.commit() 
+            flash('Receta eliminada exitosamente', 'success')
+            return redirect(url_for('recetas.vista_recetas'))
+        else:
+            flash('Receta no encontrada', 'error')
+            return redirect(url_for('recetas.vista_recetas'))
+
+    return render_template("404.html"), 404

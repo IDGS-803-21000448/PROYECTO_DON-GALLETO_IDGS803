@@ -22,25 +22,37 @@
             <h6 class="m-0 font-weight-bold">Formulario</h6>
         </div>
         <div class="card-body">
-            <form action="" method="POST">
-                <!-- Datos de Persona -->
+            <form action="/editarReceta" method="POST" enctype="multipart/form-data">
+                <!-- Datos de Receta -->
+                <input type="hidden" id="receta_id" name="receta_id" value="{{ receta.id }}">
                 <div class="card">
                     <div class="card-header">
                         <div class="col-12">
                             <i class="fas fa-solid fa-receipt"></i> Datos Receta
                         </div>
                     </div>
-            
                     <div class="card-body">
                         <div class="row">
                             <div class="col-sm-4 form-group">
+                                {{ formReceta.nombre.label(class="form-label") }} 
                                 {{ render_field(formReceta.nombre, class="form-control") }}
                             </div>
                             <div class="col-sm-4 form-group">
+                                {{ formReceta.num_galletas.label(class="form-label") }} 
                                 {{ render_field(formReceta.num_galletas, class="form-control") }}
                             </div>
                             <div class="col-sm-4 form-group">
+                                {{ formReceta.fecha.label(class="form-label") }} 
                                 {{ render_field(formReceta.fecha, class="form-control") }}
+                            </div>
+                            <div class="col-sm-4 form-group">
+                            </div>
+                            <div class="col-sm-4 form-group">
+                                {{ render_field(formReceta.imagen, class="custom-file-input", id="imagen_input", onchange="mostrarImagenSeleccionada(this)") }}
+                                <label class="custom-file-label" for="imagen_input" id="nombre_imagen_label">Elegir imagen</label>
+                            </div>
+                            <div class="col-sm-4 form-group text-center">
+                                <img id="imagen_preview" src="data:image/png;base64,{{ receta.imagen }}" alt="Vista previa de la imagen" class="img-fluid" style="height: 100px; width: 100px">
                             </div>
                             <div class="col-sm-4 form-group" style="display: none;">
                                 {{ render_field(formReceta.ingredientes, class="form-control") }}
@@ -67,12 +79,12 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-sm-12 form-group">
+                                            {{ formReceta.descripcion.label(class="form-label") }} 
                                             {{ render_field(formReceta.descripcion, rows="15", class="form-control") }}
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <br>
                             <div class="card col-6">
                                 <div class="card-header">
                                     <div class="col-md-12">
@@ -133,17 +145,93 @@
                 </div>
                 <br>
                 <div class="text-center">
-                    <button type="submit" class="btn btn-success"><i class="fas fa-solid fa-save"></i> Guardar Receta</button>
-                    <button type="button" class="btn btn-danger"><i class="fas fa-solid fa-trash"></i> Eliminar Receta</button>
-                    <button type="button" class="btn btn-primary"><i class="fas fa-solid fa-eraser" action="{{ url_for('recetas.detalle_recetas') }}"></i> Limpiar Campos</button>
-                    <button type="button" class="btn btn-warning"><i class="fas fa-solid fa-ban"></i> Cancelar</button>
+                    <button type="submit" id="guardarRecetaBtn" class="btn btn-success" name="guardar_receta_btn"><i class="fas fa-solid fa-save"></i> Guardar Receta</button>
+                    <button type="button" id="eliminarRecetaBtn" class="btn btn-danger" name="eliminar_receta_btn" data-receta-id="{{ receta.id }}"><i class="fas fa-solid fa-trash"></i> Eliminar Receta</button>
+                    <button type="submit" id="limpiarCamposBtn" class="btn btn-primary" name="limpiar_campos_btn"><i class="fas fa-solid fa-eraser"></i> Limpiar Campos</button>
                 </div>
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             </form>
         </div>
     </div>
 
+        <!-- Modal de confirmación (oculto por defecto) -->
+    <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="materiaPrimaModalLabel" aria-hidden="true" role="dialog">
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-body">
+                    <h1 class="card-title text-center">Confirmar Borrado de Merma</h1>
+                    <p class="card-text text-center">Estás a punto de eliminar la merma</p>
+                    <div class="text-center">
+                        <form action="{{ url_for('recetas.eliminar_receta')}}" method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <input type="hidden" name="id" id="idEliminar">
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </form>
+                        <button type="button" id="closeModalConfirmacion" class="closeModalConfirmacion btn btn-success">
+                            Cancelar
+                        </button>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
+    <script>
+        function mostrarImagenSeleccionada(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    var imagenPreview = document.querySelector('#imagen_preview');
+                    if (imagenPreview) {
+                        imagenPreview.src = e.target.result;
+                    }
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        function mostrarNombreImagen(input) {
+            var nombreImagen = input.files[0].name;
+            var labelImagen = document.querySelector('#nombre_imagen_label');
+            if (labelImagen) {
+                labelImagen.innerHTML = nombreImagen;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var imagenInput = document.querySelector('#imagen_input');
+            if (imagenInput) {
+                imagenInput.addEventListener('change', function () {
+                    mostrarImagenSeleccionada(this);
+                });
+            }
+            var recetaId = document.getElementById('receta_id').value;
+            var eliminarRecetaBtn = document.getElementById('eliminarRecetaBtn');
+            var modalConfirmacion = document.getElementById('modalConfirmacion');
+            var closeModalConfirmacion = document.getElementById('closeModalConfirmacion');
+            var confirmarEliminarBtn = document.getElementById('confirmarEliminarBtn');
+
+            eliminarRecetaBtn.addEventListener('click', function () {
+                document.getElementById('idEliminar').value = recetaId;
+                modalConfirmacion.classList.add('show');
+                modalConfirmacion.style.display = 'block';
+                modalConfirmacion.setAttribute('aria-modal', 'true');
+            });
+
+            closeModalConfirmacion.addEventListener('click', function () {
+                modalConfirmacion.classList.remove('show');
+                modalConfirmacion.style.display = 'none';
+                modalConfirmacion.removeAttribute('aria-modal');
+            });
+        });
+    </script>
+
+
     <script src="{{ url_for('static', filename='js/controllerRecetas.js') }}"></script>
-
-
 {% endblock %}
