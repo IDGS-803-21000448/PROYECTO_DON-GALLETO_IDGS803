@@ -54,9 +54,9 @@
                             <div class="col-sm-4 form-group text-center">
                                 <img id="imagen_preview" src="data:image/png;base64,{{ receta.imagen }}" alt="Vista previa de la imagen" class="img-fluid" style="height: 100px; width: 100px">
                             </div>
-                            <!-- <div class="col-sm-4 form-group" style="display: none;">
+                            <div class="col-sm-4 form-group" style="display: none;">
                                 {{ render_field(formReceta.ingredientes, class="form-control") }}
-                            </div> -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -85,7 +85,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- <div class="card col-6">
+                            <div class="card col-6">
                                 <div class="card-header">
                                     <div class="col-md-12">
                                         <i class="fas fa-solid fa-wheat-awn"></i> Ingredientes
@@ -95,19 +95,30 @@
                                     <div class="row">
                                         <div class="row">
                                             <div class="col-sm-6 form-group">
-                                                {{ render_field(formDetalle.ingrediente, class="form-control") }}
+                                                {{ formReceta.ingrediente.label(class="form-label", id="ingrediente_label") }}
+                                                <select name="ingrediente" id="ingrediente_input" class="form-control">
+                                                    {% for materia_prima in materias_primas %}
+                                                        <option value="{{ materia_prima.id, materia_prima.nombre }}">{{ materia_prima.nombre }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                {% for error in formReceta.ingrediente.errors %}
+                                                    <span class="text-danger">{{ error }}</span>
+                                                {% endfor %}
                                             </div>
                                             <div class="col-sm-6 form-group">
-                                                {{ render_field(formDetalle.cantidad, class="form-control") }}
+                                                {{ formReceta.cantidad.label(class="form-label", id="cantidad_label") }}
+                                                {{ render_field(formReceta.cantidad, class="form-control", id="cantidad_input") }}
                                             </div>
                                             <div class="col-sm-6 form-group">
-                                                {{ render_field(formDetalle.unidad_medida, class="form-control") }}
+                                                {{ formReceta.unidad_medida.label(class="form-label", id="unidad_medida_label") }}
+                                                {{ render_field(formReceta.unidad_medida, class="form-control", id="unidad_medida_input") }}
                                             </div>
                                             <div class="col-sm-6 form-group">
-                                                {{ render_field(formDetalle.porcentaje_merma, class="form-control") }}
+                                                {{ formReceta.porcentaje_merma.label(class="form-label", id="porcentaje_merma_label") }}
+                                                {{ render_field(formReceta.porcentaje_merma, class="form-control", id="porcentaje_merma_input") }}
                                             </div>
                                             <div class="col-sm-12 form-group">
-                                                <button type="button" class="btn btn-success"><i class="fas fa-solid fa-plus"></i> Agregar</button>
+                                                <a type="button" id="agregar" name="agregar" value="Agregar" class="btn btn-success mb-3" onclick="addIngrediente()"><i class="fas fa-solid fa-plus"></i> Agregar</a>
                                             </div>
                                         </div>
                                         <div class="table-responsive">
@@ -121,22 +132,13 @@
                                                         <th>Acciones</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
-                                                    {%for ing in ingredientes%}
-                                                        <tr>
-                                                            <td>{{ing.ingrediente_id}}</td>
-                                                            <td>{{ing.ingrediente}}</td>
-                                                            <td>{{ing.cantidad}} {{ing.unidad_medida}}</td>
-                                                            <td>{{ing.porcentaje_merma}}</td>
-                                                            <td><a href="eliminar?id={{ing.ingrediente_id}}" class="btn btn-danger">Eliminar</a></td>
-                                                        </tr>
-                                                    {%endfor%}
+                                                <tbody id="tblIngredientes">
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
                                 </div>
-                            </div> -->
+                            </div>
                             
                         </div>
                     </div>
@@ -152,83 +154,84 @@
         </div>
     </div>
 
-<!-- Modal de confirmación (oculto por defecto) -->
-<div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="materiaPrimaModalLabel" aria-hidden="true" role="dialog">
-    <div class="container mt-5">
-        <div class="row">
-             <div class="col-md-6 offset-md-3">
-               <div class="card">
-                 <div class="card-body">
-                   <h1 class="card-title text-center">Confirmar Borrado de Merma</h1>
-                   <p class="card-text text-center">Estás a punto de eliminar la merma</p>
-                   <div class="text-center">
-                       <form action="{{ url_for('recetas.eliminar_receta')}}" method="post" class="d-inline">
-                          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                          <input type="hidden" name="id" id="idEliminar">
-                          <button type="submit" class="btn btn-danger">Eliminar</button>
-                       </form>
-                       <button type="button" id="closeModalConfirmacion" class="closeModalConfirmacion btn btn-success">
-                          Cancelar
-                       </button>
-                   </div>
-                 </div>
-               </div>
-             </div>
+        <!-- Modal de confirmación (oculto por defecto) -->
+    <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="materiaPrimaModalLabel" aria-hidden="true" role="dialog">
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-body">
+                    <h1 class="card-title text-center">Confirmar Borrado de Merma</h1>
+                    <p class="card-text text-center">Estás a punto de eliminar la merma</p>
+                    <div class="text-center">
+                        <form action="{{ url_for('recetas.eliminar_receta')}}" method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <input type="hidden" name="id" id="idEliminar">
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </form>
+                        <button type="button" id="closeModalConfirmacion" class="closeModalConfirmacion btn btn-success">
+                            Cancelar
+                        </button>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
         </div>
     </div>
- </div>
 
-<script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
-<script>
-    function mostrarImagenSeleccionada(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
+    <script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
+    <script>
+        function mostrarImagenSeleccionada(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
 
-            reader.onload = function (e) {
-                var imagenPreview = document.querySelector('#imagen_preview');
-                if (imagenPreview) {
-                    imagenPreview.src = e.target.result;
-                }
-            };
+                reader.onload = function (e) {
+                    var imagenPreview = document.querySelector('#imagen_preview');
+                    if (imagenPreview) {
+                        imagenPreview.src = e.target.result;
+                    }
+                };
 
-            reader.readAsDataURL(input.files[0]);
+                reader.readAsDataURL(input.files[0]);
+            }
         }
-    }
-    function mostrarNombreImagen(input) {
-        var nombreImagen = input.files[0].name;
-        var labelImagen = document.querySelector('#nombre_imagen_label');
-        if (labelImagen) {
-            labelImagen.innerHTML = nombreImagen;
+        function mostrarNombreImagen(input) {
+            var nombreImagen = input.files[0].name;
+            var labelImagen = document.querySelector('#nombre_imagen_label');
+            if (labelImagen) {
+                labelImagen.innerHTML = nombreImagen;
+            }
         }
-    }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        var imagenInput = document.querySelector('#imagen_input');
-        if (imagenInput) {
-            imagenInput.addEventListener('change', function () {
-                mostrarImagenSeleccionada(this);
+        document.addEventListener('DOMContentLoaded', function () {
+            var imagenInput = document.querySelector('#imagen_input');
+            if (imagenInput) {
+                imagenInput.addEventListener('change', function () {
+                    mostrarImagenSeleccionada(this);
+                });
+            }
+            var recetaId = document.getElementById('receta_id').value;
+            var eliminarRecetaBtn = document.getElementById('eliminarRecetaBtn');
+            var modalConfirmacion = document.getElementById('modalConfirmacion');
+            var closeModalConfirmacion = document.getElementById('closeModalConfirmacion');
+            var confirmarEliminarBtn = document.getElementById('confirmarEliminarBtn');
+
+            eliminarRecetaBtn.addEventListener('click', function () {
+                document.getElementById('idEliminar').value = recetaId;
+                modalConfirmacion.classList.add('show');
+                modalConfirmacion.style.display = 'block';
+                modalConfirmacion.setAttribute('aria-modal', 'true');
             });
-        }
-        var recetaId = document.getElementById('receta_id').value;
-        var eliminarRecetaBtn = document.getElementById('eliminarRecetaBtn');
-        var modalConfirmacion = document.getElementById('modalConfirmacion');
-        var closeModalConfirmacion = document.getElementById('closeModalConfirmacion');
-        var confirmarEliminarBtn = document.getElementById('confirmarEliminarBtn');
 
-        eliminarRecetaBtn.addEventListener('click', function () {
-            document.getElementById('idEliminar').value = recetaId;
-            modalConfirmacion.classList.add('show');
-            modalConfirmacion.style.display = 'block';
-            modalConfirmacion.setAttribute('aria-modal', 'true');
+            closeModalConfirmacion.addEventListener('click', function () {
+                modalConfirmacion.classList.remove('show');
+                modalConfirmacion.style.display = 'none';
+                modalConfirmacion.removeAttribute('aria-modal');
+            });
         });
-
-        closeModalConfirmacion.addEventListener('click', function () {
-            modalConfirmacion.classList.remove('show');
-            modalConfirmacion.style.display = 'none';
-            modalConfirmacion.removeAttribute('aria-modal');
-        });
-    });
-</script>
+    </script>
 
 
+    <script src="{{ url_for('static', filename='js/controllerRecetas.js') }}"></script>
 {% endblock %}

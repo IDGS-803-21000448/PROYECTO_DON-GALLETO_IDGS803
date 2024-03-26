@@ -2,9 +2,11 @@ from . import recetas
 from models import Receta, MateriaPrima, RecetaDetalle
 from flask import render_template, request, jsonify, url_for, redirect, flash
 from formularios import formsReceta
+
 from werkzeug.utils import secure_filename
 import base64
 from models import db
+import json
 
 
 @recetas.route("/vistaRecetas", methods=["GET"])
@@ -19,13 +21,15 @@ def crud_recetas():
 @recetas.route('/nuevaReceta', methods=['GET', 'POST'])
 def nueva_receta():
     formReceta = formsReceta.RecetaForm(request.form)
-    formDetalle = formsReceta.RecetaDetalleForm()
-    materias_primas = MateriaPrima.query.with_entities(MateriaPrima.nombre).all()
+    #formDetalle = formsReceta.RecetaDetalleForm()
+
+    # Obtén la lista de ingredientes desde la tabla MateriaPrima
+    materias_primas = MateriaPrima.query.all()
 
     if request.method == 'POST' and formReceta.validate():
         return redirect(url_for('recetas.detalle_recetas'))
 
-    return render_template('moduloRecetas/nuevaReceta.html', formReceta=formReceta, formDetalle=formDetalle, materias_primas=materias_primas)
+    return render_template('moduloRecetas/nuevaReceta.html', formReceta=formReceta, materias_primas=materias_primas)
 
 @recetas.route("/guardarReceta", methods=["POST"])
 def guardar_receta():
@@ -61,8 +65,19 @@ def allowed_file(filename):
 @recetas.route("/detalleReceta", methods=["GET", "POST"])
 def detalle_recetas():
     formReceta = formsReceta.RecetaForm(request.form)
-    formDetalle = formsReceta.RecetaDetalleForm(request.form)
+    #formDetalle = formsReceta.RecetaDetalleForm(request.form)
 
+    materias_primas = MateriaPrima.query.all()
+    print(materias_primas)
+    
+    # Verificar si se envió el formulario y se presionó el botón "Limpiar Campos"
+    if request.method == "POST" and request.form.get("limpiar_campos"):
+        formReceta.nombre.data = ''
+        formReceta.num_galletas.data = ''
+        formReceta.fecha.data = None
+        formReceta.descripcion.data = ''
+        return render_template("moduloRecetas/detalleReceta.html", receta=None, formReceta=formReceta, ingredientes=[], materias_primas=materias_primas)
+    
     # Resto de tu lógica para manejar el formulario cuando no se presiona "Limpiar Campos"
     if request.method == "POST":
         receta_id = request.form.get("receta_id")
@@ -73,8 +88,26 @@ def detalle_recetas():
         formReceta.descripcion.data = receta.descripcion
         formReceta.imagen.data = receta.imagen
 
+        ingredientesReceta = RecetaDetalle.query.filter_by(receta_id=receta_id).all()
+        
+        ingredientes = []
+
+        for ingrediente in ingredientesReceta:
+            materia_prima = MateriaPrima.query.filter_by(id=ingrediente.materia_prima_id).first()
+
+            ingredientes.append({
+                'ingrediente_id': materia_prima.id,
+                'ingrediente': materia_prima.nombre,
+                'cantidad': ingrediente.cantidad_necesaria,
+                'unidad_medida': ingrediente.unidad_medida,
+                'porcentaje_merma': float(ingrediente.merma_porcentaje)
+            })
+
+        print(ingredientes)
+        formReceta.ingredientes.data = json.dumps(ingredientes) # Serializa los ingredientes
+
         # Pasa la receta y los formularios a la plantilla HTML para mostrarlos
-        return render_template("moduloRecetas/detalleReceta.html", receta=receta, formReceta=formReceta, formDetalle=formDetalle)
+        return render_template("moduloRecetas/detalleReceta.html", receta=receta, formReceta=formReceta, materias_primas=materias_primas, ingredientes=ingredientes)
     
     return render_template("404.html"), 404
 
