@@ -17,9 +17,9 @@
             {{ render_field(formProveedor.telefono, class="form-control", placeholder="Telefono") }}
         </div>
     </div>
-    <div class="row mb-3">
+    <div class="row mb-3 justify-content-center">
         <div class="form-group col-md-4">
-            {{ render_field(formProveedor.nombre_vendedor, class="form-control", placeholder="Nombre del Vendedor") }}
+            {{ render_field(formProveedor.nombre_vendedor, class="form-control text-center", placeholder="Nombre del Vendedor") }}
         </div>
     </div>
     <div class="col-md-12 text-center">
@@ -54,7 +54,7 @@
                    <form action="{{url_for('proveedores.seleccionar_proveedor')}}" method="post" class="d-inline">
                        <input type="hidden" name="id" value="{{proveedor.id}}" />
                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                       <button type="submit" class="btn btn-success">Editar</button>
+                       <button type="submit" class="btn btn-warning">Editar</button>
                    </form>
                    <button id="eliminarProveedor" data-id="{{proveedor.id}}" class="btn btn-danger" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
                 </td>
