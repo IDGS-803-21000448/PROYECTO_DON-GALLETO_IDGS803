@@ -85,29 +85,29 @@
                                     <div class="row">
                                         <div class="row">
                                             <div class="col-sm-6 form-group">
-                                                {{ formDetalle.ingrediente.label(class="form-label", id="ingrediente_label") }}
+                                                {{ formReceta.ingrediente.label(class="form-label", id="ingrediente_label") }}
                                                 <select name="ingrediente" id="ingrediente_input" class="form-control">
                                                     {% for materia_prima in materias_primas %}
-                                                        <option value="{{ materia_prima.id }}">{{ materia_prima.nombre }}</option>
+                                                        <option value="{{ materia_prima.id, materia_prima.nombre }}">{{ materia_prima.nombre }}</option>
                                                     {% endfor %}
                                                 </select>
-                                                {% for error in formDetalle.ingrediente.errors %}
+                                                {% for error in formReceta.ingrediente.errors %}
                                                     <span class="text-danger">{{ error }}</span>
                                                 {% endfor %}
                                             </div>
                                             <div class="col-sm-6 form-group">
-                                                {{ formDetalle.cantidad.label(class="form-label", id="cantidad_label") }}
-                                                {{ render_field(formDetalle.cantidad, class="form-control", id="cantidad_input") }}
+                                                {{ formReceta.cantidad.label(class="form-label", id="cantidad_label") }}
+                                                {{ render_field(formReceta.cantidad, class="form-control", id="cantidad_input") }}
                                             </div>
                                             <div class="col-sm-6 form-group">
-                                                {{ formDetalle.unidad_medida.label(class="form-label", id="unidad_medida_label") }}
-                                                {{ render_field(formDetalle.unidad_medida, class="form-control", id="unidad_medida_input") }}
+                                                {{ formReceta.unidad_medida.label(class="form-label", id="unidad_medida_label") }}
+                                                {{ render_field(formReceta.unidad_medida, class="form-control", id="unidad_medida_input") }}
                                             </div>
                                             <div class="col-sm-6 form-group">
-                                                {{ formDetalle.porcentaje_merma.label(class="form-label", id="porcentaje_merma_label") }}
-                                                {{ render_field(formDetalle.porcentaje_merma, class="form-control", id="porcentaje_merma_input") }}
+                                                {{ formReceta.porcentaje_merma.label(class="form-label", id="porcentaje_merma_label") }}
+                                                {{ render_field(formReceta.porcentaje_merma, class="form-control", id="porcentaje_merma_input") }}
                                             </div>
-                                            <input type="submit" id="agregar" name="agregar" value="Agregar" class="btn btn-success mb-3" />
+                                            <a type="button" id="agregar" name="agregar" value="Agregar" class="btn btn-success mb-3" onclick="addIngrediente()"><i class="fas fa-solid fa-plus"></i> Agregar</a>
                                         </div>
                                         <div class="table-responsive">
                                             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -117,17 +117,10 @@
                                                         <th>Cantidad</th>
                                                         <th>Unidad de Medida</th>
                                                         <th>Porcentaje de Merma</th>
+                                                        <th>Acción</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody>
-                                                    {% for ingrediente_data in ingredientes_data %}
-                                                    <tr>
-                                                        <td>{{ ingrediente_data.ingrediente }}</td>
-                                                        <td>{{ ingrediente_data.cantidad }}</td>
-                                                        <td>{{ ingrediente_data.unidad_medida }}</td>
-                                                        <td>{{ ingrediente_data.porcentaje_merma }}</td>
-                                                    </tr>
-                                                    {% endfor %}
+                                                <tbody id="tblIngredientes">
                                                 </tbody>
                                             </table>
                                         </div>
@@ -149,6 +142,8 @@
             </form>
         </div>
     </div>
+
+    <script src="{{ url_for('static', filename='js/controllerRecetas.js') }}"></script>
 
 {% endblock %}
 
