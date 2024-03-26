@@ -22,7 +22,9 @@ class Receta(db.Model):
     nombre = db.Column(db.String(100))
     descripcion = db.Column(db.Text)
     num_galletas = db.Column(db.Integer)
+    imagen = db.Column(db.Text)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
+    estatus = db.Column(db.Integer, default=1)
 
 class RecetaDetalle(db.Model):
     __tablename__ = 'receta_detalle'
@@ -30,8 +32,8 @@ class RecetaDetalle(db.Model):
     receta_id = db.Column(db.Integer, db.ForeignKey('recetas.id'))
     materia_prima_id = db.Column(db.Integer, db.ForeignKey('materias_primas.id'))
     cantidad_necesaria = db.Column(db.Float)
+    unidad_medida = db.Column(db.String(10))
     merma_porcentaje = db.Column(db.Float)
-    
     receta = db.relationship('Receta', backref=db.backref('detalles', lazy=True))
     materia_prima = db.relationship('MateriaPrima', backref=db.backref('usos', lazy=True))
 
