@@ -40,3 +40,20 @@ BEGIN
     WHERE id = p_id;
 END//
 DELIMITER ;
+
+
+#------------PROVEEDORES----------------
+DROP PROCEDURE IF EXISTS agregar_proveedor;
+DELIMITER //
+CREATE PROCEDURE agregar_proveedor (
+    IN p_nombre VARCHAR(100),
+    IN p_direccion VARCHAR(255),
+    IN p_telefono VARCHAR(15),
+    IN p_nombre_vendedor VARCHAR(100),
+    IN p_estatus INT
+)
+BEGIN
+    INSERT INTO proveedores (nombre, direccion, telefono, nombre_vendedor, estatus)
+    VALUES (p_nombre, p_direccion, p_telefono, p_nombre_vendedor, p_estatus);
+END //
+DELIMITER ;
