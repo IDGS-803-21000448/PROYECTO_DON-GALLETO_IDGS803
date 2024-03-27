@@ -56,61 +56,25 @@
     </div>
 
     <div class="col-md-6 my-3 d-flex justify-content-end">
-        <button type="button" id="btnInteraccion" class="btn btn-primary" onclick="window.location.href='/detalleReceta'"><i class="fas fa-plus"></i> Nueva Receta
+        <button type="button" id="btnInteraccion" class="btn btn-primary" onclick="window.location.href='/nuevaReceta'"><i class="fas fa-plus"></i> Nueva Receta
         </button>
     </div>
 </div>
 
 <!-- Imagenes de las galletas -->
 <section>
+    {% for receta in recetas %}
     <figure>
-        <img src="{{ url_for('static', filename='src/galleta-dinosaurio.png') }}" alt="galleta_dinosaurio">
-        <figcaption>Galleta de Dinosaurio</figcaption>
+        <form method="POST" action="{{ url_for('recetas.detalle_recetas') }}">
+            <input type="hidden" name="receta_id" value="{{ receta.id }}">
+            <button type="submit" class="btn-img" style="background: none; border: none; padding: 0; margin: 0; cursor: pointer;">
+                <img src="data:image/png;base64,{{ receta.imagen }}" alt="{{ receta.nombre }}">
+            </button>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        </form>
+        <figcaption>{{ receta.nombre }}</figcaption>
     </figure>
-
-    <figure>
-        <img src="{{ url_for('static', filename='src/galleta-chocolate.png') }}" alt="galleta_chocolate">
-        <figcaption>Galleta de Chocolate</figcaption>
-    </figure>
-
-    <figure>
-        <img src="{{ url_for('static', filename='src/galleta-nuez.png') }}" alt="galleta_nuez">
-        <figcaption>Galleta de Nuez</figcaption>
-    </figure>
-
-    <figure>
-        <img src="{{ url_for('static', filename='src/galleta-limon.png') }}" alt="otra_galleta">
-        <figcaption>Galleta de Limón</figcaption>
-    </figure>
-
-    <figure>
-        <img src="{{ url_for('static', filename='src/galleta-avena.png') }}" alt="galleta_especial">
-        <figcaption>Galleta de Avena</figcaption>
-    </figure>
-
-    <figure>
-        <img src="{{ url_for('static', filename='src/galleta-almendra.png') }}" alt="galleta_vainilla">
-        <figcaption>Galleta de Almendra</figcaption>
-    </figure>
-
-    <figure>
-        <img src="{{ url_for('static', filename='src/galleta-coco.png') }}" alt="otra_galleta">
-        <figcaption>Galleta de Coco</figcaption>
-    </figure>
-
-    <figure>
-        <img src="{{ url_for('static', filename='src/galleta-fresa.png') }}" alt="galleta_especial">
-        <figcaption>Galleta de Fresa</figcaption>
-    </figure>
-
-    <figure>
-        <img src="{{ url_for('static', filename='src/galleta-arcoiris.png') }}" alt="galleta_vainilla">
-        <figcaption>Galleta de Arcoíris</figcaption>
-    </figure>
-
-    <figure>
-        <img src="{{ url_for('static', filename='src/galleta-salada.png') }}" alt="galleta_vainilla">
-        <figcaption>Galleta Salada</figcaption>
-    </figure>
+    {% endfor %}
 </section>
+
 {% endblock %}

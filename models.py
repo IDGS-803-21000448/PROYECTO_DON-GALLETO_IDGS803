@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import datetime
+from flask_login import UserMixin
 
 db = SQLAlchemy()
 
@@ -36,7 +37,9 @@ class Receta(db.Model):
     nombre = db.Column(db.String(100))
     descripcion = db.Column(db.Text)
     num_galletas = db.Column(db.Integer)
+    imagen = db.Column(db.Text)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
+    estatus = db.Column(db.Integer, default=1)
 
 class RecetaDetalle(db.Model):
     __tablename__ = 'receta_detalle'
@@ -44,8 +47,8 @@ class RecetaDetalle(db.Model):
     receta_id = db.Column(db.Integer, db.ForeignKey('recetas.id'))
     materia_prima_id = db.Column(db.Integer, db.ForeignKey('materias_primas.id'))
     cantidad_necesaria = db.Column(db.Float)
+    unidad_medida = db.Column(db.String(10))
     merma_porcentaje = db.Column(db.Float)
-    
     receta = db.relationship('Receta', backref=db.backref('detalles', lazy=True))
     materia_prima = db.relationship('MateriaPrima', backref=db.backref('usos', lazy=True))
 
@@ -71,7 +74,7 @@ class Produccion(db.Model):
     fecha_postergado = db.Column(db.DateTime, nullable=True)
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(80), nullable=False)
@@ -80,6 +83,26 @@ class User(db.Model):
     estatus = db.Column(db.String(80), nullable=False)
     usuario = db.Column(db.String(80), nullable=False)
     contrasena = db.Column(db.String(80), nullable=False)
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        # Aquí puedes agregar lógica para deshabilitar usuarios si es necesario
+        if self.estatus == "Activo":
+            return True
+        else:
+            return False
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        # Flask-Login espera que el identificador sea una cadena, por eso la conversión
+        return str(self.id)
 
 class Alerta(db.Model):
     __tablename__ = 'alertas'

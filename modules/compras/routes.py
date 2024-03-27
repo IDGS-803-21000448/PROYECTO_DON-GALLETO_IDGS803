@@ -1,10 +1,14 @@
-from formularios import formCompras
+from flask import render_template
 from . import compras
 from flask import render_template, request, flash, redirect, url_for
 import models
 from models import db
+from controllers.controller_login import requiere_rol
+from flask_login import login_required
 
 @compras.route("/moduloCompras", methods=["GET"])
+@login_required
+@requiere_rol("admin")
 def modulo_compras():
     form_compras = formCompras.CompraForm()
     proveedores =  models.Proveedor.query.filter_by(estatus=1).all()
