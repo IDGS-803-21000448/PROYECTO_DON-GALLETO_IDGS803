@@ -7,22 +7,38 @@
 
     <div class="row mb-3">
             {{ render_field(form.id, class="form-control", placeholder="id") }}
-        <div class="form-group col-md-4">
+        <div class="form-group col-md-3">
             {{ render_field(form.cantidad, class="form-control", placeholder="Nombre") }}
         </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-md-3">
             {{ render_field(form.precio_compra, class="form-control", placeholder="Precio de Compra") }}
         </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-md-3">
+            {{ render_field(form.tipo, class="form-control", placeholder="Unidad de medida") }}
+        </div>
+        <div class="form-group col-md-3">
             {{ render_field(form.fecha, class="form-control", type="date", placeholder="Fecha de compra") }}
         </div>
     </div>
     <div class="col-md-12 text-center">
-        <input type="hidden" id="proveedor_id" name="proveedor_id" value="{{ form.proveedor_id.data }}">
-        <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#materiaPrimaModal">
-            Seleccionar proveedor
-        </button>
-        {{  render_errors(form.proveedor_id) }}
+        <div class="form-group col-md-3">
+            {{ render_field(form.fecha_caducidad, class="form-control", type="date", placeholder="Fecha de compra") }}
+        </div>
+        <div class="form-group col-md-3">
+            <input type="hidden" id="proveedor_id" name="proveedor_id" value="{{ form.proveedor_id.data }}">
+            <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#materiaPrimaModal">
+                Seleccionar proveedor
+            </button>
+            {{  render_errors(form.proveedor_id) }}
+        </div>
+        <div class="form-group col-md-3">
+            <input type="hidden" id="id_tipo_materia" name="id_tipo_materia" value="{{ form.id_tipo_materia.data }}">
+            <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#materiaPrimaModal">
+                Seleccionar proveedor
+            </button>
+            {{  render_errors(form.id_tipo_materia) }}
+        </div>
+
         <button type="submit" class="btn btn-success mx-auto">Guardar</button>
     </div>
     <div>
@@ -37,19 +53,21 @@
         <thead>
             <tr>
                 <th>Nombre</th>
-                <th>Dirección</th>
-                <th>Telefono</th>
-                <th>Nombre del Vendedor</th>
+                <th>Precio</th>
+                <th>Fecha</th>
+                <th>Lote</th>
+                <th>Cantidad</th>
                 <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
-            {% for proveedor in proveedores %}
+            {% for compra in compras %}
             <tr>
-                <td>{{ proveedor['nombre'] }}</td>
-                <td>{{ proveedor['direccion'] }}</td>
-                <td>{{ proveedor['telefono'] }}</td>
-                <td>{{ proveedor['nombre_vendedor'] }}</td>
+                <td>{{ compra.tipo_materia.nombre }}</td>
+                <td>{{ compra.precio_compra }}</td>
+                <td>{{ compra.create_date }}</td>
+                <td>{{ compra['lote'] }}</td>
+                <td>{{ compra['cantidad_disponible'] }}</td>
                 <td>
                    <form action="{{url_for('proveedores.seleccionar_proveedor')}}" method="post" class="d-inline">
                        <input type="hidden" name="id" value="{{proveedor.id}}" />
@@ -66,11 +84,51 @@
 
 </div>
 
-<div class="modal fade" id="materiaPrimaModal" tabindex="-1" aria-labelledby="materiaPrimaModalLabel" aria-hidden="true" role="dialog">
+    <div class="modal fade" id="proveedorModal" tabindex="-1" aria-labelledby="proveedorModal" aria-hidden="true" role="dialog">
+        <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="materiaPrimaModalLabel">Seleccionar Proveedor</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Telefono</th>
+                  <th>Nombre Vendedor</th>
+                  <th>Seleccionar</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for proveedor in proveedores %}
+                <tr>
+                  <td>{{ proveedor.nombre }}</td>
+                  <td>{{ proveedor.telefono }}</td>
+                  <td>{{ proveedor.nombre_vendedor }}</td>
+                  <td>
+                    <button type="button" class="btn btn-success select-proveedor" data-proveedor-id="{{ proveedor.id }}"
+                            data-bs-dismiss="modal">
+                      Seleccionar
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="materiaPrimaModal" tabindex="-1" aria-labelledby="materiaPrimaModalLabel" aria-hidden="true" role="dialog">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="materiaPrimaModalLabel">Seleccionar Proveedor</h5>
+        <h5 class="modal-title" id="materiaPrimaModalLabel">Seleccionar Materia Prima</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -80,19 +138,19 @@
           <thead>
             <tr>
               <th>Nombre</th>
-              <th>Telefono</th>
-              <th>Nombre Vendedor</th>
+              <th>Cantidad</th>
+              <th>Tipo</th>
               <th>Seleccionar</th>
             </tr>
           </thead>
           <tbody>
-            {% for proveedor in proveedores %}
+            {% for materia in materias_primas %}
             <tr>
-              <td>{{ proveedor.nombre }}</td>
-              <td>{{ proveedor.telefono }}</td>
-              <td>{{ proveedor.nombre_vendedor }}</td>
+              <td>{{ materia.nombre }}</td>
+              <td>{{ materia.cantidad_disponible }}</td>
+              <td>{{ materia.tipo }}</td>
               <td>
-                <button type="button" class="btn btn-success select-proveedor" data-id="{{ proveedor.id }}"
+                <button type="button" class="btn btn-success select-materia" data-id="{{ materia.id }}"
                         data-bs-dismiss="modal">
                   Seleccionar
                 </button>
@@ -105,6 +163,7 @@
     </div>
   </div>
 </div>
+
 
 
 <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="materiaPrimaModalLabel" aria-hidden="true" role="dialog">
@@ -162,13 +221,26 @@
       });
     });
 
-    $(document).ready(function() {
-      $('.select-proveedor').click(function() {
-        var proveedor_id = $(this).data('id');
+    $('.select-proveedor').click(function() {
+        var proveedorId = $(this).data('proveedor-id');
 
-        $('#proveedor_id').val(proveedor_id);
-
+        $('#proveedor_id').val(proveedorId);
+        $('#proveedorModal').modal('hide')
       });
+
+    $('.select-materia').click(function() {
+        var materiaId = $(this).data('id');
+
+        $('#id_tipo_materia').val(materiaId);
+        $('#materiaPrimaModal').modal('hide')
+      });
+
+      $(document).on('click', '#eliminarProveedor', function() {
+          var proveedorId = $(this).data('id');
+          $('#idEliminar').val(proveedorId);
+          $('#modalConfirmacion').modal('show');  // Muestra el modal
+      });
+
 
     // Adjunta el evento al botón que abre el modal, no al botón de cierre del modal
     $(document).on('click', '#eliminarProveedor', function() {

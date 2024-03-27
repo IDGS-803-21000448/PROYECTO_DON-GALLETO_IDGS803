@@ -1,7 +1,7 @@
 from flask import render_template
 from flask_login import login_required
 from controllers.controller_login import requiere_rol
-
+from flask_login import current_user
 from controllers import controller_mermas
 from . import index
 
