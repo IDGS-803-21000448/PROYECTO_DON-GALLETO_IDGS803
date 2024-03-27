@@ -18,21 +18,6 @@ def crud_proveedores():
     return render_template("moduloProveedores/crudProveedores.html", formProveedor=form_proveedores, proveedores = listado_proveedor)
 
 
-# @proveedores.route("/agregarProveedor", methods=["GET", "POST"])
-# def agregar_proveedor():
-#     form_proveedor = formProveedores.ProveedorForm(request.form)
-#     if request.method == "POST" and form_proveedor.validate():
-#         controller_proveedores.agregar_proveedor(form_proveedor)
-#         form_proveedor = formProveedores.ProveedorForm()
-#         listado_proveedor = Proveedor.query.filter_by(estatus = 1).all()
-#         flash("Proveedoredor agregado correctamente", "success")
-#         return render_template("moduloProveedores/crudProveedores.html", formProveedor=form_proveedor, proveedores=listado_proveedor)
-#     else:
-#         # Aquí no se debería volver a crear el objeto form_proveedor
-#         flash("Error al agregar proveedor", "error")
-#         listado_proveedor = Proveedor.query.all()
-#         return render_template("moduloProveedores/crudProveedores.html", formProveedor=form_proveedor, proveedores=listado_proveedor)
-
 
 @proveedores.route('/agregarProveedor', methods=['GET','POST'])
 @login_required
