@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+{% from "_macros.html" import render_field %}
+
+<div class="row">
+    <div class="col-md-6">
+        <h1 class="h3 mb-2 text-gray"><i class="fas fa-fw fa-coins"></i> Costo Galletas</h1>
+    </div>
+</div>
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card card-shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="fw-bold mb-0">Lista de galletas</h4>
+                </div>
+                <div class="card-body">
+                    <h2 class="text-center">Nombre de la receta: {{ nombre_galleta }}</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Ingrediente</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-center">Tipo de medida</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for galleta in galletas %}
+                                    <tr class="text-center">
+                                        <td>{{ galleta.ingrediente }}</td>
+                                        <td>{{ galleta.cantidad }}</td>
+                                        <td>{{ galleta.medida }}</td>                                      
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row justify-content-center mt-4">
+                    <div class="col-lg-6 text-center">
+                        <form action="{{ url_for('galletas.actualizar_precio') }}" method="POST">
+                            <div class="form-group text-center mb-3">
+                                {{ render_field(form.precio_mano_obra, class="form-control", placeholder="Mano de obra") }}
+                            </div>
+                            <div class="form-group text-center">
+                                <button type="submit" class="btn btn-warning">Actualizar</button>
+                            </div>
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -50,14 +50,14 @@
                 <form action="/login" method="POST">      
                   <!-- Email input -->
                   <div class="form-outline mb-4">
-                    {{ render_field(form.usuario, class="form-control") }}
                     <label class="form-label" for="form3Example3">Usuario</label>
+                    {{ render_field(form.usuario, class="form-control") }}
                   </div>
       
                   <!-- Password input -->
                   <div class="form-outline mb-4">
-                    {{ render_field(form.contrasena, class="form-control") }}
                     <label class="form-label" for="form3Example4">Contraseña</label>
+                    {{ render_field(form.contrasena, class="form-control") }}
                   </div>
                   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                   <!-- Submit button -->
