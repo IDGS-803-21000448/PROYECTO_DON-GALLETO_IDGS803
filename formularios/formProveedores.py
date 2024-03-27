@@ -7,7 +7,7 @@ class ProveedorForm(Form):
     id = IntegerField('id', widget=HiddenInput(), default=0)
     nombre=StringField('Nombre', [
         validators.DataRequired(message='El campo es requerido'),
-        validators.length(min=4, max=15, message='Ingresa un nombre valido')
+        validators.length(min=4, max=50, message='Ingresa un nombre valido')
     ])
     direccion=StringField('Dirección', [
         validators.DataRequired(message='El campo es requerido'),

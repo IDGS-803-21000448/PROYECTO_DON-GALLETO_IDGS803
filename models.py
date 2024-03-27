@@ -153,3 +153,10 @@ class DetalleVenta(db.Model):
     cantidad = db.Column(db.Integer, nullable=False)
     subtotal = db.Column(db.Float, nullable=False)
     venta_id = db.Column(db.Integer, db.ForeignKey('venta.id'), nullable=False)
+
+class CostoGalleta(db.Model):
+    __tablename__ = 'costoGalletas'
+    id = db.Column(db.Integer, primary_key=True)
+    galleta_id = db.Column(db.Integer, db.ForeignKey('tipo_materia.id'))
+    precio = db.Column(db.Float)
+    fecha_utlima_actualizacion = db.Column(db.DateTime, default=datetime.datetime.now)
