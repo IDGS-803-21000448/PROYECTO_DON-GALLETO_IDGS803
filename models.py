@@ -46,12 +46,12 @@ class RecetaDetalle(db.Model):
     __tablename__ = 'receta_detalle'
     id = db.Column(db.Integer, primary_key=True)
     receta_id = db.Column(db.Integer, db.ForeignKey('recetas.id'))
-    materia_prima_id = db.Column(db.Integer, db.ForeignKey('materias_primas.id'))
+    tipo_materia_id = db.Column(db.Integer, db.ForeignKey('tipo_materia.id'))
     cantidad_necesaria = db.Column(db.Float)
     unidad_medida = db.Column(db.String(10))
     merma_porcentaje = db.Column(db.Float)
     receta = db.relationship('Receta', backref=db.backref('detalles', lazy=True))
-    materia_prima = db.relationship('MateriaPrima', backref=db.backref('usos', lazy=True))
+    tipo_materia = db.relationship('Tipo_Materia', backref=db.backref('usos', lazy=True))
 
 class MermaMateriaPrima(db.Model):
     __tablename__ = 'mermaMateriaPrima'
@@ -135,5 +135,22 @@ class Proveedor(db.Model):
     telefono = db.Column(db.String(15))
     nombre_vendedor = db.Column(db.String(100))
     estatus = db.Column(db.Integer, default=1)
+    
+#-------VENTAS-------
+class Venta(db.Model):
+    __tablename__ = 'venta'
+    id = db.Column(db.Integer, primary_key=True)
+    folio = db.Column(db.String(8))
+    nombre_cliente = db.Column(db.String(50))
+    fecha = db.Column(db.DateTime, default=datetime.datetime.now)
+    total = db.Column(db.Float)
 
-
+class DetalleVenta(db.Model):
+    __tablename__ = 'detalle_venta'
+    id = db.Column(db.Integer, primary_key=True)
+    sabor = db.Column(db.String(50), nullable=False)
+    tipo_venta = db.Column(db.String(50), nullable=False)
+    precio_unitario = db.Column(db.Float, nullable=False)
+    cantidad = db.Column(db.Integer, nullable=False)
+    subtotal = db.Column(db.Float, nullable=False)
+    venta_id = db.Column(db.Integer, db.ForeignKey('venta.id'), nullable=False)

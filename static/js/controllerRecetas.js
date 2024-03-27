@@ -29,7 +29,7 @@ function loadIngredientes() {
 
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'Eliminar';
-        deleteButton.class = 'btn btn-danger';
+        deleteButton.className = 'btn btn-danger';
         deleteButton.addEventListener('click', () => {
             eliminarIngrediente(ingrediente);
             document.getElementById('ingredientes').value = JSON.stringify(ingredientes);
