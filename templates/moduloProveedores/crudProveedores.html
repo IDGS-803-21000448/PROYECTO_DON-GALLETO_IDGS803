@@ -64,14 +64,14 @@
     </table>
 
 </div>
-<div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="materiaPrimaModalLabel" aria-hidden="true" role="dialog">
-  <div class="container mt-5">
-      <div class="row">
-           <div class="col-md-6 offset-md-3">
+<div class="modal fade"  id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacion" aria-hidden="true" role="dialog">
+  <div class="container mt-5 modal-dialog" role="document">
+      <div class="row modal-content" style="display: contents;">
+           <div class="col-md-12 offset-md-3 mx-0">
              <div class="card">
                <div class="card-body">
-                 <h1 class="card-title text-center">Confirmar Borrado de Proveedor</h1>
-                 <p class="card-text text-center">Estás a punto de eliminar un proveedor</p>
+                 <h1 class="card-title text-center">Confirmar Borrado del Proveedor</h1>
+                 <p class="card-text text-center">Estás a punto de eliminar el proveedor</p>
                  <div class="text-center">
                      <form action="{{ url_for('proveedores.eliminar_proveedor')}}" method="post" class="d-inline">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
@@ -88,6 +88,7 @@
       </div>
   </div>
 </div>
+
 
 <script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
 
