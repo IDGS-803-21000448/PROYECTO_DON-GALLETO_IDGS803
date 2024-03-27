@@ -20,11 +20,11 @@ class MateriaPrima(db.Model):
     id_tipo_materia = db.Column(db.Integer, db.ForeignKey('tipo_materia.id'))
 
     cantidad_disponible = db.Column(db.Float)
-    create_date = db.Column(db.DateTime, default=datetime.datetime.now)
     tipo = db.Column(db.String(50))
+    precio_compra = db.Column(db.Float)
+    create_date = db.Column(db.DateTime, default=datetime.datetime.now)
     fecha_caducidad = db.Column(db.Date)
     lote = db.Column(db.String(50))
-    precio_compra = db.Column(db.Float)
 
     estatus = db.Column(db.Integer, default=1)
     proveedor = db.relationship('Proveedor', backref=db.backref('MateriaPrima', lazy=True))

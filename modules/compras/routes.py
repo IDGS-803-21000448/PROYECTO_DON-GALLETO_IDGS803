@@ -1,4 +1,6 @@
 from flask import render_template
+
+from formularios import formCompras
 from . import compras
 from flask import render_template, request, flash, redirect, url_for
 import models
@@ -7,14 +9,15 @@ from controllers.controller_login import requiere_rol
 from flask_login import login_required
 
 @compras.route("/moduloCompras", methods=["GET"])
-@login_required
-@requiere_rol("admin")
+#@login_required
+#@requiere_rol("admin")
 def modulo_compras():
     form_compras = formCompras.CompraForm()
+    tipo_materias = models.Tipo_Materia.query.filter_by(estatus=1).all()
     proveedores =  models.Proveedor.query.filter_by(estatus=1).all()
     listado_compras = models.MateriaPrima.query.filter_by(estatus=1).all()
     return render_template("moduloCompras/moduloCompras.html", form=form_compras,
-                           materias_primas=listado_compras, proveedores = proveedores)
+                           materias_primas=tipo_materias, proveedores = proveedores, compras = listado_compras)
 
 
 @compras.route("/agregarCompra", methods=["POST"])
