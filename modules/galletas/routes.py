@@ -2,7 +2,7 @@ from flask import render_template, request, flash, redirect, url_for
 from . import galletas
 from controllers.controller_login import requiere_rol
 from flask_login import login_required
-from models import Receta, RecetaDetalle, MateriaPrima
+from models import Receta, RecetaDetalle, MateriaPrima, Tipo_Materia
 from formularios import formCosto
 
 @galletas.route("/costoGalleta", methods=["GET"])
@@ -46,7 +46,7 @@ def actualizar_precio():
     galletas = []
 
     for detalle in detalles:
-        materia_prima = MateriaPrima.query.get(detalle.materia_prima_id)
+        materia_prima = Tipo_Materia.query.get(detalle.id)
 
         if materia_prima:
             detalle_con_nombre = {
