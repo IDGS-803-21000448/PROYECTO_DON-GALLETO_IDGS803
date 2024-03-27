@@ -66,58 +66,83 @@
     </tbody>
   </table>
 
-  <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="materiaPrimaModalLabel" aria-hidden="true" role="dialog">
-    <div class="container mt-5 modal-dialog" role="document">
-        <div class="row modal-content" style="display: contents;">
-             <div class="col-md-6 offset-md-3">
-               <div class="card">
-                 <div class="card-body">
-                   <h1 class="card-title text-center">Confirmar Borrado de Usuario</h1>
-                   <p class="card-text text-center">Estás a punto de eliminar un usuario</p>
-                   <div class="text-center">
-                       <form action="{{ url_for('usuarios.eliminar_usuarios')}}" method="post" class="d-inline">
-                          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                          <input type="hidden" name="id" id="idEliminar">
-                          <button type="submit" class="btn btn-danger">Eliminar</button>
-                       </form>
-                       <button type="button" id="#closeModalConfirmacion" class="closeModalConfirmacion btn btn-success">
-                          Cancelar
-                       </button>
-                   </div>
+  
+
+</div>
+
+<div class="modal fade"  id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacion" aria-hidden="true" role="dialog">
+  <div class="container mt-5 modal-dialog" role="document">
+      <div class="row modal-content" style="display: contents;">
+           <div class="col-md-12 offset-md-3 mx-0">
+             <div class="card">
+               <div class="card-body">
+                 <h1 class="card-title text-center">Confirmar Borrado del Usuario</h1>
+                 <p class="card-text text-center">Estás a punto de eliminar el usuario</p>
+                 <div class="text-center">
+                     <form action="{{ url_for('usuarios.eliminar_usuarios')}}" method="post" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <input type="hidden" name="id" id="idEliminar">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                     </form>
+                     <button type="button" id="closeModalConfirmacion" class="closeModalConfirmacion btn btn-success">
+                        Cancelar
+                     </button>
                  </div>
                </div>
              </div>
-        </div>
-    </div>
+           </div>
+      </div>
   </div>
 </div>
 
 
 
+<script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
+
 <script>
-  $(document).ready(function() {
-    // Filtrado de búsqueda en la tabla
-    $('#searchInput').on('input', function() {
-      var searchText = $(this).val().toLowerCase();
-      $('#userTable tr').filter(function() {
-        $(this).toggle($(this).text().toLowerCase().indexOf(searchText) > -1)
+    document.addEventListener("DOMContentLoaded", function() {
+      const searchInput = document.getElementById('searchInput');
+      const userTable = document.getElementById('userTable');
+      const rows = userTable.getElementsByTagName('tr');
+  
+      searchInput.addEventListener('input', function() {
+        const searchText = this.value.toLowerCase();
+        for (let i = 1; i < rows.length; i++) {
+          const row = rows[i];
+          const cells = row.getElementsByTagName('td');
+          let found = false;
+          for (let j = 0; j < cells.length; j++) {
+            const cell = cells[j];
+            if (cell.textContent.toLowerCase().indexOf(searchText) > -1) {
+              found = true;
+              break;
+            }
+          }
+          if (found) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        }
       });
     });
 
-    // Apertura del modal de confirmación con el ID del usuario a eliminar
+    // Adjunta el evento al botón que abre el modal, no al botón de cierre del modal
     $(document).on('click', '#eliminarUsuario', function() {
-      var usuarioId = $(this).data('id');
-      $('#idEliminar').val(usuarioId); // Asigna el ID al input oculto dentro del modal
-      $('#modalConfirmacion').modal('show'); // Muestra el modal de confirmación
+      var materia_id = $(this).data('id');
+      $('#idEliminar').val(materia_id);
+      $('#modalConfirmacion').modal('show');
     });
 
-    // Cierre del modal de confirmación
-    $('#closeModalConfirmacion').click(function() {
-      $('#modalConfirmacion').modal('hide'); // Oculta el modal
+    $(document).on('click', '#closeModalConfirmacion', function() {
+        $('#modalConfirmacion').modal('hide');
     });
-  });
-</script>
-<script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
+
+  
+  </script>
+
+
+
 
 
 {% endblock %}
