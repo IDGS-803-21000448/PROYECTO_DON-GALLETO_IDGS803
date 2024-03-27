@@ -1,5 +1,5 @@
 from . import recetas
-from models import Receta, MateriaPrima, RecetaDetalle
+from models import Receta, MateriaPrima, RecetaDetalle, Tipo_Materia
 from flask import render_template, request, jsonify, url_for, redirect, flash
 from formularios import formsReceta
 from controllers.controller_login import requiere_rol
@@ -29,8 +29,8 @@ def nueva_receta():
     formReceta = formsReceta.RecetaForm(request.form)
     #formDetalle = formsReceta.RecetaDetalleForm()
 
-    # Obtén la lista de ingredientes desde la tabla MateriaPrima
-    materias_primas = MateriaPrima.query.all()
+    # Obtén la lista de ingredientes desde la tabla Tipo_Materia
+    materias_primas = Tipo_Materia.query.all()
 
     if request.method == 'POST' and formReceta.validate():
         return redirect(url_for('recetas.detalle_recetas'))
@@ -74,7 +74,7 @@ def guardar_receta():
         if lastDetalles:
             # Verificar si en el ingredientesJson no hay un id de ingrediente registrado en el lastDetalles, si es asi debe eliminarlo de la base de datos donde el id de receta y el id de materia prima coincidan
             for detalle in lastDetalles:
-                if not any(ingrediente['id'] == detalle.materia_prima_id for ingrediente in ingredientesJson):
+                if not any(ingrediente['id'] == detalle.tipo_materia_id for ingrediente in ingredientesJson):
                     db.session.delete(detalle)
                     db.session.commit()        
 
@@ -82,7 +82,7 @@ def guardar_receta():
         for ingrediente in ingredientesJson:
             detalle = RecetaDetalle(
                 receta_id=last_receta.id,
-                materia_prima_id=ingrediente['ingrediente_id'],
+                tipo_materia_id=ingrediente['ingrediente_id'],
                 cantidad_necesaria=ingrediente['cantidad'],
                 unidad_medida=ingrediente['unidad_medida'],
                 merma_porcentaje=ingrediente['porcentaje_merma']
@@ -90,7 +90,7 @@ def guardar_receta():
             # Verificar si la receta ya tiene detalles
             if lastDetalles:                
                 # Verificar si el detalle ya existe en la base de datos
-                existe = next((x for x in lastDetalles if x.materia_prima_id == ingrediente['id']), None)
+                existe = next((x for x in lastDetalles if x.tipo_materia_id == ingrediente['id']), None)
 
                 # Si el detalle ya existe solo modificar datos en la base de datos donde el id de ingrediente y el id de receta coincidan
                 if existe:
@@ -120,7 +120,7 @@ def detalle_recetas():
     formReceta = formsReceta.RecetaForm(request.form)
     #formDetalle = formsReceta.RecetaDetalleForm(request.form)
 
-    materias_primas = MateriaPrima.query.all()
+    materias_primas = Tipo_Materia.query.all()
     
     # Verificar si se envió el formulario y se presionó el botón "Limpiar Campos"
     if request.method == "POST" and request.form.get("limpiar_campos"):
@@ -145,7 +145,7 @@ def detalle_recetas():
         ingredientes = []
 
         for ingrediente in ingredientesReceta:
-            materia_prima = MateriaPrima.query.filter_by(id=ingrediente.materia_prima_id).first()
+            materia_prima = Tipo_Materia.query.filter_by(id=ingrediente.tipo_materia_id).first()
 
             ingredientes.append({
                 'ingrediente_id': materia_prima.id,
@@ -215,7 +215,7 @@ def editar_receta():
             if lastDetalles:
                 # Verificar si en el ingredientesJson no hay un id de ingrediente registrado en el lastDetalles, si es asi debe eliminarlo de la base de datos donde el id de receta y el id de materia prima coincidan
                 for detalle in lastDetalles:
-                    if not any(int(ingrediente['ingrediente_id']) == int(detalle.materia_prima_id) for ingrediente in ingredientesJson):
+                    if not any(int(ingrediente['ingrediente_id']) == int(detalle.tipo_materia_id) for ingrediente in ingredientesJson):
                             db.session.delete(detalle)
                             db.session.commit()        
 
@@ -223,7 +223,7 @@ def editar_receta():
             for ingrediente in ingredientesJson:
                 detalle = RecetaDetalle(
                     receta_id=last_receta.id,
-                    materia_prima_id=ingrediente['ingrediente_id'],
+                    tipo_materia_id=ingrediente['ingrediente_id'],
                     cantidad_necesaria=ingrediente['cantidad'],
                     unidad_medida=ingrediente['unidad_medida'],
                     merma_porcentaje=ingrediente['porcentaje_merma']
@@ -231,7 +231,7 @@ def editar_receta():
                 # Verificar si la receta ya tiene detalles
                 if lastDetalles:                
                     # Verificar si el detalle ya existe en la base de datos
-                    existe = next((x for x in lastDetalles if x.materia_prima_id == ingrediente['ingrediente_id']), None)
+                    existe = next((x for x in lastDetalles if x.tipo_materia_id == ingrediente['ingrediente_id']), None)
 
                     # Si el detalle ya existe solo modificar datos en la base de datos donde el id de ingrediente y el id de receta coincidan
                     if existe:

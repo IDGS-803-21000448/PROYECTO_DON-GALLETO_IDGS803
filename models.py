@@ -5,15 +5,30 @@ from flask_login import UserMixin
 
 db = SQLAlchemy()
 
+class Tipo_Materia(db.Model):
+    __tablename__ = 'tipo_materia'
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(50))
+    tipo = db.Column(db.String(50))
+    cantidad_disponible = db.Column(db.Float)
+    estatus = db.Column(db.Integer, default=1)
+
 class MateriaPrima(db.Model):
     __tablename__ = 'materias_primas'
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100))
-    fecha_caducidad = db.Column(db.Date)
+    id_proveedor = db.Column(db.Integer, db.ForeignKey('proveedores.id'))
+    id_tipo_materia = db.Column(db.Integer, db.ForeignKey('tipo_materia.id'))
+
     cantidad_disponible = db.Column(db.Float)
     tipo = db.Column(db.String(50))
+    precio_compra = db.Column(db.Float)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
+    fecha_caducidad = db.Column(db.Date)
+    lote = db.Column(db.String(50))
+
     estatus = db.Column(db.Integer, default=1)
+    proveedor = db.relationship('Proveedor', backref=db.backref('MateriaPrima', lazy=True))
+    tipo_materia = db.relationship('Tipo_Materia', backref=db.backref('MateriaPrima', lazy=True))
 
 
 class Receta(db.Model):
@@ -30,12 +45,12 @@ class RecetaDetalle(db.Model):
     __tablename__ = 'receta_detalle'
     id = db.Column(db.Integer, primary_key=True)
     receta_id = db.Column(db.Integer, db.ForeignKey('recetas.id'))
-    materia_prima_id = db.Column(db.Integer, db.ForeignKey('materias_primas.id'))
+    tipo_materia_id = db.Column(db.Integer, db.ForeignKey('tipo_materia.id'))
     cantidad_necesaria = db.Column(db.Float)
     unidad_medida = db.Column(db.String(10))
     merma_porcentaje = db.Column(db.Float)
     receta = db.relationship('Receta', backref=db.backref('detalles', lazy=True))
-    materia_prima = db.relationship('MateriaPrima', backref=db.backref('usos', lazy=True))
+    tipo_materia = db.relationship('Tipo_Materia', backref=db.backref('usos', lazy=True))
 
 class MermaMateriaPrima(db.Model):
     __tablename__ = 'mermaMateriaPrima'
@@ -119,7 +134,7 @@ class Proveedor(db.Model):
     telefono = db.Column(db.String(15))
     nombre_vendedor = db.Column(db.String(100))
     estatus = db.Column(db.Integer, default=1)
-
+    
 #-------VENTAS-------
 class Venta(db.Model):
     __tablename__ = 'venta'
