@@ -1,32 +1,57 @@
 {%extends 'layout.html' %}
 
 {%block content %}
-{% from "_macros.html" import render_field %}
+{% from "_macros.html" import render_field, render_errors %}
 
 <form name="formes" id="form" method="POST" novalidate action="/agregarCompra">
 
     <div class="row mb-3">
             {{ render_field(form.id, class="form-control", placeholder="id") }}
         <div class="form-group col-md-3">
-            {{ render_field(form.cantidad, class="form-control", placeholder="Nombre") }}
+            {{ render_field(form.nombre, class="form-control", id="nombre-materia", placeholder="Nombre Materia") }}
+        </div>
+         <div class="form-group col-md-3">
+            {{ render_field(form.nombre_proveedor, class="form-control", id="nombre-proveedor", placeholder="Nombre") }}
         </div>
         <div class="form-group col-md-3">
-            {{ render_field(form.precio_compra, class="form-control", placeholder="Precio de Compra") }}
+            {{ render_field(form.cantidad, class="form-control", placeholder="Cantidad") }}
         </div>
         <div class="form-group col-md-3">
             {{ render_field(form.tipo, class="form-control", placeholder="Unidad de medida") }}
         </div>
+
+    </div>
+    <div class="row text-center">
         <div class="form-group col-md-3">
+            {{ render_field(form.precio_compra, class="form-control", placeholder="Precio de Compra") }}
+        </div>
+         <div class="form-group col-md-1">
+            <label>
+                {{ form.fecha.label }}
+            </label>
+        </div>
+        <div class="form-group col-md-2">
+
             {{ render_field(form.fecha, class="form-control", type="date", placeholder="Fecha de compra") }}
         </div>
-    </div>
-    <div class="col-md-12 text-center">
-        <div class="form-group col-md-3">
-            {{ render_field(form.fecha_caducidad, class="form-control", type="date", placeholder="Fecha de compra") }}
+        <div class="form-group col-md-1">
+            <label>
+                {{ form.fecha_caducidad.label }}
+            </label>
+        </div>
+        <div class="form-group col-md-2">
+            {{ render_field(form.fecha_caducidad, class="form-control", type="date", placeholder="Fecha de Caducidad") }}
         </div>
         <div class="form-group col-md-3">
+            {{ render_field(form.lote, class="form-control", placeholder="Lote de materia") }}
+        </div>
+
+
+    </div>
+    <div class="row">
+         <div class="form-group col-md-3">
             <input type="hidden" id="proveedor_id" name="proveedor_id" value="{{ form.proveedor_id.data }}">
-            <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#materiaPrimaModal">
+            <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#proveedorModal">
                 Seleccionar proveedor
             </button>
             {{  render_errors(form.proveedor_id) }}
@@ -34,12 +59,13 @@
         <div class="form-group col-md-3">
             <input type="hidden" id="id_tipo_materia" name="id_tipo_materia" value="{{ form.id_tipo_materia.data }}">
             <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#materiaPrimaModal">
-                Seleccionar proveedor
+                Seleccionar Materia
             </button>
             {{  render_errors(form.id_tipo_materia) }}
         </div>
-
-        <button type="submit" class="btn btn-success mx-auto">Guardar</button>
+        <div class="form-group col-md-3">
+            <button type="submit" class="btn btn-success mx-auto">Guardar</button>
+        </div>
     </div>
     <div>
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
@@ -53,10 +79,12 @@
         <thead>
             <tr>
                 <th>Nombre</th>
+                <th>Proveedor</th>
                 <th>Precio</th>
                 <th>Fecha</th>
                 <th>Lote</th>
-                <th>Cantidad</th>
+                <th>Cantidad Compra</th>
+                <th>Cantidad Disponible</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -64,17 +92,20 @@
             {% for compra in compras %}
             <tr>
                 <td>{{ compra.tipo_materia.nombre }}</td>
+                <td>{{ compra.proveedor.nombre_vendedor }}</td>
                 <td>{{ compra.precio_compra }}</td>
                 <td>{{ compra.create_date }}</td>
                 <td>{{ compra['lote'] }}</td>
+                <td>{{ compra['cantidad_compra'] }}</td>
                 <td>{{ compra['cantidad_disponible'] }}</td>
+
                 <td>
-                   <form action="{{url_for('proveedores.seleccionar_proveedor')}}" method="post" class="d-inline">
-                       <input type="hidden" name="id" value="{{proveedor.id}}" />
+                   <form action="{{url_for('compras.seleccionar_compra')}}" method="post" class="d-inline">
+                       <input type="hidden" name="id" value="{{compra.id}}" />
                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                        <button type="submit" class="btn btn-warning">Editar</button>
                    </form>
-                   <button id="eliminarProveedor" data-id="{{proveedor.id}}" class="btn btn-danger" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
+                   <button id="eliminarCompra" data-id="{{compra.id}}" class="btn btn-danger" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
                 </td>
             </tr>
             {% endfor %}
@@ -110,7 +141,7 @@
                   <td>{{ proveedor.telefono }}</td>
                   <td>{{ proveedor.nombre_vendedor }}</td>
                   <td>
-                    <button type="button" class="btn btn-success select-proveedor" data-proveedor-id="{{ proveedor.id }}"
+                    <button type="button" class="btn btn-success select-proveedor" data-proveedor-id="{{ proveedor.id }}" data-nombre="{{ proveedor.nombre_vendedor }}"
                             data-bs-dismiss="modal">
                       Seleccionar
                     </button>
@@ -125,7 +156,7 @@
     </div>
 
     <div class="modal fade" id="materiaPrimaModal" tabindex="-1" aria-labelledby="materiaPrimaModalLabel" aria-hidden="true" role="dialog">
-  <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="materiaPrimaModalLabel">Seleccionar Materia Prima</h5>
@@ -150,11 +181,11 @@
               <td>{{ materia.cantidad_disponible }}</td>
               <td>{{ materia.tipo }}</td>
               <td>
-                <button type="button" class="btn btn-success select-materia" data-id="{{ materia.id }}"
+                <button type="button" class="btn btn-success select-materia" data-id="{{ materia.id }}" data-nombre="{{ materia.nombre }}"
                         data-bs-dismiss="modal">
                   Seleccionar
                 </button>
-              </td>
+                </td>
             </tr>
             {% endfor %}
           </tbody>
@@ -166,16 +197,16 @@
 
 
 
-<div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="materiaPrimaModalLabel" aria-hidden="true" role="dialog">
-  <div class="container mt-5">
-      <div class="row">
+    <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="materiaPrimaModalLabel" aria-hidden="true" role="dialog">
+        <div class="container mt-5">
+            <div class="row">
            <div class="col-md-6 offset-md-3">
              <div class="card">
                <div class="card-body">
-                 <h1 class="card-title text-center">Confirmar Borrado de Proveedor</h1>
-                 <p class="card-text text-center">Estás a punto de eliminar un proveedor</p>
+                 <h1 class="card-title text-center">Confirmar Borrado de Compra</h1>
+                 <p class="card-text text-center">Estás a punto de eliminar una Comprar</p>
                  <div class="text-center">
-                     <form action="{{ url_for('proveedores.eliminar_proveedor')}}" method="post" class="d-inline">
+                     <form action="{{ url_for('compras.eliminar_compra')}}" method="post" class="d-inline">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                         <input type="hidden" name="id" id="idEliminar">
                         <button type="submit" class="btn btn-danger">Eliminar</button>
@@ -223,15 +254,20 @@
 
     $('.select-proveedor').click(function() {
         var proveedorId = $(this).data('proveedor-id');
+        var nombre = $(this).data('nombre');
 
         $('#proveedor_id').val(proveedorId);
+        $('#nombre-proveedor').val(nombre);
+
         $('#proveedorModal').modal('hide')
       });
 
     $('.select-materia').click(function() {
         var materiaId = $(this).data('id');
+        var nombre = $(this).data('nombre');
 
         $('#id_tipo_materia').val(materiaId);
+        $('#nombre-materia').val(nombre);
         $('#materiaPrimaModal').modal('hide')
       });
 
@@ -243,7 +279,7 @@
 
 
     // Adjunta el evento al botón que abre el modal, no al botón de cierre del modal
-    $(document).on('click', '#eliminarProveedor', function() {
+    $(document).on('click', '#eliminarCompra', function() {
       var proveedorId = $(this).data('id');
       $('#idEliminar').val(proveedorId);
       $('#modalConfirmacion').modal('show');  // Muestra el modal

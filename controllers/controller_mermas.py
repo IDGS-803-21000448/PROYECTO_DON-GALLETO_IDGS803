@@ -15,7 +15,7 @@ def verificarCaducidades():
             dias_para_caducar = (materiaPrima.fecha_caducidad - fecha_actual).days # Cuanros días faltan para que la materia prima Caduque
 
             if dias_para_caducar <= 0: # Si Caduco Se Agrega la Alerta y se inserta en mermas
-                nombre = f"Tienes {materiaPrima.nombre} caducada"
+                nombre = f"Tienes {materiaPrima.tipo_materia.nombre} caducada"
                 descripcion = (f"Hay {materiaPrima.cantidad_disponible} de {materiaPrima.nombre} que esta "
                                f"caducada, y fue colocada como merma ")
 
@@ -31,7 +31,7 @@ def verificarCaducidades():
 
             elif dias_para_caducar <= 6: # Si Tiene 6 o menos dias a la fecha de caducidad manda la alerta
 
-                nombre = f"Tienes {materiaPrima.nombre} por caducar"
+                nombre = f"Tienes {materiaPrima.tipo_materia.nombre} por caducar"
                 descripcion = (f"Hay {materiaPrima.cantidad_disponible} de {materiaPrima.nombre} que esta a "
                                f"{dias_para_caducar} dias de caducar")
                 insertarAlertas(nombre, descripcion)

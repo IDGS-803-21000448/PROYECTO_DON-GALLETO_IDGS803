@@ -92,7 +92,7 @@
       {% for merma in mermas %}
       <tr>
         <td>{{ merma.id }}</td>
-        <td>{{ merma.materia_prima.nombre }}</td>
+        <td>{{ merma.materia_prima.tipo_materia.nombre }}</td>
         <td>{{ merma.tipo }}</td>
         <td>{{ merma.cantidad }}</td>
         <td>{{ merma.descripcion }}</td>
@@ -132,7 +132,7 @@
           <tbody>
             {% for materia in materiasPrimas %}
             <tr>
-              <td>{{ materia.nombre }}</td>
+              <td>{{ materia.tipo_materia.nombre }}</td>
               <td>{{ materia.tipo }}</td>
               <td>{{ materia.cantidad_disponible }}</td>
               <td>
