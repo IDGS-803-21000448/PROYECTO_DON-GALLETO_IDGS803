@@ -1,10 +1,11 @@
 from wtforms import Form
 from wtforms import *
 from wtforms import validators
+from wtforms.widgets import HiddenInput
 
 
 class UsersForm(Form):
-    id = IntegerField('')
+    id = IntegerField('id', widget=HiddenInput(), default=0)
     nombre=StringField('Nombre', [
         validators.DataRequired(message='El campo es requerido'),
         validators.length(min=4, max=15, message='Ingresa un nombre valido')
@@ -23,12 +24,12 @@ class UsersForm(Form):
         validators.length(min=4, max=15, message='Ingresa un usuario valido')
     ])
     contrasena = PasswordField('Contraseña', [
-        validators.DataRequired(message='El campo es requerido'),
-        validators.length(min=4, max=15, message='Ingresa una contraseña valida')
+        #validators.DataRequired(message='El campo es requerido'),
+        validators.length(max=15, message='Ingresa una contraseña valida')
     ])
     confirmar_contrasena = PasswordField('Confirmar contraseña', [
-        validators.DataRequired(message='El campo es requerido'),
-        validators.length(min=4, max=15, message='Ambas contraseñas deben de coincidir.')
+        #validators.DataRequired(message='El campo es requerido'),
+        validators.length(max=15, message='Ambas contraseñas deben de coincidir.')
     ])
     
 class UsersFormModificar(Form):
