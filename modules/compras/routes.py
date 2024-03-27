@@ -15,7 +15,7 @@ def modulo_compras():
     form_compras = formCompras.CompraForm()
     tipo_materias = models.Tipo_Materia.query.filter_by(estatus=1).all()
     proveedores =  models.Proveedor.query.filter_by(estatus=1).all()
-    listado_compras = models.MateriaPrima.query.filter_by(estatus=1).all()
+    listado_compras = listado_compras = models.MateriaPrima.query.filter(models.MateriaPrima.estatus != 0).all()
     return render_template("moduloCompras/moduloCompras.html", form=form_compras,
                            materias_primas=tipo_materias, proveedores = proveedores, compras = listado_compras)
 
@@ -24,7 +24,7 @@ def modulo_compras():
 def agregar_compra():
     form_compras = formCompras.CompraForm(request.form)
     proveedores = models.Proveedor.query.filter_by(estatus=1).all()
-    listado_compras = models.MateriaPrima.query.filter_by(estatus=1).all()
+    listado_compras = listado_compras = models.MateriaPrima.query.filter(models.MateriaPrima.estatus != 0).all()
     if form_compras.validate():
         if form_compras.id.data == 0:
             nueva_compra= models.MateriaPrima(
@@ -95,7 +95,7 @@ def seleccionar_compra():
     id = request.form['id']
     form_compras = formCompras.CompraForm()
     proveedores = models.Proveedor.query.filter_by(estatus=1).all()
-    listado_compras = models.MateriaPrima.query.filter_by(estatus=1).all()
+    listado_compras = listado_compras = models.MateriaPrima.query.filter(models.MateriaPrima.estatus != 0).all()
     if request.method == 'POST':
         compra = models.MateriaPrima.query.get_or_404(id)
         form_compras.id.data = compra.id
