@@ -3,6 +3,186 @@
 {%block content %}
 {% from "_macros.html" import render_field %}
 
+<form name="formes" id="form" method="POST" novalidate action="/agregarCompra">
 
+    <div class="row mb-3">
+            {{ render_field(form.id, class="form-control", placeholder="id") }}
+        <div class="form-group col-md-4">
+            {{ render_field(form.cantidad, class="form-control", placeholder="Nombre") }}
+        </div>
+        <div class="form-group col-md-4">
+            {{ render_field(form.precio_compra, class="form-control", placeholder="Precio de Compra") }}
+        </div>
+        <div class="form-group col-md-4">
+            {{ render_field(form.fecha, class="form-control", type="date", placeholder="Fecha de compra") }}
+        </div>
+    </div>
+    <div class="col-md-12 text-center">
+        <input type="hidden" id="proveedor_id" name="proveedor_id" value="{{ form.proveedor_id.data }}">
+        <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#materiaPrimaModal">
+            Seleccionar proveedor
+        </button>
+        {{  render_errors(form.proveedor_id) }}
+        <button type="submit" class="btn btn-success mx-auto">Guardar</button>
+    </div>
+    <div>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    </div>
+</form>
+
+<div class="row mb-3">
+    <h1 class="text-center">Listado de Proveedores</h1>
+    <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar...">
+    <table id="proveedorTable" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Dirección</th>
+                <th>Telefono</th>
+                <th>Nombre del Vendedor</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for proveedor in proveedores %}
+            <tr>
+                <td>{{ proveedor['nombre'] }}</td>
+                <td>{{ proveedor['direccion'] }}</td>
+                <td>{{ proveedor['telefono'] }}</td>
+                <td>{{ proveedor['nombre_vendedor'] }}</td>
+                <td>
+                   <form action="{{url_for('proveedores.seleccionar_proveedor')}}" method="post" class="d-inline">
+                       <input type="hidden" name="id" value="{{proveedor.id}}" />
+                       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                       <button type="submit" class="btn btn-warning">Editar</button>
+                   </form>
+                   <button id="eliminarProveedor" data-id="{{proveedor.id}}" class="btn btn-danger" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
+                </td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+</div>
+
+<div class="modal fade" id="materiaPrimaModal" tabindex="-1" aria-labelledby="materiaPrimaModalLabel" aria-hidden="true" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="materiaPrimaModalLabel">Seleccionar Proveedor</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Telefono</th>
+              <th>Nombre Vendedor</th>
+              <th>Seleccionar</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for proveedor in proveedores %}
+            <tr>
+              <td>{{ proveedor.nombre }}</td>
+              <td>{{ proveedor.telefono }}</td>
+              <td>{{ proveedor.nombre_vendedor }}</td>
+              <td>
+                <button type="button" class="btn btn-success select-proveedor" data-id="{{ proveedor.id }}"
+                        data-bs-dismiss="modal">
+                  Seleccionar
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="materiaPrimaModalLabel" aria-hidden="true" role="dialog">
+  <div class="container mt-5">
+      <div class="row">
+           <div class="col-md-6 offset-md-3">
+             <div class="card">
+               <div class="card-body">
+                 <h1 class="card-title text-center">Confirmar Borrado de Proveedor</h1>
+                 <p class="card-text text-center">Estás a punto de eliminar un proveedor</p>
+                 <div class="text-center">
+                     <form action="{{ url_for('proveedores.eliminar_proveedor')}}" method="post" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <input type="hidden" name="id" id="idEliminar">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                     </form>
+                     <button type="button" id="closeModalConfirmacion" class="closeModalConfirmacion btn btn-success">
+                        Cancelar
+                     </button>
+                 </div>
+               </div>
+             </div>
+           </div>
+      </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const searchInput = document.getElementById('searchInput');
+      const userTable = document.getElementById('proveedorTable');
+      const rows = userTable.getElementsByTagName('tr');
+  
+      searchInput.addEventListener('input', function() {
+        const searchText = this.value.toLowerCase();
+        for (let i = 1; i < rows.length; i++) {
+          const row = rows[i];
+          const cells = row.getElementsByTagName('td');
+          let found = false;
+          for (let j = 0; j < cells.length; j++) {
+            const cell = cells[j];
+            if (cell.textContent.toLowerCase().indexOf(searchText) > -1) {
+              found = true;
+              break;
+            }
+          }
+          if (found) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        }
+      });
+    });
+
+    $(document).ready(function() {
+      $('.select-proveedor').click(function() {
+        var proveedor_id = $(this).data('id');
+
+        $('#proveedor_id').val(proveedor_id);
+
+      });
+
+    // Adjunta el evento al botón que abre el modal, no al botón de cierre del modal
+    $(document).on('click', '#eliminarProveedor', function() {
+      var proveedorId = $(this).data('id');
+      $('#idEliminar').val(proveedorId);
+      $('#modalConfirmacion').modal('show');  // Muestra el modal
+    });
+    
+    // Adjunta el evento al botón de cierre del modal
+    $('#closeModalConfirmacion').click(function() {
+        $('#modalConfirmacion').modal('hide');  // Oculta el modal
+    });
+
+  
+  </script>
 
 {% endblock %}
