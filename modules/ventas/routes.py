@@ -29,7 +29,7 @@ def nueva_venta():
     return render_template("moduloVentas/moduloVenta.html", form=form_venta, ventas=ventas_array)
 
 def get_sabores():
-    sabores = [(receta.nombre, receta.nombre) for receta in Receta.query.filter_by(estatus=1).all()]
+    sabores = [((receta.nombre, receta.id), receta.nombre) for receta in Receta.query.filter_by(estatus=1).all()]
     return sabores
 
 @ventas.route("/realizarVenta", methods=["POST"])
@@ -52,6 +52,8 @@ def realizar_venta():
         )
         db.session.add(nueva_venta)
         db.session.commit()
+
+        print(f"DETALLE VENTA: {lista_ventas}")
 
         for venta_data in lista_ventas:
             # Obtener el ID de la venta insertada para usarlo en DetalleVenta

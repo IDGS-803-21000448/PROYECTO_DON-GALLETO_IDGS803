@@ -3,6 +3,16 @@
 {% block content %}
 {% from "_macros.html" import render_field %}
 
+{% with messages = get_flashed_messages()%}
+    {% if messages%}
+        {%for message in messages %}
+            <div class="alert alert-warning">
+                {{message}}
+            </div>
+        {%endfor%}
+    {% endif %}
+{% endwith %}
+
 <form action="/realizarVenta" method="POST" id="form_venta">
     <div class="row">
         <div class="col-md-6">
@@ -10,7 +20,8 @@
         </div>
 
         <div class="col-md-6 my-3 d-flex justify-content-end">
-            <button type="button" id="btnInteraccion" class="btn btn-primary" onclick="window.location.href='/moduloVenta'"><i class="fas fa-arrow-left"></i> Regresar
+            <button type="button" id="btnInteraccion" class="btn btn-primary"
+                onclick="window.location.href='/moduloVenta'"><i class="fas fa-arrow-left"></i> Regresar
             </button>
         </div>
     </div>
@@ -45,7 +56,8 @@
             </div>
             <div class="row justify-content-center">
                 <div class="col-md-6 text-center">
-                    <button type="button" class="btn btn-primary" id="agregar_producto" name="agregar_producto">Agregar Producto</button>
+                    <button type="button" class="btn btn-primary" id="agregar_producto" name="agregar_producto">Agregar
+                        Producto</button>
                 </div>
             </div>
         </div>
@@ -59,19 +71,23 @@
             <table class="table" id="tabla_productos">
                 <thead>
                     <tr>
-                        <th>Tipo de venta</th>
                         <th>Cantidad</th>
                         <th>Sabor</th>
+                        <th>Tipo de venta</th>
+                        <th>Precio Unitario</th>
+                        <th>Subtotal</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for venta in ventas %}
                     <tr>
-                        <td>{{ venta.tipo_venta }}</td>
                         <td>{{ venta.cantidad }}</td>
                         <td>{{ venta.sabor }}</td>
-                        <td><button type="submit" class="btn btn-danger">Eliminar</button></td>
+                        <td>{{ venta.tipo_venta }}</td>
+                        <td>{{ venta.precio_unitario }}</td>
+                        <td>{{ venta.subtotal }}</td>
+                        <td><button type="button" class="btn btn-danger">Eliminar</button></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -79,33 +95,38 @@
             <div class="row justify-content-center">
                 <div class="col-md-6 text-center">
                     <h3><b>TOTAL: $ 500</b></h3>
-                    <button id="confirmarVenta" class="btn btn-success" data-toggle="modal" data-target="#modalConfirmacion">Realizar Venta</button>
+                    <button id="confirmarVenta" class="btn btn-success" data-toggle="modal"
+                        data-target="#modalConfirmacion">Realizar Venta</button>
                 </div>
             </div>
         </div>
     </div>
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-    <div class="modal fade"  id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacion" aria-hidden="true" role="dialog">
+    <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacion" aria-hidden="true"
+        role="dialog">
         <div class="container mt-5 modal-dialog" role="document">
             <div class="row modal-content" style="display: contents;">
-                 <div class="col-md-12 offset-md-3 mx-0">
-                   <div class="card">
-                     <div class="card-body">
-                       <h1 class="card-title text-center">Confirmar Venta</h1>
-                       <p class="card-text text-center">¿Estás seguro de realizar esta venta?</p>
-                       <div class="text-center">
-                           <button id="realizar_venta" type="submit" class="btn btn-success">Realizar Venta</button>
-                           <button type="button" id="closeModalConfirmacion" class="closeModalConfirmacion btn btn-danger" onclick="$('#modalConfirmacion').modal('hide');">
-                              Cancelar
-                           </button>
-                       </div>
-                     </div>
-                   </div>
-                 </div>
+                <div class="col-md-12 offset-md-3 mx-0">
+                    <div class="card">
+                        <div class="card-body">
+                            <h1 class="card-title text-center">Confirmar Venta</h1>
+                            <p class="card-text text-center">¿Estás seguro de realizar esta venta?</p>
+                            <div class="text-center">
+                                <button id="realizar_venta" type="submit" class="btn btn-success">Realizar
+                                    Venta</button>
+                                <button type="button" id="closeModalConfirmacion"
+                                    class="closeModalConfirmacion btn btn-danger"
+                                    onclick="$('#modalConfirmacion').modal('hide');">
+                                    Cancelar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-      </div>
+    </div>
 </form>
 
 <script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
@@ -115,7 +136,7 @@
         /// --------Capturar evento clic en botón Realizar Venta-------------
         document.getElementById('realizar_venta').addEventListener('click', function (e) {
             e.preventDefault();
-        
+
             var tabla = document.getElementById('tabla_productos');
             var filas = tabla.getElementsByTagName('tr');
             var datosVenta = [];
@@ -131,13 +152,13 @@
                 return;
             }
 
-            for (var i = 1; i < filas.length; i++) { 
+            for (var i = 1; i < filas.length; i++) {
                 var celdas = filas[i].getElementsByTagName('td');
                 var tipoVenta = celdas[0].textContent.trim();
                 var cantidad = celdas[1].innerText;
                 var sabor = celdas[2].innerText;
 
-                if (nombre === ''|| fechaInput === '') {
+                if (nombre === '' || fechaInput === '') {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
@@ -148,10 +169,10 @@
 
                 datosVenta.push({ nombre: nombre, tipoVenta: tipoVenta, cantidad: cantidad, sabor: sabor, fecha: fechaInput });
             }
-        
+
             // Obtener el token CSRF del formulario
             var csrfToken = document.querySelector('input[name="csrf_token"]').value;
-        
+
             fetch('/realizarVenta', {
                 method: 'POST',
                 headers: {
@@ -160,36 +181,36 @@
                 },
                 body: JSON.stringify({ ventas: datosVenta })
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.mensaje === 'Correcto') {
-                    //Limpiar los campos
-                    document.getElementById('nombre').value = '';
-                    document.getElementById('tipo_venta').value = '';
-                    document.getElementById('cantidad').value = '';
-                    document.getElementById('sabor').value = '';
-                    document.getElementById('fecha').value = '';
+                .then(response => response.json())
+                .then(data => {
+                    if (data.mensaje === 'Correcto') {
+                        //Limpiar los campos
+                        document.getElementById('nombre').value = '';
+                        document.getElementById('tipo_venta').value = '';
+                        document.getElementById('cantidad').value = '';
+                        document.getElementById('sabor').value = '';
+                        document.getElementById('fecha').value = '';
 
-                    // Limpiar la tabla
-                    var tabla = document.getElementById('tabla_productos');
-                    tabla.innerHTML = '<tr><th>Tipo de Venta</th><th>Cantidad</th><th>Sabor</th></tr>';
+                        // Limpiar la tabla
+                        var tabla = document.getElementById('tabla_productos');
+                        tabla.innerHTML = '<tr><th>Tipo de Venta</th><th>Cantidad</th><th>Sabor</th></tr>';
 
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Éxito!',
-                        text: 'La venta fue realizada correctamente.'
-                    });
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: 'La venta fue realizada correctamente.'
+                        });
 
-                    window.location.href='/moduloVenta';
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Ocurrió un error al insertar los datos de venta.'
-                    });
-                }
-            })
-            .catch(error => console.error('Error:', error));
+                        window.location.href = '/moduloVenta';
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Ocurrió un error al insertar los datos de venta.'
+                        });
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         });
 
         //-------------- Capturar evento clic en botón Agregar Producto------------
@@ -243,7 +264,7 @@
         });
     });
 
-    $(document).on('click', '#closeModalConfirmacion', function() {
+    $(document).on('click', '#closeModalConfirmacion', function () {
         $('#modalConfirmacion').modal('hide');
     });
 
