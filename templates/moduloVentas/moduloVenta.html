@@ -8,6 +8,11 @@
         <div class="col-md-6">
             <h1 class="h3 mb-2 text-gray"><i class="fas fa-solid fa-cart-plus"></i> Ventas</h1>
         </div>
+
+        <div class="col-md-6 my-3 d-flex justify-content-end">
+            <button type="button" id="btnInteraccion" class="btn btn-primary" onclick="window.location.href='/moduloVenta'"><i class="fas fa-arrow-left"></i> Regresar
+            </button>
+        </div>
     </div>
 
     <div class="card shadow mb-4">
@@ -74,7 +79,7 @@
             <div class="row justify-content-center">
                 <div class="col-md-6 text-center">
                     <h3><b>TOTAL: $ 500</b></h3>
-                    <button id="eliminarUsuario" class="btn btn-success" data-toggle="modal" data-target="#modalConfirmacion">Realizar Venta</button>
+                    <button id="confirmarVenta" class="btn btn-success" data-toggle="modal" data-target="#modalConfirmacion">Realizar Venta</button>
                 </div>
             </div>
         </div>
@@ -90,7 +95,7 @@
                        <h1 class="card-title text-center">Confirmar Venta</h1>
                        <p class="card-text text-center">¿Estás seguro de realizar esta venta?</p>
                        <div class="text-center">
-                           <button type="submit" class="btn btn-success">Realizar Venta</button>
+                           <button id="realizar_venta" type="submit" class="btn btn-success">Realizar Venta</button>
                            <button type="button" id="closeModalConfirmacion" class="closeModalConfirmacion btn btn-danger" onclick="$('#modalConfirmacion').modal('hide');">
                               Cancelar
                            </button>
@@ -103,9 +108,7 @@
       </div>
 </form>
 
-
-
-
+<script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -176,6 +179,8 @@
                         title: '¡Éxito!',
                         text: 'La venta fue realizada correctamente.'
                     });
+
+                    window.location.href='/moduloVenta';
                 } else {
                     Swal.fire({
                         icon: 'error',

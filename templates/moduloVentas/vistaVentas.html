@@ -1,0 +1,86 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+{% from "_macros.html" import render_field %}
+
+    <!-- Page Heading -->
+    <div class="row">
+        <div class="col-md-6">
+            <h1 class="h3 mb-2 text-gray"><i class="fas fa-solid fa-cart-plus"></i> Ventas</h1>
+        </div>
+
+        <div class="col-md-6 my-3 d-flex justify-content-end">
+            <button type="button" id="btnInteraccion" class="btn btn-primary" onclick="window.location.href='/nuevaVenta'"><i class="fas fa-plus"></i> Nueva Venta
+            </button>
+        </div>
+    </div>
+    <!-- Table Usuarios -->
+    <div class="card shadow mb-4" id="spacesTable">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold">Ventas</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Folio</th>
+                            <th>Cliente</th>
+                            <th>Fecha</th>
+                            <th>Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for venta in ventas %}
+                            <tr>
+                                <td>{{venta.folio}}</td>
+                                <td>{{venta.nombre_cliente}}</td>
+                                <td>{{venta.fecha.strftime('%Y-%m-%d %H:%M:%S')}}</td>
+                                <td>{{venta.total}}</td>
+                                <td><button id="generarTicket" data-id="{{venta.folio}}" class="btn btn-warning" data-toggle="modal" data-target="#modalConfirmacion">Generar Ticket</button></td>
+                            </tr>
+                        {%endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade"  id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacion" aria-hidden="true" role="dialog">
+        <div class="container mt-5 modal-dialog" role="document">
+            <div class="row modal-content" style="display: contents;">
+                 <div class="col-md-12 offset-md-3 mx-0">
+                   <div class="card">
+                     <div class="card-body">
+                       <h1 class="card-title text-center">Generar Ticket de Compra</h1>
+                       <p class="card-text text-center">¿Estás seguro de realizar generar el ticket de esta venta?</p>
+                       <div class="text-center">
+                           <button type="button" id="closeModalConfirmacion" class="closeModalConfirmacion btn btn-danger">Cancelar</button>
+                           <a type="button" id="closeModalConfirmacion" class="closeModalConfirmacion btn btn-success">
+                              Generar
+                           </a>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+            </div>
+        </div>
+      </div>
+      <script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
+      <script>
+        $(document).ready(function() {
+            // Escucha el evento click en los botones que tienen el id 'generarTicket'
+            $(document).on('click', '[id^="generarTicket"]', function() {
+                var folio = $(this).attr('data-id'); // Obtiene el folio del botón clickeado
+                var href = "generarTicket?folio=" + folio; // Crea el enlace
+                $('#modalConfirmacion').find('a.btn-success').attr('href', href); // Actualiza el enlace en el botón del modal
+            });
+        });
+
+        $(document).on('click', '#closeModalConfirmacion', function() {
+            $('#modalConfirmacion').modal('hide');
+        });
+    </script>
+
+{% endblock %}
