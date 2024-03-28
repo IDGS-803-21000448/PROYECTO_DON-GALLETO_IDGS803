@@ -1,0 +1,41 @@
+from . import solicitud_produccion
+from flask import render_template, request, jsonify, url_for, redirect, flash
+#from formularios import formSolicitudProduccion
+from controllers.controller_login import requiere_rol
+from flask_login import login_required
+from models import db, Receta, Produccion
+import json
+from datetime import datetime
+
+
+@solicitud_produccion.route("/solicitudProduccion", methods=["GET"])
+@login_required
+@requiere_rol("admin")
+def vista_recetas():
+    recetas = Receta.query.filter_by(estatus=1).all()
+    solcitudes = Produccion.query.filter_by(estatus='solicitud').all()
+    
+    return render_template("moduloProduccion/solicitudProduccion.html", recetas=recetas, solicitudes=solcitudes)
+
+@solicitud_produccion.route("/agregarSolicitud", methods=["POST"])
+@login_required
+@requiere_rol("admin")
+def agregar_solicitud():
+    # id_receta = request.form.get("receta_id")
+    id_receta = request.form['receta_id']
+    
+    nueva_solicitud = Produccion(
+        receta_id=id_receta,
+        estatus='solicitud',
+        cantidad=1, # Este dato falta por confirmar qué es
+        fecha_solicitud=datetime.now(),
+        fecha_producido=None,
+        fecha_postergado=None
+    )
+    
+    db.session.add(nueva_solicitud)
+    db.session.commit()
+    flash("Solicitud de producción agregada", "info")
+    
+    
+    return redirect(url_for("solicitudProduccion.vista_recetas"))

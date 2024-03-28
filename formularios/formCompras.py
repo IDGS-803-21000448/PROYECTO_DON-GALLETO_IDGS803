@@ -14,7 +14,7 @@ class CompraForm(Form):
     cantidad = FloatField('Cantidad')
     tipo = SelectField('Unidad de Medida', [
                         validators.DataRequired(message='El campo es requerido')
-                            ],choices=[('g', 'g'),('kg', 'kg'), ('ml', 'ml'), ('l', 'l')])
+                            ],choices=[('g', 'g'),('kg', 'kg'), ('ml', 'ml'), ('l', 'l'), ('pz', 'pz')])
     precio_compra = FloatField('Precio_Compra')
     fecha = StringField('Fecha Compra', [
         DataRequired(message='El campo es requerido')

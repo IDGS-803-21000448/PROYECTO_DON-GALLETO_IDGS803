@@ -73,6 +73,14 @@ class Produccion(db.Model):
     fecha_solicitud = db.Column(db.DateTime, default=datetime.datetime.now)
     fecha_producido = db.Column(db.DateTime, nullable=True)
     fecha_postergado = db.Column(db.DateTime, nullable=True)
+    receta = db.relationship('Receta', backref=db.backref('produccion', lazy=True))
+    
+# class solicitudProduccion(db.Model):
+#     __tablename__ = 'solicitudProduccion'
+#     id = db.Column(db.Integer, primary_key=True)
+#     fecha_solicitud = db.Column(db.DateTime, default=datetime.datetime.now, nullable=False)
+#     receta_id = db.Column(db.Integer, db.ForeignKey('recetas.id'))
+#     estatus = db.Column(db.String(50))
 
 
 class User(db.Model, UserMixin):
