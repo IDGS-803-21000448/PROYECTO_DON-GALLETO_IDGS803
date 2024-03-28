@@ -3,6 +3,62 @@
 {% block content %}
 {% from "_macros.html" import render_field %}
 
+<style>
+    .modal {
+      display: none; 
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+  
+    .modal-content {
+      background-color: #fefefe;
+      margin: 10% auto;
+      margin: 10% auto; 
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%; 
+      max-width: 500px;
+    }
+  
+    .close {
+      color: #aaaaaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+  
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  
+    .button-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3 class="text-center">¿Estás seguro de que deseas actualizar?</h3>
+    <p class="text-center">Se actualizará el valor de la galleta.</p>
+    <div class="button-container">
+      <button id="confirmarBtn" class="btn btn-success">Confirmar</button>
+      <button id="cancelarBtn" class="btn btn-danger">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Contenido de la tabla -->
 <div class="row">
     <div class="col-md-6">
         <h1 class="h3 mb-2 text-gray"><i class="fas fa-fw fa-coins"></i> Costo Galletas</h1>
@@ -40,23 +96,68 @@
                 </div>
                 <div class="row justify-content-center mt-4">
                     <div class="col-lg-6 text-center">
-                        <form action="{{ url_for('galletas.detalles_costo') }}" method="POST">
+                        <form id="formActualizar" action="{{ url_for('galletas.detalles_costo') }}" method="POST">
                             <div class="form-group text-center mb-3">
                                 {{ render_field(form.precio_mano_obra, class="form-control", placeholder="Mano de obra") }}
                             </div>
                             <input type="hidden" name="id" value="{{ id }}">
+                            <h4>El costo actual de mano de obra es: ${{ mano_obra}}</h4>
                             {% for galleta in galletas %}
                                 <input type="hidden" name="id_materia[]" value="{{ galleta.id_materia }}">
                             {% endfor %}
                             <div class="form-group text-center">
-                                <button type="submit" class="btn btn-warning">Actualizar</button>
+                                <button type="button" id="btnActualizar" class="btn btn-warning">Actualizar</button>
                             </div>
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                         </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    var modal = document.getElementById("myModal");
+
+    var btn = document.getElementById("btnActualizar");
+
+    var confirmarBtn = document.getElementById("confirmarBtn");
+
+    // Obtener el botón para cancelar
+    var cancelarBtn = document.getElementById("cancelarBtn");
+
+    var span = document.getElementsByClassName("close")[0];
+
+    function mostrarModal() {
+        modal.style.display = "block";
+    }
+
+    function cerrarModal() {
+        modal.style.display = "none";
+    }
+
+    btn.onclick = function() {
+        mostrarModal();
+    }
+
+    span.onclick = function() {
+        cerrarModal();
+    }
+
+    cancelarBtn.onclick = function() {
+        cerrarModal();
+    }
+
+    function confirmarActualizacion() {
+        var form = document.getElementById("formActualizar");
+        form.submit(); 
+        cerrarModal(); 
+    }
+
+    confirmarBtn.onclick = function() {
+        confirmarActualizacion();
+    }
+</script>
 
 {% endblock %}
