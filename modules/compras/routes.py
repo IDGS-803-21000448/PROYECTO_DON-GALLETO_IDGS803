@@ -1,5 +1,6 @@
 from flask import render_template
 
+from controllers.controller_materia_prima import actualizar_cantidades_tipo
 from formularios import formCompras
 from . import compras
 from flask import render_template, request, flash, redirect, url_for
@@ -15,7 +16,7 @@ def modulo_compras():
     form_compras = formCompras.CompraForm()
     tipo_materias = models.Tipo_Materia.query.filter_by(estatus=1).all()
     proveedores =  models.Proveedor.query.filter_by(estatus=1).all()
-    listado_compras = listado_compras = models.MateriaPrima.query.filter(models.MateriaPrima.estatus != 0).all()
+    listado_compras = models.MateriaPrima.query.filter(models.MateriaPrima.estatus != 0).all()
     return render_template("moduloCompras/moduloCompras.html", form=form_compras,
                            materias_primas=tipo_materias, proveedores = proveedores, compras = listado_compras)
 
@@ -24,8 +25,20 @@ def modulo_compras():
 def agregar_compra():
     form_compras = formCompras.CompraForm(request.form)
     proveedores = models.Proveedor.query.filter_by(estatus=1).all()
-    listado_compras = listado_compras = models.MateriaPrima.query.filter(models.MateriaPrima.estatus != 0).all()
+    listado_compras = models.MateriaPrima.query.filter(models.MateriaPrima.estatus != 0).all()
+    tipo_materias = models.Tipo_Materia.query.filter_by(estatus=1).all()
+
     if form_compras.validate():
+        materia = models.Tipo_Materia.query.get_or_404(form_compras.id_tipo_materia.data)
+        if materia.tipo == "pz" and form_compras.tipo.data != "pz":
+            flash('La materia Prima Esta en piezas no puedes colocar otra unidad', 'success')
+            return render_template("moduloCompras/moduloCompras.html", form=form_compras,
+                                   materias_primas=tipo_materias, proveedores=proveedores, compras=listado_compras)
+        if form_compras.tipo.data == "pz" and materia.tipo != "pz":
+            flash('La materia Prima no debe de estar en piezas', 'success')
+            return render_template("moduloCompras/moduloCompras.html", form=form_compras,
+                                   materias_primas=tipo_materias, proveedores=proveedores, compras=listado_compras)
+
         if form_compras.id.data == 0:
             nueva_compra= models.MateriaPrima(
                 id_proveedor = form_compras.proveedor_id.data,
@@ -39,10 +52,6 @@ def agregar_compra():
                 lote = form_compras.lote.data,
             )
 
-            materia = models.Tipo_Materia.query.get_or_404(form_compras.id_tipo_materia.data)
-            materia.cantidad_disponible = materia.cantidad_disponible + form_compras.cantidad.data if materia.tipo == form_compras.tipo.data \
-                                            else materia.cantidad_disponible + convertirCantidades(materia.tipo, form_compras.tipo.data, form_compras.cantidad.data)
-
             db.session.add(nueva_compra)
         else:
 
@@ -51,28 +60,8 @@ def agregar_compra():
                 if compra.cantidad_disponible != form_compras.cantidad.data:
                     flash('No puedes Modificar cantidades de un lote ya utilizado en producción', 'error')
                     return render_template("moduloCompras/moduloCompras.html", form=form_compras,
-                                           materias_primas=listado_compras, proveedores=proveedores)
-
-            if compra.id_tipo_materia == form_compras.id_tipo_materia.data:
-                materia = models.Tipo_Materia.query.get_or_404(form_compras.id_tipo_materia.data)
-                materia.cantidad_disponible -= convertirCantidades(materia.tipo, compra.tipo,
-                                                                           compra.cantidad_disponible)
-
-                materia.cantidad_disponible = materia.cantidad_disponible + form_compras.cantidad.data if materia.tipo == form_compras.tipo.data \
-                    else materia.cantidad_disponible + convertirCantidades(materia.tipo, form_compras.tipo.data,
-                                                                           form_compras.cantidad.data)
-                db.session.commit()
-            else:
-
-                materia = models.Tipo_Materia.query.get_or_404(compra.id_tipo_materia)
-                materia.cantidad_disponible -= convertirCantidades(materia.tipo, compra.tipo,
-                                                                           compra.cantidad_disponible)
-                db.session.commit()
-                nuevaMateria = models.Tipo_Materia.query.get_or_404(form_compras.id_tipo_materia.data)
-                nuevaMateria.cantidad_disponible = nuevaMateria.cantidad_disponible + form_compras.cantidad.data if nuevaMateria.tipo == form_compras.tipo.data \
-                    else nuevaMateria.cantidad_disponible + convertirCantidades(nuevaMateria.tipo, form_compras.tipo.data,
-                                                                           form_compras.cantidad.data)
-                db.session.commit()
+                                           materias_primas=tipo_materias, proveedores=proveedores,
+                                           compras=listado_compras)
 
             compra.id_proveedor = form_compras.proveedor_id.data
             compra.id_tipo_materia = form_compras.id_tipo_materia.data
@@ -84,10 +73,11 @@ def agregar_compra():
             compra.fecha_caducidad = form_compras.fecha_caducidad.data
             compra.lote = form_compras.lote.data
         db.session.commit()
+        actualizar_cantidades_tipo()
         return redirect(url_for('compras.modulo_compras'))
 
     return render_template("moduloCompras/moduloCompras.html", form=form_compras,
-                           materias_primas=listado_compras, proveedores = proveedores)
+                           materias_primas=tipo_materias, proveedores=proveedores, compras=listado_compras)
 
 
 @compras.route('/seleccionarCompra', methods=['GET', 'POST'])
@@ -95,12 +85,13 @@ def seleccionar_compra():
     id = request.form['id']
     form_compras = formCompras.CompraForm()
     proveedores = models.Proveedor.query.filter_by(estatus=1).all()
-    listado_compras = listado_compras = models.MateriaPrima.query.filter(models.MateriaPrima.estatus != 0).all()
+    listado_compras = models.MateriaPrima.query.filter(models.MateriaPrima.estatus != 0).all()
+    tipo_materias = models.Tipo_Materia.query.filter_by(estatus=1).all()
     if request.method == 'POST':
         compra = models.MateriaPrima.query.get_or_404(id)
         form_compras.id.data = compra.id
         form_compras.nombre.data = compra.tipo_materia.nombre
-        form_compras.nombre_proveedor.data = compra.proveedor.nombre
+        form_compras.nombre_proveedor.data = compra.proveedor.nombre_vendedor
         form_compras.proveedor_id.data = compra.id_proveedor
         form_compras.id_tipo_materia.data = compra.id_tipo_materia
         form_compras.cantidad.data = compra.cantidad_disponible
@@ -112,7 +103,7 @@ def seleccionar_compra():
         flash('Compra seleccionada correctamente', 'success')
 
     return render_template("moduloCompras/moduloCompras.html", form=form_compras,
-                           materias_primas=listado_compras, proveedores=proveedores)
+                           materias_primas=tipo_materias, proveedores=proveedores, compras=listado_compras)
 
 @compras.route('/eliminarCompra', methods=['POST'])
 def eliminar_compra():
@@ -124,6 +115,7 @@ def eliminar_compra():
                                                        compra.cantidad_disponible)
     compra.estatus = 0
     db.session.commit()
+    actualizar_cantidades_tipo()
     flash('Materia Prima eliminada correctamente', 'success')
     return redirect(url_for('compras.modulo_compras'))
 
