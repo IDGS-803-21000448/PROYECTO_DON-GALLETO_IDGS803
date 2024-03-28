@@ -6,6 +6,7 @@ from models import Receta, RecetaDetalle, MateriaPrima, Tipo_Materia, CostoGalle
 from formularios import formCosto
 import math
 from datetime import datetime
+from sqlalchemy import desc
 
 cantidades = []
 
@@ -57,6 +58,9 @@ def actualizar_precio():
     galleta_id = request.form.get('id')
     form = formCosto.CalculoCompraForm()
     galleta = Receta.query.filter_by(id=galleta_id).first()
+    costos = CostoGalleta.query.filter_by(id=galleta_id).first()
+    mano_obra = costos.mano_obra if costos and costos.mano_obra else 0
+
 
     if not galleta:
         return "Galleta no encontrada", 404
@@ -82,7 +86,7 @@ def actualizar_precio():
             galletas_det.append(detalle_con_nombre)
             print(f"ID Receta: {detalle_con_nombre['id_receta']}, ID Materia: {detalle_con_nombre['id_materia']}, Ingrediente: {detalle_con_nombre['ingrediente']}, Cantidad: {detalle_con_nombre['cantidad']}, Medida: {detalle_con_nombre['medida']}")
 
-    return render_template("moduloGalletas/modificarPrecio.html", galletas=galletas_det, nombre_galleta=nombre_galleta, id=galleta_id, form=form)
+    return render_template("moduloGalletas/modificarPrecio.html", galletas=galletas_det, nombre_galleta=nombre_galleta, id=galleta_id, form=form, mano_obra=mano_obra)
 
 @galletas.route("/detalleCosto", methods=["POST"])
 @login_required
@@ -92,13 +96,17 @@ def detalles_costo():
     id_galleta = request.form.get('id')
     form = formCosto.CalculoCompraForm(request.form)
     mano_obra = form.precio_mano_obra.data
+    fecha_actual = datetime.now()
 
     materias_primas = []
-    suma_costos = 0  # Inicializar la suma de costos
+    suma_costos = 0
     unidades_recetas_procesadas = set()  # Conjunto para rastrear las unidades de recetas procesadas
 
     for id_materia in id_materia_lista:
-        materia_prima = MateriaPrima.query.filter_by(id_tipo_materia=id_materia).first()
+        materia_prima = MateriaPrima.query.filter_by(id_tipo_materia=id_materia)\
+        .order_by(desc(MateriaPrima.create_date))\
+        .filter(MateriaPrima.create_date <= fecha_actual)\
+        .first()
 
         if materia_prima:
             cantidad_galleta = cantidades[id_materia_lista.index(id_materia)]
@@ -163,7 +171,7 @@ def detalles_costo():
 
     db.session.commit()
 
-    return render_template("moduloGalletas/detalleCosto.html", materias_primas=materias_primas, suma_costos=suma_costos, promedio_costos=promedio_costos)
+    return redirect(url_for('galletas.costo_galleta'))
 
 def convertirCantidades(tipo1, tipo2, cantidad):
     if (tipo1 == "g" or tipo1 == "ml") and (tipo2 == "kg" or tipo2 == "l"):
