@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, flash, jsonify, m
 from . import ventas
 from formularios import formVenta
 from flask import session
-from models import Receta, Venta, DetalleVenta, db
+from models import Receta, Venta, DetalleVenta, db, CostoGalleta
 import random
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
@@ -29,7 +29,13 @@ def nueva_venta():
     return render_template("moduloVentas/moduloVenta.html", form=form_venta, ventas=ventas_array)
 
 def get_sabores():
-    sabores = [((receta.nombre, receta.id), receta.nombre) for receta in Receta.query.filter_by(estatus=1).all()]
+    galletas = Receta.query.filter_by(estatus=1).all()
+    sabores = []
+    for receta in galletas:
+        precio = CostoGalleta.query.filter_by(id=receta.id_precio).first()
+        sabores.append(((receta.nombre, precio.id, precio.precio, precio.galletas_disponibles), receta.nombre))
+
+    print(sabores)
     return sabores
 
 @ventas.route("/realizarVenta", methods=["POST"])

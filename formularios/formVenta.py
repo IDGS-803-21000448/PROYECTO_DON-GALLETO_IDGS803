@@ -14,6 +14,11 @@ class VentaForm(Form):
         validators.DataRequired(message='El campo es requerido'),
         validators.Length(min=4, max=50, message='Ingresa un tipo de venta válido')
     ])
+    paquete = SelectField('Paquete', choices=[
+        ('0', 'Seleccione un paquete'),
+        ('1', '700g'),
+        ('2', '1Kg')
+    ])
     sabor = SelectField('Sabor de galleta', validators=[
         validators.DataRequired(message='El campo es requerido'),
         validators.Length(min=4, max=50, message='Ingresa un sabor válido')

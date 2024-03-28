@@ -45,6 +45,13 @@
                     {{ render_field(form.cantidad, class="form-control", placeholder="Cantidad") }}
                 </div>
                 <div class="form-group col-md-2"></div>
+                
+            </div>
+            <div class="row mb-3">
+                <div class="form-group col-md-4">
+                    {{ form.paquete.label(class="form-label", id="paquete_label") }}
+                    {{ render_field(form.paquete, class="form-control", placeholder="Paquete") }}
+                </div>
                 <div class="form-group col-md-4">
                     {{ form.sabor.label(class="form-label", id="sabor_label") }}
                     {{ render_field(form.sabor, class="form-control", placeholder="Sabor") }}
@@ -94,7 +101,7 @@
             </table>
             <div class="row justify-content-center">
                 <div class="col-md-6 text-center">
-                    <h3><b>TOTAL: $ 500</b></h3>
+                    <h3><b>TOTAL: $ <a id="totalVenta"></a></b></h3>
                     <button id="confirmarVenta" class="btn btn-success" data-toggle="modal"
                         data-target="#modalConfirmacion">Realizar Venta</button>
                 </div>
@@ -220,7 +227,16 @@
             // Obtener valores de los campos
             var tipoVenta = document.getElementById('tipo_venta').value.trim();
             var cantidad = document.getElementById('cantidad').value.trim();
-            var sabor = document.getElementById('sabor').value.trim();
+            var saborRaw = document.getElementById('sabor').value.trim();
+
+            dataSabor = saborRaw.replace(/[()\s]/g, '');
+            dataDepurada = dataSabor.split(',');
+
+            var sabor = dataDepurada[0].replace(/'/g, '');
+            var costoId = parseInt(dataDepurada[1]);
+            var precioUnitario = parseFloat(dataDepurada[2]);
+            var stock = parseInt(dataDepurada[3]);
+            let subtotal = 0;
 
             // Verificar que todos los campos estén completos
             if (tipoVenta === '' || cantidad === '' || sabor === '') {
@@ -232,26 +248,97 @@
                 return; // Detener la ejecución si falta algún campo
             }
 
+            if (tipoVenta === 'paquete') {
+                if (document.getElementById('paquete').value === '0'){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Por favor selecciona una presentación de paquete.'
+                    });
+                    return;
+                }
+            }
+
+            if (tipoVenta === 'pieza') {
+                subtotal = '$' + (Math.ceil(parseFloat(cantidad)) * parseFloat(precioUnitario));
+            }
+
+            if (tipoVenta === 'gramos') {
+                unidades = (parseFloat(cantidad) / 30)
+                //redondear la cantidad de unidades en un valor entero por ejemplo: 1.5 = 2, 1.1 = 2
+                subtotal = '$' + (Math.ceil(parseFloat(unidades)) * parseFloat(precioUnitario));
+            }
+
+            if (tipoVenta === 'paquete') {
+                paquete = document.getElementById('paquete').value;
+                console.log(paquete);
+
+                if (paquete == '1'){
+                    cantidadTotal = parseFloat(cantidad) * 700;
+                }
+
+                if (paquete == '2'){
+                    cantidadTotal = parseFloat(cantidad) * 1000;
+                }
+
+                unidades =  parseFloat(cantidadTotal) / 30
+                subtotal = '$' + (parseFloat(Math.ceil(parseFloat(unidades)) * parseFloat(precioUnitario)));
+            }
+
+            
+
             // Crear nueva fila en la tabla
             var tabla = document.getElementById('tabla_productos').getElementsByTagName('tbody')[0];
             var nuevaFila = tabla.insertRow();
 
             // Insertar celdas en la nueva fila
-            var celdaTipoVenta = nuevaFila.insertCell(0);
-            var celdaCantidad = nuevaFila.insertCell(1);
-            var celdaSabor = nuevaFila.insertCell(2);
-            var celdaAcciones = nuevaFila.insertCell(3);
+            var celdaCantidad = nuevaFila.insertCell(0);
+            var celdaSabor = nuevaFila.insertCell(1);
+            var celdaTipoVenta = nuevaFila.insertCell(2);
+            var celdaPrecio = nuevaFila.insertCell(3);
+            var celdaSubtotal = nuevaFila.insertCell(4);
+            var celdaAcciones = nuevaFila.insertCell(5);
 
             // Agregar valores a las celdas
-            celdaTipoVenta.innerHTML = tipoVenta;
+            if (tipoVenta === 'paquete') {
+                paquete = document.getElementById('paquete').value;
+
+                if (paquete == '1'){
+                    cantidadTotal = parseFloat(cantidad) * 700
+                    celdaTipoVenta.innerHTML = tipoVenta + ' 700g';
+                }
+
+                if (paquete == '2'){
+                    cantidadTotal = parseFloat(cantidad) * 1000
+                    celdaTipoVenta.innerHTML = tipoVenta + ' 1Kg';
+                }
+            }else{
+                celdaTipoVenta.innerHTML = tipoVenta;
+            }
+
+            celdaSubtotal.innerHTML = subtotal;
             celdaCantidad.innerHTML = cantidad;
             celdaSabor.innerHTML = sabor;
+            celdaPrecio.innerHTML = precioUnitario;
+
             celdaAcciones.innerHTML = '<button type="button" class="btn btn-danger eliminar-fila">Eliminar</button>';
 
             // Limpiar campos del formulario
             document.getElementById('tipo_venta').value = '';
             document.getElementById('cantidad').value = '';
             document.getElementById('sabor').value = '';
+
+            // Calcular el total de la venta
+            let rows = tabla.getElementsByTagName('tr');
+            let total = 0;
+
+            for (let i = 0; i < rows.length; i++) {
+                // Get the cells in the current row
+                let cells = rows[i].getElementsByTagName('td');
+                total += parseFloat(cells[4].innerText.replace('$', ''));
+            }
+
+            document.getElementById('totalVenta').innerHTML = total;
         });
 
         // Capturar evento clic en botón Eliminar
@@ -266,6 +353,21 @@
 
     $(document).on('click', '#closeModalConfirmacion', function () {
         $('#modalConfirmacion').modal('hide');
+    });
+
+    document.getElementById('paquete').disabled = true;
+    document.getElementById('paquete').value = '0';
+    document.getElementById('totalVenta').innerHTML = '0.00';
+
+    document.getElementById('tipo_venta').addEventListener('change', function () {
+        let selected = this.value;
+
+        if (selected === 'pieza' || selected === 'gramos') {
+            document.getElementById('paquete').disabled = true;
+            document.getElementById('paquete').value = '0';
+        } else {
+            document.getElementById('paquete').disabled = false;
+        }
     });
 
 </script>
