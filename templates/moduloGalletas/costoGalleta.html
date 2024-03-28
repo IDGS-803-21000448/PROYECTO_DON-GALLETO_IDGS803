@@ -20,7 +20,7 @@
                         <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th class="text-center">ID</th>
+                                    <th class="text-center" style="display: none;">ID</th>
                                     <th class="text-center">Nombre</th>
                                     <th class="text-center">Precio</th>
                                     <th class="text-center">Editar</th>
@@ -29,7 +29,7 @@
                             <tbody>
                                 {% for galleta in galletas %}
                                     <tr>
-                                        <td>{{ galleta.id }}</td>
+                                        <td style="display: none;">{{ galleta.id }}</td>
                                         <td>{{ galleta.nombre }}</td>
                                         <td>{{ galleta.precio }}</td>
                                         <td class="text-center">

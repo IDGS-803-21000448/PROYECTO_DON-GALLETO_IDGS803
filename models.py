@@ -160,4 +160,6 @@ class CostoGalleta(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     galleta_id = db.Column(db.Integer, db.ForeignKey('tipo_materia.id'))
     precio = db.Column(db.Float)
+    galletas_disponibles = db.Column(db.Integer)
+    mano_obra = db.Column(db.Float)
     fecha_utlima_actualizacion = db.Column(db.DateTime, default=datetime.datetime.now)
