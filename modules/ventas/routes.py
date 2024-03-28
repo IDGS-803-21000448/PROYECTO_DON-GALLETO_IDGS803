@@ -8,15 +8,21 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.lib.units import inch
+from controllers.controller_login import requiere_rol
+from flask_login import login_required
 
 ventas_array = []
 
 @ventas.route("/moduloVenta", methods=["GET"])
+@login_required
+@requiere_rol("admin")
 def modulo_venta():
     ventas = Venta.query.order_by(Venta.fecha.desc()).all()
     return render_template("moduloVentas/vistaVentas.html", ventas=ventas)
 
 @ventas.route("/nuevaVenta", methods=["GET"])
+@login_required
+@requiere_rol("admin")
 def nueva_venta():
     form_venta = formVenta.VentaForm()
     form_venta.sabor.choices = get_sabores()  # Actualiza las opciones del campo sabor
@@ -27,6 +33,8 @@ def get_sabores():
     return sabores
 
 @ventas.route("/realizarVenta", methods=["POST"])
+@login_required
+@requiere_rol("admin")
 def realizar_venta():
     datos = request.json
 
@@ -77,6 +85,8 @@ def generar_folio():
     return nuevo_folio
 
 @ventas.route("/generarTicket", methods=["GET"])
+@login_required
+@requiere_rol("admin")
 def generar_ticket():
     folio = request.args.get('folio')
 
