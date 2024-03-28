@@ -22,6 +22,7 @@ def crud_usuarios():
 
 @usuarios.route("/agregarUsuario", methods=["GET", "POST"])
 @login_required
+@requiere_token
 @requiere_rol("admin")
 def agregar_usuarios():
     form_usuarios = formUsuario.UsersForm(request.form)
@@ -72,6 +73,7 @@ def agregar_usuarios():
 
 @usuarios.route("/seleccionarUsuario", methods=["GET", "POST"])
 @login_required
+@requiere_token
 @requiere_rol("admin")
 def seleccionar_usuario():
     id = request.form['id']  # Usar corchetes para acceder al valor del campo 'id' en el formulario
@@ -91,6 +93,7 @@ def seleccionar_usuario():
 
 @usuarios.route("/eliminarUsuario", methods=["POST"])
 @login_required
+@requiere_token
 @requiere_rol("admin")
 def eliminar_usuarios():
     id = request.form['id']

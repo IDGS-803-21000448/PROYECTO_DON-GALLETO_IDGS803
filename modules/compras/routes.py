@@ -6,11 +6,12 @@ from . import compras
 from flask import render_template, request, flash, redirect, url_for
 import models
 from models import db
-from controllers.controller_login import requiere_rol
+from controllers.controller_login import requiere_rol, requiere_token
 from flask_login import login_required
 
 @compras.route("/moduloCompras", methods=["GET"])
 #@login_required
+#@requiere_token
 #@requiere_rol("admin")
 def modulo_compras():
     form_compras = formCompras.CompraForm()
