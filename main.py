@@ -6,7 +6,7 @@ from config import DevelopmentConfig
 from models import db
 from modules import (galletas, index, proveedores, usuarios, recetas, dashboard, inventarios, alertas, produccion,
                      mermas, ventas, compras, login, materiaPrima,solicitudProduccion)
-from models import Alerta, User, MateriaPrima, MermaMateriaPrima, Produccion, Receta, RecetaDetalle, Proveedor
+from models import *
 import flask_login as fl
 
 
@@ -19,14 +19,12 @@ login_manager = fl.LoginManager()
 login_manager.init_app(app)
 
 admin = Admin(app)
-admin.add_view(ModelView(User, db.session))
-admin.add_view(ModelView(Alerta, db.session))
-admin.add_view(ModelView(MateriaPrima, db.session))
-admin.add_view(ModelView(Produccion, db.session))
-admin.add_view(ModelView(Receta, db.session))
-admin.add_view(ModelView(MermaMateriaPrima, db.session))
-admin.add_view(ModelView(RecetaDetalle, db.session))
-admin.add_view(ModelView(Proveedor, db.session))
+# Lista de modelos
+modelos = [Tipo_Materia, MateriaPrima, Receta, RecetaDetalle, MermaMateriaPrima, Produccion, User, Alerta, MemraGalleta, Proveedor, Venta, DetalleVenta, CostoGalleta]
+
+# Agregar cada modelo como vista de administrador
+for modelo in modelos:
+    admin.add_view(ModelView(modelo, db.session))
 
 
 app.register_blueprint(index.index)

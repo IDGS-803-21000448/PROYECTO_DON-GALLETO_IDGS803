@@ -3,65 +3,84 @@
 {%block content %}
 {% from "_macros.html" import render_field, render_errors %}
 
-<form name="formes" id="form" method="POST" novalidate action="/agregarMateriaPrima">
+<div class="row">
+    <div class="col-md-6">
+        <h1 class="h3 mb-2 text-gray"><i class="fas fa-kitchen-set"></i> Materia prima</h1>
+    </div>
+</div>
 
-    <div class="row mb-3">
-            {{ render_field(form.id, class="form-control", placeholder="id") }}
-        <div class="form-group col-md-4">
-            {{ render_field(form.nombre, class="form-control", placeholder="Nombre") }}
-        </div>
-        <div class="form-group col-md-4">
-            {{ render_field(form.cantidad, class="form-control", placeholder="Cantidad") }}
-        </div>
-        <div class="form-group col-md-4">
-            {{ render_field(form.tipo, class="form-control", type="date", placeholder="Tipo de medida") }}
+<div class="card shadow mb-4" id="spacesTable">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold">Datos de materia prima</h6>
+    </div>
+    <div class="card-body">
+        <form name="formes" id="form" method="POST" novalidate action="/agregarMateriaPrima">
+            <div class="row mb-3">
+                    {{ render_field(form.id, class="form-control", placeholder="id") }}
+                <div class="form-group col-md-4">
+                    {{ form.nombre.label(class="form-label") }}
+                    {{ render_field(form.nombre, class="form-control", placeholder="Nombre") }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ form.cantidad.label(class="form-label") }}
+                    {{ render_field(form.cantidad, class="form-control", placeholder="Cantidad") }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ form.tipo.label(class="form-label") }}
+                    {{ render_field(form.tipo, class="form-control", type="date", placeholder="Tipo de medida") }}
+                </div>
+            </div>
+            <div class="col-md-12 text-center">
+                {% if form.id.data == 0 %}
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                {% endif %}
+                {% if form.id.data != 0 %}
+                    <button type="submit" class="btn btn-warning">Modificar</button>
+                {% endif %}
+            </div>
+            <div>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow mb-4" id="spacesTable">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold">Listado de materia prima</h6>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar...">
+            <table id="materiaTable" class="table table-striped">
+                <thead>
+                    <tr class="text-center">
+                        <th>Nombre</th>
+                        <th>Cantidad</th>
+                        <th>Tipo</th>
+                        <th>Seleccionar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for materia in materias_primas %}
+                    <tr class="text-center">
+                        <td>{{ materia['nombre'] }}</td>
+                        <td>{{ materia['cantidad_disponible'] }}</td>
+                        <td>{{ materia['tipo'] }}</td>
+                        <td>
+                            <form action="{{url_for('materiaPrima.seleccionar_materia')}}" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="{{materia.id}}" />
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <button type="submit" class="btn btn-warning">Editar</button>
+                            </form>
+                            <button id="eliminar_materia" data-id="{{materia.id}}" class="btn btn-danger" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
-    <div class="col-md-12 text-center">
-        {% if form.id.data == 0 %}
-            <button type="submit" class="btn btn-success">Guardar</button>
-        {% endif %}
-        {% if form.id.data != 0 %}
-            <button type="submit" class="btn btn-warning">Modificar</button>
-        {% endif %}
-    </div>
-    <div>
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-    </div>
-</form>
-
-<div class="row mb-3">
-        <h1 class="text-center">Listado de Materia Prima</h1>
-    <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar...">
-    <table id="materiaTable" class="table table-striped">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Cantidad</th>
-                <th>Tipo</th>
-                <th>Seleccionar</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for materia in materias_primas %}
-            <tr>
-                <td>{{ materia['nombre'] }}</td>
-                <td>{{ materia['cantidad_disponible'] }}</td>
-                <td>{{ materia['tipo'] }}</td>
-                <td>
-                   <form action="{{url_for('materiaPrima.seleccionar_materia')}}" method="post" class="d-inline">
-                       <input type="hidden" name="id" value="{{materia.id}}" />
-                       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                       <button type="submit" class="btn btn-warning">Editar</button>
-                   </form>
-                   <button id="eliminar_materia" data-id="{{materia.id}}" class="btn btn-danger" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
-                </td>
-            </tr>
-            {% endfor %}
-
-        </tbody>
-    </table>
-
 </div>
 
 <div class="modal fade"  id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacion" aria-hidden="true" role="dialog">

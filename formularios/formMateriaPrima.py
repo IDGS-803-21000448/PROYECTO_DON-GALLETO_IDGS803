@@ -5,7 +5,7 @@ from wtforms.widgets import HiddenInput
 
 class MateriaPrimaForm(Form):
     id = IntegerField('id', widget=HiddenInput(), default=0)
-    nombre = StringField('Lote Merma', [
+    nombre = StringField('Nombre Materia Prima', [
         DataRequired(message='El campo es requerido')
     ])
     cantidad = FloatField('Cantidad')
