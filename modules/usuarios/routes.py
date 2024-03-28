@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, flash
 from models import db, User
 from controllers import controller_usuarios
 from . import usuarios
-from controllers.controller_login import requiere_rol
+from controllers.controller_login import requiere_rol, requiere_token
 from flask_login import login_required
 from formularios import formUsuario
 from formularios.formUsuario import UsersForm
@@ -10,13 +10,13 @@ from flask import request
 
 @usuarios.route("/crudUsuarios", methods=["GET"])
 @login_required
+@requiere_token
 @requiere_rol("admin")
 def crud_usuarios():
     form_usuarios = formUsuario.UsersForm(request.form)
 
     listado_usuarios = User.query.filter_by(estatus='Activo').all()
     return render_template("moduloUsuarios/crudUsuarios.html", form=form_usuarios, users=listado_usuarios)
-
 
 
 
