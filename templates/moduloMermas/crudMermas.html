@@ -36,7 +36,7 @@
                <label for="cantidad">
                     {{ form.cantidad.label }}
                 </label>
-                <input type="text" id="cantidad" readonly required name="cantidad" placeholder="Cantidad" class="form-control" value="{{ form.cantidad.data or '' }}">
+                <input type="text" id="cantidad" required name="cantidad" placeholder="Cantidad" class="form-control" value="{{ form.cantidad.data or '' }}">
                  {{  render_errors(form.cantidad) }}
            </div>
             <div class="form-group col-3">
@@ -92,7 +92,7 @@
       {% for merma in mermas %}
       <tr>
         <td>{{ merma.id }}</td>
-        <td>{{ merma.materia_prima.nombre }}</td>
+        <td>{{ merma.materia_prima.tipo_materia.nombre }}</td>
         <td>{{ merma.tipo }}</td>
         <td>{{ merma.cantidad }}</td>
         <td>{{ merma.descripcion }}</td>
@@ -104,7 +104,7 @@
                  <input type="hidden" name="tipo_merma" value="materiaPrima">
                 <button type="submit" class="btn btn-warning">Editar</button>
             </form>
-            <button type="button" id="eliminarMerma"  data-id = "{{ merma.id }}" class="btn btn-danger" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
+            <button type="button" data-id = "{{ merma.id }}" class="btn btn-danger eliminarMerma" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
         </td>
       </tr>
       {% endfor %}
@@ -123,18 +123,20 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Tipo</th>
-              <th>Cantidad Disponible</th>
+                <th>Nombre</th>
+                <th>Cantidad Disponible</th>
+                <th>Tipo</th>
+                <th>lote</th>
               <th>Seleccionar</th>
             </tr>
           </thead>
           <tbody>
             {% for materia in materiasPrimas %}
             <tr>
-              <td>{{ materia.nombre }}</td>
-              <td>{{ materia.tipo }}</td>
-              <td>{{ materia.cantidad_disponible }}</td>
+                <td>{{ materia.tipo_materia.nombre }}</td>
+                <td>{{ materia.tipo }}</td>
+                <td>{{ materia.cantidad_disponible }}</td>
+                <td>{{ materia.lote }}</td>
               <td>
                 <button type="button" class="btn btn-success select-materia" data-id="{{ materia.id }}"
                         data-tipo="{{ materia.tipo }}"
@@ -152,9 +154,9 @@
 </div>
 
 <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacion" aria-hidden="true" role="dialog">
-   <div class="container mt-5">
-       <div class="row">
-            <div class="col-md-6 offset-md-3">
+   <div class="container mt-5 modal-dialog" role="document">
+      <div class="row modal-content" style="display: contents;">
+           <div class="col-md-12 offset-md-3 mx-0">
               <div class="card">
                 <div class="card-body">
                   <h1 class="card-title text-center">Confirmar Borrado de Merma</h1>
@@ -194,7 +196,7 @@ $(document).ready(function() {
     $('#materiaPrimaModal').modal('hide')
   });
 
-  $('#eliminarMerma').click(function() {
+  $('.eliminarMerma').click(function() {
     var mermaId = $(this).data('id');
     $('#idEliminar').val(mermaId);
   });

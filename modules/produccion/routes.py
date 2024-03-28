@@ -10,8 +10,8 @@ from flask_login import login_required
 def produccion_main():
     return render_template("moduloProduccion/produccion.html")
 
-@produccion.route("/solicitudProduccion", methods=["GET"])
-@login_required
-@requiere_rol("admin")
-def solicitud_produccion():
-    return render_template("moduloProduccion/solicitudProduccion.html")
+# @produccion.route("/solicitudProduccion", methods=["GET"])
+# @login_required
+# @requiere_rol("admin")
+# def solicitud_produccion():
+#     return render_template("moduloProduccion/solicitudProduccion.html")

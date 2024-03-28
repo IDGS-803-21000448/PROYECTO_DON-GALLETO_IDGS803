@@ -5,7 +5,7 @@ from flask_admin.contrib.sqla import ModelView
 from config import DevelopmentConfig
 from models import db
 from modules import (galletas, index, proveedores, usuarios, recetas, dashboard, inventarios, alertas, produccion,
-                     mermas, ventas, compras, login, materiaPrima)
+                     mermas, ventas, compras, login, materiaPrima,solicitudProduccion)
 from models import Alerta, User, MateriaPrima, MermaMateriaPrima, Produccion, Receta, RecetaDetalle, Proveedor
 import flask_login as fl
 
@@ -43,6 +43,7 @@ app.register_blueprint(ventas.ventas)
 app.register_blueprint(compras.compras)
 app.register_blueprint(login.login)
 app.register_blueprint(materiaPrima.materia_prima)
+app.register_blueprint(solicitudProduccion.solicitud_produccion)
 
 # Manejo de Errores
 @app.errorhandler(404)
@@ -61,4 +62,4 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
 
-    app.run(debug=True, port=8080)
+    app.run(debug=False, port=8080)
