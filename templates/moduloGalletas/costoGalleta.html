@@ -28,11 +28,11 @@
                             </thead>
                             <tbody>
                                 {% for galleta in galletas %}
-                                    <tr>
+                                    <tr class="text-center">
                                         <td style="display: none;">{{ galleta.id }}</td>
                                         <td>{{ galleta.nombre }}</td>
                                         <td>{{ galleta.precio }}</td>
-                                        <td class="text-center">
+                                        <td>
                                             <form action="{{ url_for('galletas.actualizar_precio') }}" method="POST">
                                                 <input type="hidden" name="id" value="{{ galleta.id }}">
                                                 <button type="submit" class="btn btn-sm btn-primary">Modificar precio</button>

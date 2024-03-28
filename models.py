@@ -41,6 +41,7 @@ class Receta(db.Model):
     imagen = db.Column(db.Text)
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
     estatus = db.Column(db.Integer, default=1)
+    id_precio = db.Column(db.Integer, db.ForeignKey('costoGalletas.id'))
 
 class RecetaDetalle(db.Model):
     __tablename__ = 'receta_detalle'
@@ -158,7 +159,6 @@ class DetalleVenta(db.Model):
 class CostoGalleta(db.Model):
     __tablename__ = 'costoGalletas'
     id = db.Column(db.Integer, primary_key=True)
-    galleta_id = db.Column(db.Integer, db.ForeignKey('tipo_materia.id'))
     precio = db.Column(db.Float)
     galletas_disponibles = db.Column(db.Integer)
     mano_obra = db.Column(db.Float)

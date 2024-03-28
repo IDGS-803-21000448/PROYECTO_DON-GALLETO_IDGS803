@@ -15,8 +15,22 @@ cantidades = []
 def costo_galleta():
     cantidades = []
     galletas = Receta.query.filter_by(estatus=1).all()
+
+    precios_galletas = {}
     costos = CostoGalleta.query.all()
-    return render_template("moduloGalletas/costoGalleta.html", galletas=galletas, costos=costos)
+    for costo in costos:
+        precios_galletas[costo.id] = costo.precio
+
+    galletas_arreglo = []
+    for galleta in galletas:
+        galleta_info = {
+            'id': galleta.id,
+            'nombre': galleta.nombre,
+            'precio': precios_galletas.get(galleta.id, 0)
+        }
+        galletas_arreglo.append(galleta_info)
+
+    return render_template("moduloGalletas/costoGalleta.html", galletas=galletas_arreglo)
 
 @galletas.route("/modificarPrecioPagina", methods=["GET", "POST"])
 @login_required
@@ -24,8 +38,6 @@ def costo_galleta():
 def detalle_costo():
     galleta_id = request.form.get('id')
     galleta = Receta.query.filter_by(id=galleta_id).first()
-    print("GALLETAAAA")
-    print(galleta.id)
     cantidades = []
 
     if not galleta:
@@ -50,12 +62,12 @@ def actualizar_precio():
 
     nombre_galleta = galleta.nombre
 
-    detalles = RecetaDetalle.query.filter_by(receta_id=galleta_id).all()
+    detalles = RecetaDetalle.query.filter_by(receta_id=galleta.id).all()
 
     galletas_det = []
 
     for detalle in detalles:
-        materia_prima = Tipo_Materia.query.get(detalle.id)
+        materia_prima = Tipo_Materia.query.get(detalle.tipo_materia_id)
 
         if materia_prima:
             detalle_con_nombre = {
@@ -67,6 +79,7 @@ def actualizar_precio():
             }
             cantidades.append(detalle.cantidad_necesaria)
             galletas_det.append(detalle_con_nombre)
+            print(f"ID Receta: {detalle_con_nombre['id_receta']}, ID Materia: {detalle_con_nombre['id_materia']}, Ingrediente: {detalle_con_nombre['ingrediente']}, Cantidad: {detalle_con_nombre['cantidad']}, Medida: {detalle_con_nombre['medida']}")
 
     return render_template("moduloGalletas/modificarPrecio.html", galletas=galletas_det, nombre_galleta=nombre_galleta, id=galleta_id, form=form)
 
@@ -120,8 +133,8 @@ def detalles_costo():
     precio_galleta = math.ceil(promedio_costos * 0.2)
     print(precio_galleta)
 
-    # Verifica si ya existe un registro con el mismo galleta_id en la tabla CostoGalleta
-    costo_existente = CostoGalleta.query.filter_by(galleta_id=id_galleta).first()
+    # Verifica si ya existe un registro con el mismo id_precio en la tabla CostoGalleta
+    costo_existente = CostoGalleta.query.filter_by(id=id_galleta).first()
 
     if costo_existente:
         # Si ya existe, actualiza el precio de la galleta en lugar de crear uno nuevo
@@ -131,13 +144,21 @@ def detalles_costo():
     else:
         # Si no existe, crea un nuevo registro en la tabla CostoGalleta
         nuevo_costo_galleta = CostoGalleta(
-            galleta_id=id_galleta,
+            id=id_galleta,
             precio=precio_galleta,
-            galletas_disponibles=100,
+            galletas_disponibles=0,
             mano_obra=mano_obra,
             fecha_utlima_actualizacion=datetime.now()
         )
         db.session.add(nuevo_costo_galleta)
+
+    # Actualiza la tabla Recetas con el nuevo id_precio correspondiente
+    receta_a_actualizar = Receta.query.filter_by(id=id_galleta).first()
+    if receta_a_actualizar:
+        receta_a_actualizar.id_precio = costo_existente.id if costo_existente else nuevo_costo_galleta.id
+        db.session.commit()
+    else:
+        print("Receta no encontrada")
 
     db.session.commit()
 
