@@ -8,6 +8,11 @@
         <div class="col-md-6">
             <h1 class="h3 mb-2 text-gray"><i class="fas fa-solid fa-cart-plus"></i> Ventas</h1>
         </div>
+
+        <div class="col-md-6 my-3 d-flex justify-content-end">
+            <button type="button" id="btnInteraccion" class="btn btn-primary" onclick="window.location.href='/moduloVenta'"><i class="fas fa-arrow-left"></i> Regresar
+            </button>
+        </div>
     </div>
 
     <div class="card shadow mb-4">
@@ -74,13 +79,36 @@
             <div class="row justify-content-center">
                 <div class="col-md-6 text-center">
                     <h3><b>TOTAL: $ 500</b></h3>
-                    <button type="submit" class="btn btn-success" id="realizar_venta" name="realizar_venta">Realizar Venta</button>
+                    <button id="confirmarVenta" class="btn btn-success" data-toggle="modal" data-target="#modalConfirmacion">Realizar Venta</button>
                 </div>
             </div>
         </div>
     </div>
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="modal fade"  id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacion" aria-hidden="true" role="dialog">
+        <div class="container mt-5 modal-dialog" role="document">
+            <div class="row modal-content" style="display: contents;">
+                 <div class="col-md-12 offset-md-3 mx-0">
+                   <div class="card">
+                     <div class="card-body">
+                       <h1 class="card-title text-center">Confirmar Venta</h1>
+                       <p class="card-text text-center">¿Estás seguro de realizar esta venta?</p>
+                       <div class="text-center">
+                           <button id="realizar_venta" type="submit" class="btn btn-success">Realizar Venta</button>
+                           <button type="button" id="closeModalConfirmacion" class="closeModalConfirmacion btn btn-danger" onclick="$('#modalConfirmacion').modal('hide');">
+                              Cancelar
+                           </button>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+            </div>
+        </div>
+      </div>
 </form>
+
+<script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -151,6 +179,8 @@
                         title: '¡Éxito!',
                         text: 'La venta fue realizada correctamente.'
                     });
+
+                    window.location.href='/moduloVenta';
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -212,6 +242,11 @@
             }
         });
     });
+
+    $(document).on('click', '#closeModalConfirmacion', function() {
+        $('#modalConfirmacion').modal('hide');
+    });
+
 </script>
 
 {% endblock %}

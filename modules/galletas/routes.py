@@ -1,6 +1,6 @@
 from flask import render_template, request, flash, redirect, url_for
 from . import galletas
-from controllers.controller_login import requiere_rol
+from controllers.controller_login import requiere_rol, requiere_token
 from flask_login import login_required
 from models import Receta, RecetaDetalle, MateriaPrima, Tipo_Materia, CostoGalleta, db
 from formularios import formCosto
@@ -11,6 +11,7 @@ cantidades = []
 
 @galletas.route("/costoGalleta", methods=["GET"])
 @login_required
+@requiere_token
 @requiere_rol("admin")
 def costo_galleta():
     cantidades = []

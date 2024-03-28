@@ -3,6 +3,7 @@ import json
 from flask import render_template, request, flash, redirect, url_for
 
 from controllers import controller_mermas
+from controllers.controller_materia_prima import actualizar_cantidades_tipo
 from models import MermaMateriaPrima, db, MemraGalleta, MateriaPrima
 from . import mermas
 from formularios.formsMerma import MermaMateriaPrimaForm, tipoMermaForm
@@ -66,6 +67,18 @@ def agregar_merma():
     if request.method == "POST" and form.validate():
 
         if form.tipo_merma.data == "materiaPrima":
+            materia_prima = MateriaPrima.query.get_or_404(form.materia_prima_id.data)
+            if materia_prima.cantidad_disponible < form.cantidad.data:
+                flash("No se puede agregar una merma mayor a la cantidad existente.", "danger")
+                formTipo = tipoMermaForm()
+                mermas = MermaMateriaPrima.query.filter_by(estatus=1)
+                materiasPrimas = controller_mermas.getMateriasPrimasSinMerma()
+                recetas = []
+                return render_template('moduloMermas/crudMermas.html', mermas=mermas, form=form,
+                                       formTipo=formTipo, materiasPrimas=materiasPrimas, recetas=recetas)
+
+            materia_prima.cantidad_disponible -= form.cantidad.data
+            db.session.commit()
             nueva_merma = MermaMateriaPrima(
                 materia_prima_id=form.materia_prima_id.data,
                 tipo=form.tipo.data,
@@ -83,6 +96,23 @@ def agregar_merma():
             )
         if form.id.data != 0:
             merma = MermaMateriaPrima.query.get_or_404(form.id.data)
+
+            materia_prima = MateriaPrima.query.get_or_404(merma.materia_prima_id)
+            materia_prima += merma.cantidad
+            db.session.commit()
+
+            materia_prima = MateriaPrima.query.get_or_404(form.materia_prima_id.data)
+            if materia_prima.cantidad < form.cantidad.data:
+                flash("No se puede agregar una merma mayor a la cantidad existente.", "danger")
+                formTipo = tipoMermaForm()
+                mermas = MermaMateriaPrima.query.filter_by(estatus=1)
+                materiasPrimas = controller_mermas.getMateriasPrimasSinMerma()
+                recetas = []
+                return render_template('moduloMermas/crudMermas.html', mermas=mermas, form=form,
+                                       formTipo=formTipo, materiasPrimas=materiasPrimas, recetas=recetas)
+
+
+
             merma.materia_prima_id = form.materia_prima_id.data,
             merma.tipo = form.tipo.data,
             merma.cantidad = form.cantidad.data,
@@ -91,6 +121,7 @@ def agregar_merma():
         else:
             db.session.add(nueva_merma)
         db.session.commit()
+        actualizar_cantidades_tipo()
         flash("Merma agregada correctamente.", "success")
     elif not form.validate():
         formTipo = tipoMermaForm()
@@ -147,8 +178,12 @@ def seleccionar_merma():
 def eliminar_merma():
     id = request.form.get('id')
     merma = MermaMateriaPrima.query.get_or_404(id)
+    materia_prima = MateriaPrima.query.get_or_404(merma.materia_prima_id)
+    materia_prima.cantidad_disponible += merma.cantidad
+    db.session.commit()
     merma.estatus = 0
     db.session.commit()
+    actualizar_cantidades_tipo()
     flash("El estatus de la merma ha sido actualizado a inactivo.", "success")
     return redirect(url_for('mermas.modulo_mermas'))
 

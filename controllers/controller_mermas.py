@@ -4,11 +4,9 @@ import models
 from models import *
 from datetime import datetime, date
 from controllers.controller_alertas import insertarAlertas
-
+from controllers.controller_materia_prima import actualizar_cantidades_tipo
 def verificarCaducidades():
-    subconsulta_mermas = db.session.query(models.MermaMateriaPrima.materia_prima_id).distinct() # Obtiene las Mermas de Materia Prima
-
-    materiasPrimas = models.MateriaPrima.query.filter(not_(models.MateriaPrima.id.in_(subconsulta_mermas))).all() #Obtiene La materia prima que no esta en merma Aún
+    materiasPrimas = MateriaPrima.query.filter_by(estatus = 1).all()  #Obtiene La materia prima que no esta en merma Aún
     fecha_actual = date.today() # Fecha De Hoy
     try:
         for materiaPrima in materiasPrimas:
@@ -16,7 +14,7 @@ def verificarCaducidades():
 
             if dias_para_caducar <= 0: # Si Caduco Se Agrega la Alerta y se inserta en mermas
                 nombre = f"Tienes {materiaPrima.tipo_materia.nombre} caducada"
-                descripcion = (f"Hay {materiaPrima.cantidad_disponible} de {materiaPrima.nombre} que esta "
+                descripcion = (f"Hay {materiaPrima.cantidad_disponible} de {materiaPrima.tipo_materia.nombre} que esta "
                                f"caducada, y fue colocada como merma ")
 
                 datos = {
@@ -25,7 +23,10 @@ def verificarCaducidades():
                     "cantidad": materiaPrima.cantidad_disponible,
                     "descripcion": "Materia Prima a Merma Por Caducidad"
                 }
-
+                materiaPrima.cantidad_disponible = 0
+                materiaPrima.estatus = 3
+                db.session.commit()
+                actualizar_cantidades_tipo()
                 insertarMermaMateriaPrima(datos)
                 insertarAlertas(nombre, descripcion)
 
@@ -53,10 +54,7 @@ def insertarMermaMateriaPrima(datos: dict):
 
 
 def getMateriasPrimasSinMerma():
-    mermas = db.session.query(
-        models.MermaMateriaPrima.materia_prima_id).distinct()  # Obtiene las Mermas de Materia Prima
-    ids_con_merma = [merma.materia_prima_id for merma in mermas]
 
-    materiasPrimas = MateriaPrima.query.filter_by(estatus=1).filter(~MateriaPrima.id.in_(ids_con_merma)).all()
+    materiasPrimas = MateriaPrima.query.filter_by(estatus = 1).all()
 
     return materiasPrimas

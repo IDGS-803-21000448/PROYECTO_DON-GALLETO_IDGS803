@@ -8,7 +8,7 @@ class MermaMateriaPrimaForm(Form):
     id = IntegerField('id', widget=HiddenInput(), default=0)
     materia_prima_id = IntegerField('ID de Materia Prima', validators=[DataRequired()])
     tipo = StringField('Tipo medida', render_kw={"readonly": True})
-    cantidad = FloatField('Cantidad', render_kw={"readonly": True})
+    cantidad = FloatField('Cantidad')
     descripcion = TextAreaField('Descripción', validators=[DataRequired()])
     fecha = StringField('Fecha Merma', [
         DataRequired(message='El campo es requerido')

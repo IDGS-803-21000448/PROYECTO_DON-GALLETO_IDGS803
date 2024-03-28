@@ -5,9 +5,11 @@ from flask import render_template, request, redirect, url_for
 from models import db, Alerta
 from formularios import formAlerta
 from flask_login import login_required
+from controllers.controller_login import requiere_token
 
 @alertas.route('/alertas', methods=['GET', 'POST'])
 @login_required
+@requiere_token
 def alertas_main():
     form_alerta = formAlerta.FormAlerta(request.form)
     listado_alertas = []
@@ -29,6 +31,7 @@ def alertas_main():
 
 @alertas.route('/actualizar_alerta', methods=['POST'])
 @login_required
+@requiere_token
 def actualizar_alerta():
     alerta_id = request.form.get('alerta_id')  
     alerta = Alerta.query.get(alerta_id)  
