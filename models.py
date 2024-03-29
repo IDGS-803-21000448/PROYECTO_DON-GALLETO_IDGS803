@@ -74,6 +74,7 @@ class Produccion(db.Model):
     fecha_solicitud = db.Column(db.DateTime, default=datetime.datetime.now)
     fecha_producido = db.Column(db.DateTime, nullable=True)
     fecha_postergado = db.Column(db.DateTime, nullable=True)
+    fecha_cancelado = db.Column(db.DateTime, nullable=True)
     receta = db.relationship('Receta', backref=db.backref('produccion', lazy=True))
     
 # class solicitudProduccion(db.Model):
