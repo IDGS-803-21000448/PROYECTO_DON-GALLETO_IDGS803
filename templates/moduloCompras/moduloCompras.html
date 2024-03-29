@@ -3,117 +3,129 @@
 {%block content %}
 {% from "_macros.html" import render_field, render_errors %}
 
-<form name="formes" id="form" method="POST" novalidate action="/agregarCompra">
-
-    <div class="row mb-3">
-            {{ render_field(form.id, class="form-control", placeholder="id") }}
-        <div class="form-group col-md-3">
-            {{ render_field(form.nombre, class="form-control", id="nombre-materia", placeholder="Nombre Materia") }}
-        </div>
-         <div class="form-group col-md-3">
-            {{ render_field(form.nombre_proveedor, class="form-control", id="nombre-proveedor", placeholder="Nombre") }}
-        </div>
-        <div class="form-group col-md-3">
-            {{ render_field(form.cantidad, class="form-control", placeholder="Cantidad") }}
-        </div>
-        <div class="form-group col-md-3">
-            {{ render_field(form.tipo, class="form-control", placeholder="Unidad de medida") }}
-        </div>
-
+<div class="row">
+    <div class="col-md-6">
+        <h1 class="h3 mb-2 text-gray"><i class="fas fa-fw fa-bag-shopping"></i> Compras</h1>
     </div>
-    <div class="row text-center">
-        <div class="form-group col-md-3">
-            {{ render_field(form.precio_compra, class="form-control", placeholder="Precio de Compra") }}
-        </div>
-         <div class="form-group col-md-1">
-            <label>
-                {{ form.fecha.label }}
-            </label>
-        </div>
-        <div class="form-group col-md-2">
-
-            {{ render_field(form.fecha, class="form-control", type="date", placeholder="Fecha de compra") }}
-        </div>
-        <div class="form-group col-md-1">
-            <label>
-                {{ form.fecha_caducidad.label }}
-            </label>
-        </div>
-        <div class="form-group col-md-2">
-            {{ render_field(form.fecha_caducidad, class="form-control", type="date", placeholder="Fecha de Caducidad") }}
-        </div>
-        <div class="form-group col-md-3">
-            {{ render_field(form.lote, class="form-control", placeholder="Lote de materia") }}
-        </div>
-
-
-    </div>
-    <div class="row">
-         <div class="form-group col-md-3">
-            <input type="hidden" id="proveedor_id" name="proveedor_id" value="{{ form.proveedor_id.data }}">
-            <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#proveedorModal">
-                Seleccionar proveedor
-            </button>
-            {{  render_errors(form.proveedor_id) }}
-        </div>
-        <div class="form-group col-md-3">
-            <input type="hidden" id="id_tipo_materia" name="id_tipo_materia" value="{{ form.id_tipo_materia.data }}">
-            <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#materiaPrimaModal">
-                Seleccionar Materia
-            </button>
-            {{  render_errors(form.id_tipo_materia) }}
-        </div>
-        <div class="form-group col-md-3">
-            <button type="submit" class="btn btn-success mx-auto">Guardar</button>
-        </div>
-    </div>
-    <div>
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-    </div>
-</form>
-
-<div class="row mb-3">
-    <h1 class="text-center">Listado de Proveedores</h1>
-    <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar...">
-    <table id="proveedorTable" class="table table-striped">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Proveedor</th>
-                <th>Precio</th>
-                <th>Fecha</th>
-                <th>Lote</th>
-                <th>Cantidad Compra</th>
-                <th>Cantidad Disponible</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for compra in compras %}
-            <tr>
-                <td>{{ compra.tipo_materia.nombre }}</td>
-                <td>{{ compra.proveedor.nombre_vendedor }}</td>
-                <td>{{ compra.precio_compra }}</td>
-                <td>{{ compra.create_date }}</td>
-                <td>{{ compra['lote'] }}</td>
-                <td>{{ compra['cantidad_compra'] }}</td>
-                <td>{{ compra['cantidad_disponible'] }}</td>
-
-                <td>
-                   <form action="{{url_for('compras.seleccionar_compra')}}" method="post" class="d-inline">
-                       <input type="hidden" name="id" value="{{compra.id}}" />
-                       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                       <button type="submit" class="btn btn-warning">Editar</button>
-                   </form>
-                   <button id="eliminarCompra" data-id="{{compra.id}}" class="btn btn-danger" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
-                </td>
-            </tr>
-            {% endfor %}
-
-        </tbody>
-    </table>
-
 </div>
+<div class="card shadow mb-4" id="spacesTable">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold">Datos de compra</h6>
+    </div>
+    <div class="card-body">
+        <form name="formes" id="form" method="POST" novalidate action="/agregarCompra">
+            <div class="row mb-3">
+                    {{ render_field(form.id, class="form-control", placeholder="id") }}
+                <div class="form-group col-md-3">
+                    {{ form.nombre_proveedor.label(class="form-label") }}
+                    {{ render_field(form.nombre_proveedor, class="form-control", id="nombre-proveedor", placeholder="Nombre") }}
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="proveedor_id">Selecciona un proveedor</label>
+                    <input type="hidden" id="proveedor_id" name="proveedor_id" value="{{ form.proveedor_id.data }}">
+                    <button type="button" class="btn btn-primary mt-0.5" data-toggle="modal" data-target="#proveedorModal">
+                        Seleccionar proveedor
+                    </button>
+                    {{  render_errors(form.proveedor_id) }}
+                </div>
+                <div class="form-group col-md-3">
+                    {{ form.nombre.label(class="form-label") }}
+                    {{ render_field(form.nombre, class="form-control", id="nombre-materia", placeholder="Nombre Materia") }}
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="idtipo_materia">Selecciona la materia</label>
+                    <input type="hidden" id="id_tipo_materia" name="id_tipo_materia" value="{{ form.id_tipo_materia.data }}">
+                    <button type="button" class="btn btn-primary mt-0.5" data-toggle="modal" data-target="#materiaPrimaModal">
+                        Seleccionar Materia
+                    </button>
+                    {{  render_errors(form.id_tipo_materia) }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="form-group col-md-3">
+                    {{ form.precio_compra.label(class="form-label") }}
+                    {{ render_field(form.precio_compra, class="form-control", placeholder="Precio de Compra") }}
+                </div>
+                <div class="form-group col-md-3">
+                    {{ form.cantidad.label(class="form-label") }}
+                    {{ render_field(form.cantidad, class="form-control", placeholder="Cantidad") }}
+                </div>
+                <div class="form-group col-md-3">
+                    {{ form.tipo.label(class="form-label") }}
+                    {{ render_field(form.tipo, class="form-control", placeholder="Unidad de medida") }}
+                </div>
+                <div class="form-group col-md-3">
+                    {{ form.lote.label(class="form-label") }}
+                    {{ render_field(form.lote, class="form-control", placeholder="Lote de materia") }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="form-group col-md-3"></div>
+                <div class="form-group col-md-3">
+                    {{ form.fecha.label(class="form-label") }}
+                    {{ render_field(form.fecha, class="form-control", type="date", placeholder="Fecha de compra") }}
+                </div>
+                <div class="form-group col-md-3">
+                    {{ form.fecha_caducidad.label(class="form-label") }}
+                    {{ render_field(form.fecha_caducidad, class="form-control", type="date", placeholder="Fecha de Caducidad") }}
+                </div>
+            </div>
+            <div class="col-md-12 text-center">
+                <button type="submit" class="btn btn-success mx-auto">Guardar</button>
+            </div>
+            <div>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow mb-4" id="spacesTable">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold">Listado de compras</h6>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar...">
+            <table id="proveedorTable" class="table table-striped">
+                <thead>
+                    <tr class="text-center">
+                        <th>Nombre</th>
+                        <th>Proveedor</th>
+                        <th>Precio</th>
+                        <th>Fecha</th>
+                        <th>Lote</th>
+                        <th>Cantidad Compra</th>
+                        <th>Cantidad Disponible</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for compra in compras %}
+                    <tr class="text-center">
+                        <td>{{ compra.tipo_materia.nombre }}</td>
+                        <td>{{ compra.proveedor.nombre_vendedor }}</td>
+                        <td>{{ compra.precio_compra }}</td>
+                        <td>{{ compra.create_date }}</td>
+                        <td>{{ compra['lote'] }}</td>
+                        <td>{{ compra['cantidad_compra'] }}</td>
+                        <td>{{ compra['cantidad_disponible'] }}</td>
+                        <td>
+                            <form action="{{url_for('compras.seleccionar_compra')}}" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="{{compra.id}}" />
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <button type="submit" class="btn btn-warning btn-sm">Editar</button>
+                            </form>
+                            <button id="eliminarCompra" data-id="{{compra.id}}" class="btn btn-danger btn-sm mt-1" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 
     <div class="modal fade" id="proveedorModal" tabindex="-1" aria-labelledby="proveedorModal" aria-hidden="true" role="dialog">
         <div class="modal-dialog modal-lg">

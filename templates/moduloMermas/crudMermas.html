@@ -1,115 +1,159 @@
 <!-- listarMermas.html -->
 {% extends 'layout.html' %}
 {% block content %}
-    {% from "_macros.html" import render_field, render_errors %}
+{% from "_macros.html" import render_field, render_errors %}
 
-     <h1>Agregar Merma</h1>
-    <form action="{{ url_for('mermas.modulo_mermas') }}" method="post">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <div class="form-group col-md-4">
-            {{ render_field(formTipo.tipo_merma, class="form-control", placeholder="Tipo de Merma") }}
-        </div>
-        <button type="submit" class="btn btn-success">Cambiar Merma</button>
-    </form>
-    <form action="/agregarMerma" method="post" class=mt-3"">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <div class="row mb-3 mt-4">
-            {{ render_field(form.id, class="form-control", placeholder="Tipo de Merma") }}
-           <div class="form-group col-3">
-               {% if form.tipo_merma.data == 'materiaPrima' %}
-                  <input type="hidden" id="materia_prima_id" name="materia_prima_id" value="{{ form.materia_prima_id.data }}">
-                  <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#materiaPrimaModal">
-                    Seleccionar Materia Prima
-                  </button>
-                   {{  render_errors(form.materia_prima_id) }}
+<style>
+    .form-group.col-md-3 {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-               {% endif %}
-               {% if form.tipo_merma.data == 'galletas' %}
-                  <input type="hidden" id="materia_prima_id" name="materia_prima_id" value="{{ form.materia_prima_id.data }}">
-                  <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#galletaModal">
-                    Seleccionar Galleta
-                  </button>
-                   {{  render_errors(form.materia_prima_id) }}
-               {% endif %}
-           </div>
-             <div class="form-group col-3">
-               <label for="cantidad">
-                    {{ form.cantidad.label }}
-                </label>
-                <input type="text" id="cantidad" required name="cantidad" placeholder="Cantidad" class="form-control" value="{{ form.cantidad.data or '' }}">
-                 {{  render_errors(form.cantidad) }}
-           </div>
-            <div class="form-group col-3">
-                <label for="tipo">
-                    {{ form.tipo.label }}
-                </label>
-                <input type="text" id="tipo" name="tipo" readonly required placeholder="Tipo de medida" class="form-control" value="{{ form.tipo.data or '' }}">
-                {{  render_errors(form.tipo) }}
-            </div>
-          <div class="form-group col-3">
-                {{ render_field(form.fecha, class="form-control", type="datetime-local", placeholder="Fecha y Hora") }}
-           </div>
-        </div>
-        <div class="row mb-3">
-          <div class="form-group col-md-12">
-                {{ render_field(form.descripcion, class="form-control", placeholder="Descripción") }}
-          </div>
-        </div>
-        <div class="row mb-3" style="
-            visibility: hidden;
-            width: 0;
-            height: 0;
-            margin: 0;
-            padding: 0;
-        ">
-          <div class="form-group col-md-12">
-                {{ render_field(form.tipo_merma, style="display: hidden;", class="form-control", placeholder="Descripción") }}
-          </div>
-        </div>
-        {% if form.id.data == 0 %}
-            <button type="submit" class="btn btn-success">Guardar Merma</button>
-        {% endif %}
-        {% if form.id.data != 0 %}
-            <button type="submit" class="btn btn-success">Modificar Merma</button>
-        {% endif %}
-
-    </form>
-
-  <h1>Listado de Mermas</h1>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Materia Prima</th>
-        <th>Tipo</th>
-        <th>Cantidad</th>
-        <th>Descripción</th>
-        <th>Fecha</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for merma in mermas %}
-      <tr>
-        <td>{{ merma.id }}</td>
-        <td>{{ merma.materia_prima.tipo_materia.nombre }}</td>
-        <td>{{ merma.tipo }}</td>
-        <td>{{ merma.cantidad }}</td>
-        <td>{{ merma.descripcion }}</td>
-        <td>{{ merma.fecha.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-         <td>
-            <form action="{{ url_for('mermas.seleccionar_merma')}}" method="post" class="d-inline">
+    .form-group.col-md-3 label {
+        margin-bottom: 0.5rem;
+    }
+</style>
+<div class="row">
+    <div class="col-md-6">
+        <h1 class="h3 mb-2 text-gray"><i class="fas fa-times-circle"></i> Mermas</h1>
+    </div>
+</div>
+<div class="card shadow mb-4" id="spacesTable">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold">Datos de merma</h6>
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('mermas.modulo_mermas') }}" method="post">
+            <div class="row mb-3">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                <input type="hidden" name="id" value="{{ merma.id }}">
-                 <input type="hidden" name="tipo_merma" value="materiaPrima">
-                <button type="submit" class="btn btn-warning">Editar</button>
-            </form>
-            <button type="button" data-id = "{{ merma.id }}" class="btn btn-danger eliminarMerma" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table><!-- Modal -->
+                <div class="form-group col-md-3"></div>
+                <div class="form-group col-md-4">
+                    {{ formTipo.tipo_merma.label(class="form-label") }}
+                    {{ render_field(formTipo.tipo_merma, class="form-control", placeholder="Tipo de Merma") }}
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="materia_prima_id">Filtro</label>
+                    <button type="submit" class="btn btn-success">Cambiar Merma</button>
+                </div>
+            </div>
+        </form>
+    <hr>
+        <form action="/agregarMerma" method="post" class="mt-3">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <div class="row mb-3">
+                {{ render_field(form.id, class="form-control", placeholder="Tipo de Merma") }}
+                <div class="form-group col-md-3">
+                    {% if form.tipo_merma.data == 'materiaPrima' %}
+                        <input type="hidden" id="materia_prima_id" name="materia_prima_id" value="{{ form.materia_prima_id.data }}">
+                        <label for="materia_prima_id">Seleccionar materia</label>
+                        <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#materiaPrimaModal">
+                            Seleccionar Materia Prima
+                        </button>
+                        {{  render_errors(form.materia_prima_id) }}
+                    {% endif %}
+                    {% if form.tipo_merma.data == 'galletas' %}
+                        <input type="hidden" id="materia_prima_id" name="materia_prima_id" value="{{ form.materia_prima_id.data }}">
+                        <label for="materia_prima_id">Seleccionar galleta</label>
+                        <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#galletaModal">
+                            Seleccionar Galleta
+                        </button>
+                        {{  render_errors(form.materia_prima_id) }}
+                    {% endif %}
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="tipo">
+                        {{ form.tipo.label }}
+                    </label>
+                    <input type="text" id="tipo" name="tipo" readonly required placeholder="Tipo de medida" class="form-control mt-2" value="{{ form.tipo.data or '' }}">
+                    {{  render_errors(form.tipo) }}
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="cantidad">
+                        {{ form.cantidad.label }}
+                    </label>
+                    <input type="text" id="cantidad" required name="cantidad" placeholder="Cantidad" class="form-control mt-2" value="{{ form.cantidad.data or '' }}">
+                    {{  render_errors(form.cantidad) }}
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="cantidad">
+                        {{ form.fecha.label }}
+                    </label>
+                    {{ render_field(form.fecha, class="form-control mt-2", type="datetime-local", placeholder="Fecha y Hora") }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="form-group col-md-12">
+                    {{ form.descripcion.label(class="form-label") }}
+                    {{ render_field(form.descripcion, class="form-control", placeholder="Descripción") }}
+                </div>
+            </div>
+            <div class="row mb-3" style="
+                visibility: hidden;
+                width: 0;
+                height: 0;
+                margin: 0;
+                padding: 0;
+            ">
+            <div class="form-group col-md-12">
+                    {{ render_field(form.tipo_merma, style="display: hidden;", class="form-control", placeholder="Descripción") }}
+            </div>
+            </div>
+            <div class="col-md-12 text-center">
+                {% if form.id.data == 0 %}
+                    <button type="submit" class="btn btn-success">Guardar Merma</button>
+                {% endif %}
+                {% if form.id.data != 0 %}
+                    <button type="submit" class="btn btn-success">Modificar Merma</button>
+                {% endif %}
+                </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow mb-4" id="spacesTable">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold">Listado de mermas</h6>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+            <tr class="text-center">
+                <th>ID</th>
+                <th>Materia Prima</th>
+                <th>Tipo</th>
+                <th>Cantidad</th>
+                <th>Descripción</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for merma in mermas %}
+                <tr class="text-center">
+                    <td>{{ merma.id }}</td>
+                    <td>{{ merma.materia_prima.tipo_materia.nombre }}</td>
+                    <td>{{ merma.tipo }}</td>
+                    <td>{{ merma.cantidad }}</td>
+                    <td>{{ merma.descripcion }}</td>
+                    <td>{{ merma.fecha.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>
+                        <form action="{{ url_for('mermas.seleccionar_merma')}}" method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <input type="hidden" name="id" value="{{ merma.id }}">
+                            <input type="hidden" name="tipo_merma" value="materiaPrima">
+                            <button type="submit" class="btn btn-warning btn-sm">Editar</button>
+                        </form>
+                        <button type="button" data-id = "{{ merma.id }}" class="btn btn-danger btn-sm mt-1 eliminarMerma" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
 <div class="modal fade" id="materiaPrimaModal" tabindex="-1" aria-labelledby="materiaPrimaModalLabel" aria-hidden="true" role="dialog">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
