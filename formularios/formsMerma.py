@@ -10,7 +10,7 @@ class MermaMateriaPrimaForm(Form):
     tipo = StringField('Tipo medida', render_kw={"readonly": True})
     cantidad = FloatField('Cantidad')
     descripcion = TextAreaField('Descripción', validators=[DataRequired()])
-    fecha = StringField('Fecha Merma', [
+    fecha = StringField('Fecha Registro', [
         DataRequired(message='El campo es requerido')
     ])
     tipo_merma = SelectField(
