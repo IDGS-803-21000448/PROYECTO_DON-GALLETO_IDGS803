@@ -22,6 +22,6 @@ class CompraForm(Form):
     fecha_caducidad = StringField('Fecha Caducidad', [
         DataRequired(message='El campo es requerido')
     ])
-    lote = StringField('Lote Merma', [
+    lote = StringField('Lote Materia', [
         DataRequired(message='El campo es requerido')
     ])
