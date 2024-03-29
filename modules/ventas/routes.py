@@ -17,7 +17,7 @@ ventas_array = []
 @login_required
 @requiere_rol("admin")
 def modulo_venta():
-    ventas = Venta.query.order_by(Venta.fecha.desc()).all()
+    ventas = Venta.query.order_by(Venta.id.desc()).all()
     return render_template("moduloVentas/vistaVentas.html", ventas=ventas)
 
 @ventas.route("/nuevaVenta", methods=["GET"])
@@ -48,32 +48,66 @@ def realizar_venta():
         lista_ventas = datos['ventas']
         id_venta_insertada = None
         primer_venta = lista_ventas[0]
+        total_str = str(primer_venta.get('total'))
+        totalVenta = float(total_str.replace('$', ''))
+
+        #en lista venta agrupar y sumar subtotales y cantidades segun su galleta_id
+        ventas_agrupadas = {}
+        for venta_data in lista_ventas:
+            id_galleta = venta_data.get('galleta_id')
+            if id_galleta not in ventas_agrupadas:
+                ventas_agrupadas[id_galleta] = {'cantidad': 0, 'subtotal': 0, 'sabor': f'{venta_data.get("sabor")}', 'precio_unitario': f'{venta_data.get("precio_unitario")}'}
+            ventas_agrupadas[id_galleta]['cantidad'] += float(venta_data.get('cantidad'))
+            ventas_agrupadas[id_galleta]['subtotal'] += float(venta_data.get('subtotal').replace('$', ''))
+
+        #validar si hay galletas disponibles segun la cantidad de en ventas_agrupadas
+        for id_galleta, datos in ventas_agrupadas.items():
+            id_costo = id_galleta
+            precio = float(datos.get('precio_unitario'))
+            subtotal = float(datos.get('subtotal'))
+            cantidadVendida = subtotal / precio
+            cantidadStock = CostoGalleta.query.filter_by(id=id_costo).first().galletas_disponibles
+            if cantidadVendida >= cantidadStock:
+                flash(f'No hay sufucientes galletas de {datos.get("sabor")} en stock', 'error')
+                respuesta = {'mensaje': 'Stock', 'galleta': f'{datos.get("sabor")}'}
+                return jsonify(respuesta)
+                    
 
         # Insertar datos en la tabla Venta
         nueva_venta = Venta(
             folio=generar_folio(),
             nombre_cliente=primer_venta.get('nombre'),
             fecha=primer_venta.get("fecha"),
-            total=500.0,
+            total=totalVenta
         )
         db.session.add(nueva_venta)
         db.session.commit()
-
-        print(f"DETALLE VENTA: {lista_ventas}")
 
         for venta_data in lista_ventas:
             # Obtener el ID de la venta insertada para usarlo en DetalleVenta
             id_venta_insertada = nueva_venta.id
 
+            #Restar cantidad de galletas en inventario
+            id_costo = venta_data.get('galleta_id')
+            precio = float(venta_data.get('precio_unitario'))
+            subtotal = float(venta_data.get('subtotal').replace('$', ''))
+
+            cantidadVendida = subtotal / precio
+            #actualizar la cantidad de galletas_disponibles de la tabla costogalletas
+            costo_galletas = CostoGalleta.query.filter_by(id=id_costo).first()
+            costo_galletas.galletas_disponibles -= cantidadVendida
+            db.session.commit()
+
             # Insertar datos en la tabla DetalleVenta
             nuevo_detalle = DetalleVenta(
                 sabor=venta_data.get('sabor'),
                 tipo_venta=venta_data.get('tipoVenta'),
-                precio_unitario=10.0, 
-                cantidad=venta_data.get('cantidad'),
-                subtotal=100.0, 
+                precio_unitario=float(venta_data.get('precio_unitario')), 
+                cantidad=int(venta_data.get('cantidad')),
+                subtotal=float(venta_data.get('subtotal').replace('$', '')), 
                 venta_id=id_venta_insertada 
             )
+
             db.session.add(nuevo_detalle)
             db.session.commit()
 

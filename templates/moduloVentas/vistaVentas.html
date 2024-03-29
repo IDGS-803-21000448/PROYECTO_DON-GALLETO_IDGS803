@@ -10,6 +10,9 @@
         </div>
 
         <div class="col-md-6 my-3 d-flex justify-content-end">
+            <button type="button" id="btnCorte" class="btn btn-warning" onclick=""><i class="fas fa-calendar"></i> Generar Corte
+            </button>
+            <a></a>
             <button type="button" id="btnInteraccion" class="btn btn-primary" onclick="window.location.href='/nuevaVenta'"><i class="fas fa-plus"></i> Nueva Venta
             </button>
         </div>
@@ -36,7 +39,7 @@
                             <tr>
                                 <td>{{venta.folio}}</td>
                                 <td>{{venta.nombre_cliente}}</td>
-                                <td>{{venta.fecha.strftime('%Y-%m-%d %H:%M:%S')}}</td>
+                                <td>{{venta.fecha.strftime('%Y-%m-%d')}}</td>
                                 <td>{{venta.total}}</td>
                                 <td><button id="generarTicket" data-id="{{venta.folio}}" class="btn btn-warning" data-toggle="modal" data-target="#modalConfirmacion">Generar Ticket</button></td>
                             </tr>

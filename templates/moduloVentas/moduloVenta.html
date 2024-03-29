@@ -149,6 +149,7 @@
             var datosVenta = [];
             var nombre = document.getElementById('nombre').value.trim();
             var fechaInput = document.getElementById('fecha').value.trim();
+            
 
             if (filas.length <= 1) {
                 Swal.fire({
@@ -161,9 +162,14 @@
 
             for (var i = 1; i < filas.length; i++) {
                 var celdas = filas[i].getElementsByTagName('td');
-                var tipoVenta = celdas[0].textContent.trim();
-                var cantidad = celdas[1].innerText;
-                var sabor = celdas[2].innerText;
+                console.log(filas);
+                var cantidad = celdas[0].innerText;
+                var sabor = celdas[1].innerText;
+                var tipoVenta = celdas[2].innerText;
+                var precio_unitario = celdas[3].innerText;
+                var subtotal = celdas[4].innerText;
+                var costoId = parseInt(celdas[6].innerText);
+                var total = parseFloat(document.getElementById("totalVenta").innerHTML.replace('$', ''));
 
                 if (nombre === '' || fechaInput === '') {
                     Swal.fire({
@@ -174,8 +180,10 @@
                     return;
                 }
 
-                datosVenta.push({ nombre: nombre, tipoVenta: tipoVenta, cantidad: cantidad, sabor: sabor, fecha: fechaInput });
+                datosVenta.push({ nombre: nombre, tipoVenta: tipoVenta, cantidad: cantidad, sabor: sabor, fecha: fechaInput, precio_unitario: precio_unitario, subtotal: subtotal, total: total, galleta_id: costoId });
             }
+
+            console.log(datosVenta);
 
             // Obtener el token CSRF del formulario
             var csrfToken = document.querySelector('input[name="csrf_token"]').value;
@@ -209,7 +217,16 @@
                         });
 
                         window.location.href = '/moduloVenta';
-                    } else {
+                    } else if (data.mensaje === 'Stock') {
+                        $('#modalConfirmacion').modal('hide');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No hay suficientes galletas de ' + data.galleta +' en el inventario, ingresa otra cantidad.'
+                        });
+                    }                     
+                    else {
+                        $('#modalConfirmacion').modal('hide');
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
@@ -227,7 +244,7 @@
             // Obtener valores de los campos
             var tipoVenta = document.getElementById('tipo_venta').value.trim();
             var cantidad = document.getElementById('cantidad').value.trim();
-            var saborRaw = document.getElementById('sabor').value.trim();
+            var saborRaw = document.getElementById('sabor').value;
 
             dataSabor = saborRaw.replace(/[()\s]/g, '');
             dataDepurada = dataSabor.split(',');
@@ -237,6 +254,50 @@
             var precioUnitario = parseFloat(dataDepurada[2]);
             var stock = parseInt(dataDepurada[3]);
             let subtotal = 0;
+
+            // revisar en la tabla si hay un producto con el mismo costoId
+            var celdas = document.getElementById('tabla_productos').getElementsByTagName('tr');
+            var cantidadEvaluar = 0;
+            if (tipoVenta === 'gramos') {
+                cantidadEvaluar = (parseFloat(cantidad) / 30)
+            }
+
+            if (tipoVenta === 'pieza') {
+                cantidadEvaluar = cantidad;
+            }
+
+            if (tipoVenta === 'paquete') {
+                paquete = document.getElementById('paquete').value;
+                console.log(paquete);
+                let cantidadxpaquete = 0;
+
+                if (paquete == '1'){
+                    cantidadxpaquete = parseFloat(cantidad) * 700;
+                }
+
+                if (paquete == '2'){
+                    cantidadxpaquete = parseFloat(cantidad) * 1000;
+                }
+
+                cantidadEvaluar =  parseFloat(cantidadTotal) / 30;
+            }
+
+            var cantGalletasTabla = cantidadEvaluar;
+            for (var i = 1; i < celdas.length; i++) {
+                var cells = celdas[i].getElementsByTagName('td');
+                var currentCostoId = parseInt(cells[6].innerText);
+                if (currentCostoId === costoId) {
+                    cantGalletasTabla += parseInt(cells[4].innerText / cells[3].innerText); 
+                    if (cantGalletasTabla > stock) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No hay suficientes galletas en el inventario, ingresa otra cantidad.'
+                        });
+                        return;
+                    }
+                }
+            }
 
             // Verificar que todos los campos estén completos
             if (tipoVenta === '' || cantidad === '' || sabor === '') {
@@ -260,6 +321,15 @@
             }
 
             if (tipoVenta === 'pieza') {
+                if (cantidad >= stock) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No hay suficientes galletas en el inventario, ingresa otra cantidad.'
+                    });
+                    return;
+                }
+
                 subtotal = '$' + (Math.ceil(parseFloat(cantidad)) * parseFloat(precioUnitario));
             }
 
@@ -285,8 +355,6 @@
                 subtotal = '$' + (parseFloat(Math.ceil(parseFloat(unidades)) * parseFloat(precioUnitario)));
             }
 
-            
-
             // Crear nueva fila en la tabla
             var tabla = document.getElementById('tabla_productos').getElementsByTagName('tbody')[0];
             var nuevaFila = tabla.insertRow();
@@ -298,6 +366,9 @@
             var celdaPrecio = nuevaFila.insertCell(3);
             var celdaSubtotal = nuevaFila.insertCell(4);
             var celdaAcciones = nuevaFila.insertCell(5);
+            var celdaReceta = nuevaFila.insertCell(6);
+            celdaReceta.innerHTML = costoId;
+            celdaReceta.style = "display: none";
 
             // Agregar valores a las celdas
             if (tipoVenta === 'paquete') {
