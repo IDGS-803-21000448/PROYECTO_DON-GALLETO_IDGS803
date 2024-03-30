@@ -162,6 +162,17 @@
 
     {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'inventario' or current_user.rol == 'produccion'%}
 
+    <li class="nav-item">
+        <a class="nav-link" href="/moduloStock">
+            <i class="fas fa-box"></i>
+            <span>Stock Galletas</span>
+        </a>
+    </li>    
+
+    {%endif%}
+
+    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'inventario' or current_user.rol == 'produccion'%}
+
     <!-- Nav Item - Mermas -->
     <li class="nav-item">
         <a class="nav-link" href="/moduloMermas">

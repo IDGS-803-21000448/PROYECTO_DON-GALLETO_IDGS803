@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <h1 class="h3 mb-2 text-gray"><i class="fas fa-box"></i> Stock de venta</h1>
+    </div>
+</div>
+
+<div class="card shadow mb-4" id="spacesTable">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold">Cantidades disponibles</h6>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr class="text-center">
+                    <th>Nombre de la galleta</th>
+                    <th>Cantidad disponible</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for galleta in galletas %}
+                <tr class="text-center">
+                    <td>{{ galleta.nombre }}</td>
+                    <td>{{ galleta.cantidad_disponible }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

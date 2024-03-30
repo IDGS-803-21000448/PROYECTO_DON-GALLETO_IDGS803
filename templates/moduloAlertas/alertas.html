@@ -2,59 +2,70 @@
 {% block content %} 
 {% from "_macros.html" import render_field %}
 
-<div class="container">
-    <div class="row mt-3">
-        <div class="col-md-12">
-            <h2>Alertas</h2>
-            <div class="form-group col-md-4">
-                <form method="POST" action="/alertas">
-                    {{ form.csrf_token }}
-                    {{ render_field(form.filtroAlerta, class="form-control") }}
-                    <button type="submit" class="btn btn-primary">Filtrar</button>
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                </form>
-            </div>            
-        </div>
+<div class="row">
+    <div class="col-md-6">
+        <h1 class="h3 mb-2 text-gray"><i class="fas fa-exclamation-triangle"></i> Alertas</h1>
     </div>
-    <div class="row">
-        <div class="col-md-12">
-            <form method="POST" action="/actualizar_alerta">
-                {{ form.csrf_token }}
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Descripción</th>
-                            <th>Fecha de alerta</th>
-                            <th>Estatus</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for alerta in alertas %}
-                            <tr>
-                                <td>{{ alerta.nombre }}</td>
-                                <td>{{ alerta.descripcion }}</td>
-                                <td>{{ alerta.fechaAlerta }}</td>
-                                <td>
-                                    <div class="form-check">
-                                        <!-- Modifica el botón para que envíe el formulario -->
-                                        <form method="POST" action="/actualizar_alerta">
-                                            {{ form.csrf_token }}
-                                            <button class="btn {% if alerta.estatus == 1 %}btn-success{% else %}btn-danger{% endif %}" type="submit" name="completada_{{ alerta.id }}" value="{{ 1 if alerta.estatus == 0 else 0 }}">
-                                                {% if alerta.estatus == 1 %}Completa{% else %}Incompleta{% endif %}
-                                            </button>
-                                            <input type="hidden" name="alerta_id" value="{{ alerta.id }}">
-                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </form>
+</div>
+<div class="card shadow mb-4" id="spacesTable">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold">Listado de alertas</h6>
+    </div>
+    <div class="card-body">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <form method="POST" action="/alertas" class="form-inline">
+                        <div class="form-group mr-2 mb-2">
+                            {{ render_field(form.filtroAlerta, class="form-control") }}
+                        </div>
+                        <div class="form-group mb-2">
+                            <button type="submit" class="btn btn-primary">Filtrar</button>
+                        </div>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <form method="POST" action="/actualizar_alerta">
+                        {{ form.csrf_token }}
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Fecha de alerta</th>
+                                    <th>Estatus</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for alerta in alertas %}
+                                    <tr>
+                                        <td>{{ alerta.nombre }}</td>
+                                        <td>{{ alerta.descripcion }}</td>
+                                        <td>{{ alerta.fechaAlerta }}</td>
+                                        <td>
+                                            <div class="form-check">
+                                                <!-- Modifica el botón para que envíe el formulario -->
+                                                <form method="POST" action="/actualizar_alerta">
+                                                    {{ form.csrf_token }}
+                                                    <button class="btn {% if alerta.estatus == 1 %}btn-success{% else %}btn-danger{% endif %}" type="submit" name="completada_{{ alerta.id }}" value="{{ 1 if alerta.estatus == 0 else 0 }}">
+                                                        {% if alerta.estatus == 1 %}Completa{% else %}Incompleta{% endif %}
+                                                    </button>
+                                                    <input type="hidden" name="alerta_id" value="{{ alerta.id }}">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
 {% endblock %}
