@@ -21,7 +21,7 @@
 
         <div class="col-md-6 my-3 d-flex justify-content-end">
             <button type="button" id="btnInteraccion" class="btn btn-primary"
-                onclick="window.location.href='/moduloVenta'"><i class="fas fa-arrow-left"></i> Regresar
+                onclick="window.location.href='/moduloVenta?turno_id={{turno_id}}'"><i class="fas fa-arrow-left"></i> Regresar
             </button>
         </div>
     </div>
@@ -279,7 +279,7 @@
                     cantidadxpaquete = parseFloat(cantidad) * 1000;
                 }
 
-                cantidadEvaluar =  parseFloat(cantidadTotal) / 30;
+                cantidadEvaluar =  parseFloat(cantidadxpaquete) / 30;
             }
 
             var cantGalletasTabla = cantidadEvaluar;
