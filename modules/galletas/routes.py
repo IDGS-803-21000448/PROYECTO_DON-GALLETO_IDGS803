@@ -1,4 +1,4 @@
-from flask import render_template, request, flash, redirect, url_for
+from flask import render_template, request, flash, redirect, url_for, flash
 from . import galletas
 from controllers.controller_login import requiere_rol, requiere_token
 from flask_login import login_required
@@ -136,11 +136,12 @@ def detalles_costo():
                         detalles_procesados.add(detalle_receta)
                         materias_primas.append(detalle_materia_prima)
                         suma_costos += detalle_materia_prima['costo_ingredientes']
+        else:
+            flash('Aún no has agregado algunos ingredientes, compralos primero en el módulo de compras', 'success')
 
     # Calcula el promedio de costos y el precio de la galleta
     promedio_costos = suma_costos / len(materias_primas)
     precio_galleta = math.ceil(promedio_costos * 0.2)
-    print(precio_galleta)
 
     # Verifica si ya existe un registro con el mismo id_precio en la tabla CostoGalleta
     costo_existente = CostoGalleta.query.filter_by(id=id_galleta).first()

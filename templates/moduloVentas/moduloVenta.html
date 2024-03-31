@@ -18,10 +18,13 @@
         <div class="col-md-6">
             <h1 class="h3 mb-2 text-gray"><i class="fas fa-solid fa-cart-plus"></i> Ventas</h1>
         </div>
-
         <div class="col-md-6 my-3 d-flex justify-content-end">
-            <button type="button" id="btnInteraccion" class="btn btn-primary"
-                onclick="window.location.href='/moduloVenta'"><i class="fas fa-arrow-left"></i> Regresar
+            <a href="{{ url_for('stock.modulo_stock') }}" class="btn btn-success mb-3 mr-2" style="width: 150px;">
+                <i class="fas fa-box"></i> Ver Stock de Galletas
+            </a>
+            <button type="button" id="btnInteraccion" class="btn btn-primary mb-3" style="width: 150px;"
+                onclick="window.location.href='/moduloVenta?turno_id={{turno_id}}'">
+                <i class="fas fa-arrow-left"></i> Regresar
             </button>
         </div>
     </div>
@@ -279,7 +282,7 @@
                     cantidadxpaquete = parseFloat(cantidad) * 1000;
                 }
 
-                cantidadEvaluar =  parseFloat(cantidadTotal) / 30;
+                cantidadEvaluar =  parseFloat(cantidadxpaquete) / 30;
             }
 
             var cantGalletasTabla = cantidadEvaluar;

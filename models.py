@@ -146,6 +146,25 @@ class Proveedor(db.Model):
     estatus = db.Column(db.Integer, default=1)
     
 #-------VENTAS-------
+class Turnos(db.Model):
+    __tablename__ = 'turnos'
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.DateTime, default=datetime.datetime.now)
+    estatus = db.Column(db.String(100), default='En turno') # En turno, completado
+    fondo_caja = db.Column(db.Float, nullable=False)
+    venta_total = db.Column(db.Float, nullable=False, default=0)
+    salidas_totales = db.Column(db.Float, nullable=False, default=0)
+    total_final = db.Column(db.Float, nullable=False, default=0)
+    id_usuario = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)    
+
+class Salidas(db.Model):
+    __tablename__ = 'salidas'
+    id = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.DateTime, default=datetime.datetime.now)
+    cantidad = db.Column(db.Float, nullable=False)
+    justificacion = db.Column(db.Text, nullable=False)
+    id_turno = db.Column(db.Integer, db.ForeignKey('turnos.id'), nullable=False)
+
 class Venta(db.Model):
     __tablename__ = 'venta'
     id = db.Column(db.Integer, primary_key=True)
@@ -153,6 +172,7 @@ class Venta(db.Model):
     nombre_cliente = db.Column(db.String(50))
     fecha = db.Column(db.DateTime, default=datetime.datetime.now)
     total = db.Column(db.Float)
+    id_turno = db.Column(db.Integer, db.ForeignKey('turnos.id'), nullable=False)
 
 class DetalleVenta(db.Model):
     __tablename__ = 'detalle_venta'
@@ -171,3 +191,5 @@ class CostoGalleta(db.Model):
     galletas_disponibles = db.Column(db.Integer)
     mano_obra = db.Column(db.Float)
     fecha_utlima_actualizacion = db.Column(db.DateTime, default=datetime.datetime.now)
+
+

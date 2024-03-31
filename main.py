@@ -5,11 +5,10 @@ from flask_admin.contrib.sqla import ModelView
 from config import DevelopmentConfig
 from models import db
 from modules import (galletas, index, proveedores, usuarios, recetas, dashboard, inventarios, alertas, produccion,
-                     mermas, ventas, compras, login, materiaPrima,solicitudProduccion)
+                     mermas, ventas, compras, login, materiaPrima,solicitudProduccion, stock)
 from models import *
 import flask_login as fl
 from flask_cors import CORS
-
 
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
@@ -44,6 +43,7 @@ app.register_blueprint(compras.compras)
 app.register_blueprint(login.login)
 app.register_blueprint(materiaPrima.materia_prima)
 app.register_blueprint(solicitudProduccion.solicitud_produccion)
+app.register_blueprint(stock.stock)
 
 # Manejo de Errores
 @app.errorhandler(404)

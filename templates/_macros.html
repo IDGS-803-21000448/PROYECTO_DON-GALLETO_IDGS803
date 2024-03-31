@@ -153,10 +153,21 @@
 
     <!-- Nav Item - Ventas -->
     <li class="nav-item">
-        <a class="nav-link" href="/moduloVenta">
+        <a class="nav-link" href="/turnos">
             <i class="fas fa-fw fa-store"></i>
             <span>Ventas</span></a>
     </li>
+
+    {%endif%}
+
+    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'inventario' or current_user.rol == 'produccion'%}
+
+    <li class="nav-item">
+        <a class="nav-link" href="/moduloStock">
+            <i class="fas fa-box"></i>
+            <span>Stock Galletas</span>
+        </a>
+    </li>    
 
     {%endif%}
 
