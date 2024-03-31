@@ -9,5 +9,6 @@ from . import index
 @login_required
 @requiere_token
 def index():
+    print(f"USUARIO: {current_user}")
     controller_mermas.verificarCaducidades()
     return render_template("index.html")

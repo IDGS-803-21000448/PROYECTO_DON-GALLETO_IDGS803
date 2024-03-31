@@ -10,12 +10,12 @@ from controllers.controller_login import generate_jwt_token
 def login_view():  # Cambia el nombre de la función para evitar conflictos
     form = LoginForm(request.form)
 
-    if request.method == "POST" and form.validate():
+    if request.method == "POST":
         usuario = request.form['usuario']
         contrasena = request.form['contrasena']
         user = User.query.filter_by(usuario=usuario).first()  # Asegúrate de que este campo coincida con tu modelo
         if user and user.contrasena == contrasena:
-    # Usuario autenticado correctamente
+            # Usuario autenticado correctamente
             res = fl.login_user(user, force=True)
 
             token = generate_jwt_token(user.id)
@@ -23,18 +23,18 @@ def login_view():  # Cambia el nombre de la función para evitar conflictos
             if token is None:
                 # Manejar el caso de error, por ejemplo, enviando una respuesta de error
                 flash('Error al generar el token de autenticación', 'error')
-                return redirect(url_for('login.login_view'))
+                return render_template("moduloLogin/login.html", form=form)
 
             # Si todo está bien, proceder como antes
             response = make_response(redirect(url_for('index.index')))
-            response.set_cookie('auth_token', token)
-            return response
-    else:
-        flash('Error en el formulario', 'error')
+            #enviar token al localstorage de la web
+            response.set_cookie('auth_token', token, samesite='None', secure=True, httponly=True)
+            print(f"------------------ REDIRECCIONANDO ------------------")
+            return response        
 
     return render_template("moduloLogin/login.html", form=form)
 
-@login_bp.route("/logout", methods=["GET", "POST"])
+@login_bp.route("/logout", methods=["GET"])
 def logout():
     fl.logout_user()
     response = make_response(redirect(url_for('login.login_view')))
