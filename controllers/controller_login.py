@@ -18,6 +18,7 @@ def requiere_rol(*roles_permitidos):
         return decorado
     return decorador
 
+# Verificacion de Token Multinavegador
 def requiere_token(f):
     @wraps(f)
     def decorated(*args, **kwargs):
