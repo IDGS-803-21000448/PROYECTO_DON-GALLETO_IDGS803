@@ -12,7 +12,7 @@
 <div class="row mt-4">
     <div class="col-md-12">
         <h2 class="h5 mb-2 text-gray"><i class="fas fa-table"></i> Solicitudes de Producción</h2>
-        <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar...">
+        <input type="text" id="searchInput1" class="form-control mb-3" placeholder="Buscar...">
         <table class="table table-striped table-bordered table-hover" id="solicitudesTable">
             <thead>
                 <tr>
@@ -54,11 +54,53 @@
     </div>
 </div>
 
+
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h2 class="h5 mb-2 text-gray"><i class="fas fa-table"></i> Solicitudes En Proceso</h2>
+        <input type="text" id="searchInput2" class="form-control mb-3" placeholder="Buscar...">
+        <table class="table table-striped table-bordered table-hover" id="procesoTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Receta</th>
+                    <th>Fecha de Solicitud</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for solicitud in solicitudes_en_proceso %}
+                <tr>
+                    <td>{{ solicitud.id }}</td>
+                    <td>{{ solicitud.receta.nombre }}</td>
+                    <td>{{ solicitud.fecha_solicitud }}</td>
+                    <td>
+                        <form action="{{url_for('produccion_blueprint.terminar_produccion')}}" method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
+                            <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
+                            <button type="submit" class="btn btn-success">Terminar</button>
+                        </form>
+                        <form action="{{url_for('produccion_blueprint.cancelar_produccion')}}" method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
+                            <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
+                            <button type="submit" class="btn btn-warning">Cancelar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <div class="row mt-4">
     <div class="col-md-12">
         <h2 class="h5 mb-2 text-gray"><i class="fas fa-table"></i> Solicitudes Postergadas</h2>
-        <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar...">
-        <table class="table table-striped table-bordered table-hover" id="solicitudesTable">
+        <input type="text" id="searchInput3" class="form-control mb-3" placeholder="Buscar...">
+        <table class="table table-striped table-bordered table-hover" id="postergadasTable">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -97,49 +139,8 @@
 
 <div class="row mt-4">
     <div class="col-md-12">
-        <h2 class="h5 mb-2 text-gray"><i class="fas fa-table"></i> Solicitudes En Proceso</h2>
-        <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar...">
-        <table class="table table-striped table-bordered table-hover" id="solicitudesTable">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Receta</th>
-                    <th>Fecha de Solicitud</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for solicitud in solicitudes_en_proceso %}
-                <tr>
-                    <td>{{ solicitud.id }}</td>
-                    <td>{{ solicitud.receta.nombre }}</td>
-                    <td>{{ solicitud.fecha_solicitud }}</td>
-                    <td>
-                        <form action="{{url_for('produccion_blueprint.terminar_produccion')}}" method="post" class="d-inline">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                            <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
-                            <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
-                            <button type="submit" class="btn btn-success">Terminar</button>
-                        </form>
-                        <form action="{{url_for('produccion_blueprint.cancelar_produccion')}}" method="post" class="d-inline">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                            <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
-                            <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
-                            <button type="submit" class="btn btn-warning">Cancelar</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-
-<div class="row mt-4">
-    <div class="col-md-12">
         <h2 class="h5 mb-2 text-gray"><i class="fas fa-table"></i> Solicitudes Canceladas</h2>
-        <input type="text" id="searchCanceladas" class="form-control mb-3" placeholder="Buscar...">
+        <input type="text" id="searchInput4" class="form-control mb-3" placeholder="Buscar...">
         <table class="table table-striped table-bordered table-hover" id="canceladasTable">
             <thead>
                 <tr>
@@ -165,10 +166,9 @@
 
 
 
-
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const searchInput = document.getElementById('searchInput');
+        const searchInput = document.getElementById('searchInput1');
         const userTable = document.getElementById('solicitudesTable');
         const rows = userTable.getElementsByTagName('tr');
     
@@ -193,5 +193,100 @@
           }
         });
       });
-</script>
+
+      document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.getElementById('searchInput2');
+        const userTable = document.getElementById('procesoTable');
+        const rows = userTable.getElementsByTagName('tr');
+    
+        searchInput.addEventListener('input', function() {
+          const searchText = this.value.toLowerCase();
+          for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.getElementsByTagName('td');
+            let found = false;
+            for (let j = 0; j < cells.length; j++) {
+              const cell = cells[j];
+              if (cell.textContent.toLowerCase().indexOf(searchText) > -1) {
+                found = true;
+                break;
+              }
+            }
+            if (found) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          }
+        });
+      });
+
+      document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.getElementById('searchInput3');
+        const userTable = document.getElementById('postergadasTable');
+        const rows = userTable.getElementsByTagName('tr');
+    
+        searchInput.addEventListener('input', function() {
+          const searchText = this.value.toLowerCase();
+          for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.getElementsByTagName('td');
+            let found = false;
+            for (let j = 0; j < cells.length; j++) {
+              const cell = cells[j];
+              if (cell.textContent.toLowerCase().indexOf(searchText) > -1) {
+                found = true;
+                break;
+              }
+            }
+            if (found) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          }
+        });
+      });
+
+      document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.getElementById('searchInput4');
+        const userTable = document.getElementById('canceladasTable');
+        const rows = userTable.getElementsByTagName('tr');
+    
+        searchInput.addEventListener('input', function() {
+          const searchText = this.value.toLowerCase();
+          for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const cells = row.getElementsByTagName('td');
+            let found = false;
+            for (let j = 0; j < cells.length; j++) {
+              const cell = cells[j];
+              if (cell.textContent.toLowerCase().indexOf(searchText) > -1) {
+                found = true;
+                break;
+              }
+            }
+            if (found) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          }
+        });
+      });
+
+// Adjunta el evento al botón que abre el modal, no al botón de cierre del modal
+$(document).on('click', '#confirmarProcesamiento', function() {
+    var proveedorId = $(this).data('id');
+    $('#idEliminar').val(proveedorId);
+  $('#modalConfirmacion').modal('show');  // Muestra el modal
+});
+
+// Adjunta el evento al botón de cierre del modal
+$('#closeModalConfirmacion').click(function() {
+    $('#modalConfirmacion').modal('hide');  // Oculta el modal
+});
+
+
+    </script>
 {% endblock %}

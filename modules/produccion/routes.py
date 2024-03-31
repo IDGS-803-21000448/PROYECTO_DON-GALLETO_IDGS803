@@ -1,6 +1,6 @@
 from flask import render_template
 from flask import render_template, request, jsonify, url_for, redirect, flash
-from models import db, Receta, Produccion, RecetaDetalle, MateriaPrima, MermaMateriaPrima, CostoGalleta
+from models import db, Receta, Produccion, RecetaDetalle, MateriaPrima, MermaMateriaPrima, CostoGalleta, Tipo_Materia
 from . import produccion
 from controllers.controller_login import requiere_rol
 from flask_login import login_required
@@ -144,7 +144,7 @@ def terminar_produccion():
     
     receta = Receta.query.get(receta_id)
     
-    costo_galleta = CostoGalleta.query.filter_by(precio = receta.id_precio).first()
+    costo_galleta = CostoGalleta.query.filter_by(id = receta.id_precio).first()
     for detalle in detalles_receta:
         if not detalle.merma_porcentaje or detalle.merma_porcentaje == 0:
                 print("no hay porcentaje de merma")
@@ -162,6 +162,12 @@ def terminar_produccion():
                 estatus = 1
             )
             db.session.add(nueva_merma)
+        
+        tipo_materia = Tipo_Materia.query.get(detalle.tipo_materia_id)
+        cantidad_a_restar = convertir_unidades(detalle.cantidad_necesaria, detalle.unidad_medida, tipo_materia.tipo)
+        tipo_materia.cantidad_disponible -= cantidad_a_restar
+        
+        
     # Actualizar stock de las galletas
     costo_galleta.galletas_disponibles += receta.num_galletas
 
@@ -190,26 +196,33 @@ def cancelar_produccion():
     solicitud.estatus = 'cancelada'
     
     try:
-        # Obtener los detalles de la solicitud
         detalles_receta = RecetaDetalle.query.filter_by(receta_id=receta_id).all()
         
-        # Regresar la materia prima a la receta
         for detalle in detalles_receta:
-            materia_prima = MateriaPrima.query.filter_by(id_tipo_materia=detalle.tipo_materia_id).first()
-            if materia_prima is not None:
-                # Convertir la cantidad necesaria a la unidad de medida de la materia prima
-                cantidad_necesaria = convertir_unidades(detalle.cantidad_necesaria, detalle.unidad_medida, materia_prima.tipo)
-                materia_prima.cantidad_disponible += cantidad_necesaria
-                db.session.commit()
-        
-        db.session.commit()
-        flash('La solicitud de producción se ha cancelado correctamente. Se ha regresado la materia prima a la receta.', 'info')
+            # Ordenar las materias primas por fecha de caducidad ascendente
+            materias_primas = MateriaPrima.query.filter_by(id_tipo_materia=detalle.tipo_materia_id)\
+                                                .order_by(MateriaPrima.fecha_caducidad.asc()).all()
+
+            cantidad_a_devolver = convertir_unidades(detalle.cantidad_necesaria, detalle.unidad_medida, materias_primas[0].tipo) if materias_primas else 0
+
+            for materia_prima in materias_primas:
+                if cantidad_a_devolver <= 0:
+                    break  # Ya se ha devuelto toda la cantidad necesaria
+
+                # Si el lote actual puede aceptar toda la cantidad a devolver, hazlo y termina el proceso
+                materia_prima.cantidad_disponible += cantidad_a_devolver
+                cantidad_a_devolver = 0  # Ajusta según necesidad real
+
+                db.session.add(materia_prima)  # Asegura que los cambios se preparan para el commit
+
+        db.session.commit()  # Realiza un único commit después de actualizar todas las materias primas
+        flash('La solicitud de producción se ha cancelado correctamente. Se ha regresado la materia prima al inventario.', 'info')
     except Exception as e:
         db.session.rollback()
-        flash('Error al regresar la materia prima a la receta. Inténtelo de nuevo más tarde.', 'error')
-        #current_app.logger.error(f'Error al regresar la materia prima a la receta: {str(e)}')
+        flash(f'Error al regresar la materia prima al inventario. Inténtelo de nuevo más tarde. {e}', 'error')
 
     return redirect(url_for("produccion_blueprint.vista_produccion"))
+
 
 
 
