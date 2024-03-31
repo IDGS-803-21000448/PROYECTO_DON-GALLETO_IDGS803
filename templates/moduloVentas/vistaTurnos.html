@@ -1,0 +1,108 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+{% from "_macros.html" import render_field %}
+
+<div class="row">
+    <div class="col-md-6">
+        <h1 class="h3 mb-2 text-gray"><i class="fas fa-solid fa-cash-register"></i> Caja</h1>
+    </div>
+    <div class="col-md-6 my-3 d-flex justify-content-end">
+        <button id="abrirTurno" class="btn btn-primary mb-3" data-toggle="modal" data-target="#modalTurno" style="width: 200px"><i
+            class="fas fa-plus"></i> Abrir Turno</button>
+    </div>
+</div>
+<!-- Page Heading -->
+
+<!-- Table Usuarios -->
+<div class="card shadow mb-4" id="spacesTable">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold">Tus Turnos</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Fondo Inicial</th>
+                        <th>Ventas Totales</th>
+                        <th>Salidas</th>
+                        <th>Total Final</th>
+                        <th>Estatus</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for turno in turnos %}
+                    <tr>
+                        <td>{{turno.id}}</td>
+                        <td>{{turno.fecha.strftime('%Y-%m-%d')}}</td>
+                        <td>{{turno.fondo_caja}}</td>
+                        <td>{{turno.venta_total}}</td>
+                        <td>{{turno.salidas_totales}}</td>
+                        <td>{{turno.total_final}}</td>
+                        {% if turno.estatus == 'En turno' %}
+                            <td><span class="badge badge-primary">{{turno.estatus}}</span></td>
+                            <td><a id="verTurno" href="/moduloVenta?turno_id={{turno.id}}" class="btn btn-warning"><i class="fas fa-cash-register"></i>
+                                    Ir al Turno</a></td>
+                        {% else %}
+                            <td><span class="badge badge-danger">{{turno.estatus}}</span></td>
+                            <td></td>
+                        {% endif %}
+                    </tr>
+                    {%endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalTurno" tabindex="-1" aria-labelledby="modalTurno" aria-hidden="true" role="dialog">
+    <div class="container mt-5 modal-dialog" role="document">
+        <div class="row modal-content" style="display: contents;">
+            <div class="col-md-12 offset-md-3 mx-0">
+                <div class="card">
+                    <div class="card-body">
+                        <h1 class="card-title text-center">Abrir Turno</h1>
+                        <p class="card-text text-center">Ingresa la cantidad de dinero que cuenta la caja</p>
+                        <form action="/abrirNuevoTurno" method="POST">
+
+                            <div class="form-group">
+                                <label for="dineroCaja">Dinero de la Caja</label>
+                                {{ render_field(form_turnos.montoInicial, class="form-control") }}
+                            </div>
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <div class="text-center">
+                                <button type="button" id="closeModalTurno"
+                                    class="closeModalConfirmacion btn btn-danger">Cancelar</button>
+                                <button type="submit" class="btn btn-success">
+                                    Abrir Turno
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
+<script>
+    $(document).ready(function () {
+        // Escucha el evento click en los botones que tienen el id 'generarTicket'
+        $(document).on('click', '[id^="generarTicket"]', function () {
+            var folio = $(this).attr('data-id'); // Obtiene el folio del botón clickeado
+            var href = "generarTicket?folio=" + folio; // Crea el enlace
+            $('#modalConfirmacion').find('a.btn-success').attr('href', href); // Actualiza el enlace en el botón del modal
+        });
+    });
+
+    $(document).on('click', '#closeModalTurno', function () {
+        $('#modalTurno').modal('hide');
+    });
+</script>
+
+{% endblock %}

@@ -3,14 +3,28 @@
 {% block content %}
 {% from "_macros.html" import render_field %}
 
+{% with messages = get_flashed_messages()%}
+    {% if messages%}
+        {%for message in messages %}
+            <div class="alert alert-warning">
+                {{message}}
+            </div>
+        {%endfor%}
+    {% endif %}
+{% endwith %}
+
 <form action="/realizarVenta" method="POST" id="form_venta">
     <div class="row">
         <div class="col-md-6">
             <h1 class="h3 mb-2 text-gray"><i class="fas fa-solid fa-cart-plus"></i> Ventas</h1>
         </div>
-
         <div class="col-md-6 my-3 d-flex justify-content-end">
-            <button type="button" id="btnInteraccion" class="btn btn-primary" onclick="window.location.href='/moduloVenta'"><i class="fas fa-arrow-left"></i> Regresar
+            <a href="{{ url_for('stock.modulo_stock') }}" class="btn btn-success mb-3 mr-2" style="width: 150px;">
+                <i class="fas fa-box"></i> Ver Stock de Galletas
+            </a>
+            <button type="button" id="btnInteraccion" class="btn btn-primary mb-3" style="width: 150px;"
+                onclick="window.location.href='/moduloVenta?turno_id={{turno_id}}'">
+                <i class="fas fa-arrow-left"></i> Regresar
             </button>
         </div>
     </div>
@@ -34,6 +48,13 @@
                     {{ render_field(form.cantidad, class="form-control", placeholder="Cantidad") }}
                 </div>
                 <div class="form-group col-md-2"></div>
+                
+            </div>
+            <div class="row mb-3">
+                <div class="form-group col-md-4">
+                    {{ form.paquete.label(class="form-label", id="paquete_label") }}
+                    {{ render_field(form.paquete, class="form-control", placeholder="Paquete") }}
+                </div>
                 <div class="form-group col-md-4">
                     {{ form.sabor.label(class="form-label", id="sabor_label") }}
                     {{ render_field(form.sabor, class="form-control", placeholder="Sabor") }}
@@ -45,7 +66,8 @@
             </div>
             <div class="row justify-content-center">
                 <div class="col-md-6 text-center">
-                    <button type="button" class="btn btn-primary" id="agregar_producto" name="agregar_producto">Agregar Producto</button>
+                    <button type="button" class="btn btn-primary" id="agregar_producto" name="agregar_producto">Agregar
+                        Producto</button>
                 </div>
             </div>
         </div>
@@ -59,53 +81,62 @@
             <table class="table" id="tabla_productos">
                 <thead>
                     <tr>
-                        <th>Tipo de venta</th>
                         <th>Cantidad</th>
                         <th>Sabor</th>
+                        <th>Tipo de venta</th>
+                        <th>Precio Unitario</th>
+                        <th>Subtotal</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for venta in ventas %}
                     <tr>
-                        <td>{{ venta.tipo_venta }}</td>
                         <td>{{ venta.cantidad }}</td>
                         <td>{{ venta.sabor }}</td>
-                        <td><button type="submit" class="btn btn-danger">Eliminar</button></td>
+                        <td>{{ venta.tipo_venta }}</td>
+                        <td>{{ venta.precio_unitario }}</td>
+                        <td>{{ venta.subtotal }}</td>
+                        <td><button type="button" class="btn btn-danger">Eliminar</button></td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
             <div class="row justify-content-center">
                 <div class="col-md-6 text-center">
-                    <h3><b>TOTAL: $ 500</b></h3>
-                    <button id="confirmarVenta" class="btn btn-success" data-toggle="modal" data-target="#modalConfirmacion">Realizar Venta</button>
+                    <h3><b>TOTAL: $ <a id="totalVenta"></a></b></h3>
+                    <button id="confirmarVenta" class="btn btn-success" data-toggle="modal"
+                        data-target="#modalConfirmacion">Realizar Venta</button>
                 </div>
             </div>
         </div>
     </div>
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-    <div class="modal fade"  id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacion" aria-hidden="true" role="dialog">
+    <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacion" aria-hidden="true"
+        role="dialog">
         <div class="container mt-5 modal-dialog" role="document">
             <div class="row modal-content" style="display: contents;">
-                 <div class="col-md-12 offset-md-3 mx-0">
-                   <div class="card">
-                     <div class="card-body">
-                       <h1 class="card-title text-center">Confirmar Venta</h1>
-                       <p class="card-text text-center">¿Estás seguro de realizar esta venta?</p>
-                       <div class="text-center">
-                           <button id="realizar_venta" type="submit" class="btn btn-success">Realizar Venta</button>
-                           <button type="button" id="closeModalConfirmacion" class="closeModalConfirmacion btn btn-danger" onclick="$('#modalConfirmacion').modal('hide');">
-                              Cancelar
-                           </button>
-                       </div>
-                     </div>
-                   </div>
-                 </div>
+                <div class="col-md-12 offset-md-3 mx-0">
+                    <div class="card">
+                        <div class="card-body">
+                            <h1 class="card-title text-center">Confirmar Venta</h1>
+                            <p class="card-text text-center">¿Estás seguro de realizar esta venta?</p>
+                            <div class="text-center">
+                                <button id="realizar_venta" type="submit" class="btn btn-success">Realizar
+                                    Venta</button>
+                                <button type="button" id="closeModalConfirmacion"
+                                    class="closeModalConfirmacion btn btn-danger"
+                                    onclick="$('#modalConfirmacion').modal('hide');">
+                                    Cancelar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-      </div>
+    </div>
 </form>
 
 <script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
@@ -115,12 +146,13 @@
         /// --------Capturar evento clic en botón Realizar Venta-------------
         document.getElementById('realizar_venta').addEventListener('click', function (e) {
             e.preventDefault();
-        
+
             var tabla = document.getElementById('tabla_productos');
             var filas = tabla.getElementsByTagName('tr');
             var datosVenta = [];
             var nombre = document.getElementById('nombre').value.trim();
             var fechaInput = document.getElementById('fecha').value.trim();
+            
 
             if (filas.length <= 1) {
                 Swal.fire({
@@ -131,13 +163,18 @@
                 return;
             }
 
-            for (var i = 1; i < filas.length; i++) { 
+            for (var i = 1; i < filas.length; i++) {
                 var celdas = filas[i].getElementsByTagName('td');
-                var tipoVenta = celdas[0].textContent.trim();
-                var cantidad = celdas[1].innerText;
-                var sabor = celdas[2].innerText;
+                console.log(filas);
+                var cantidad = celdas[0].innerText;
+                var sabor = celdas[1].innerText;
+                var tipoVenta = celdas[2].innerText;
+                var precio_unitario = celdas[3].innerText;
+                var subtotal = celdas[4].innerText;
+                var costoId = parseInt(celdas[6].innerText);
+                var total = parseFloat(document.getElementById("totalVenta").innerHTML.replace('$', ''));
 
-                if (nombre === ''|| fechaInput === '') {
+                if (nombre === '' || fechaInput === '') {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
@@ -146,12 +183,14 @@
                     return;
                 }
 
-                datosVenta.push({ nombre: nombre, tipoVenta: tipoVenta, cantidad: cantidad, sabor: sabor, fecha: fechaInput });
+                datosVenta.push({ nombre: nombre, tipoVenta: tipoVenta, cantidad: cantidad, sabor: sabor, fecha: fechaInput, precio_unitario: precio_unitario, subtotal: subtotal, total: total, galleta_id: costoId });
             }
-        
+
+            console.log(datosVenta);
+
             // Obtener el token CSRF del formulario
             var csrfToken = document.querySelector('input[name="csrf_token"]').value;
-        
+
             fetch('/realizarVenta', {
                 method: 'POST',
                 headers: {
@@ -160,36 +199,45 @@
                 },
                 body: JSON.stringify({ ventas: datosVenta })
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.mensaje === 'Correcto') {
-                    //Limpiar los campos
-                    document.getElementById('nombre').value = '';
-                    document.getElementById('tipo_venta').value = '';
-                    document.getElementById('cantidad').value = '';
-                    document.getElementById('sabor').value = '';
-                    document.getElementById('fecha').value = '';
+                .then(response => response.json())
+                .then(data => {
+                    if (data.mensaje === 'Correcto') {
+                        //Limpiar los campos
+                        document.getElementById('nombre').value = '';
+                        document.getElementById('tipo_venta').value = '';
+                        document.getElementById('cantidad').value = '';
+                        document.getElementById('sabor').value = '';
+                        document.getElementById('fecha').value = '';
 
-                    // Limpiar la tabla
-                    var tabla = document.getElementById('tabla_productos');
-                    tabla.innerHTML = '<tr><th>Tipo de Venta</th><th>Cantidad</th><th>Sabor</th></tr>';
+                        // Limpiar la tabla
+                        var tabla = document.getElementById('tabla_productos');
+                        tabla.innerHTML = '<tr><th>Tipo de Venta</th><th>Cantidad</th><th>Sabor</th></tr>';
 
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Éxito!',
-                        text: 'La venta fue realizada correctamente.'
-                    });
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: 'La venta fue realizada correctamente.'
+                        });
 
-                    window.location.href='/moduloVenta';
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Ocurrió un error al insertar los datos de venta.'
-                    });
-                }
-            })
-            .catch(error => console.error('Error:', error));
+                        window.location.href = '/moduloVenta';
+                    } else if (data.mensaje === 'Stock') {
+                        $('#modalConfirmacion').modal('hide');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No hay suficientes galletas de ' + data.galleta +' en el inventario, ingresa otra cantidad.'
+                        });
+                    }                     
+                    else {
+                        $('#modalConfirmacion').modal('hide');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Ocurrió un error al insertar los datos de venta.'
+                        });
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         });
 
         //-------------- Capturar evento clic en botón Agregar Producto------------
@@ -199,7 +247,60 @@
             // Obtener valores de los campos
             var tipoVenta = document.getElementById('tipo_venta').value.trim();
             var cantidad = document.getElementById('cantidad').value.trim();
-            var sabor = document.getElementById('sabor').value.trim();
+            var saborRaw = document.getElementById('sabor').value;
+
+            dataSabor = saborRaw.replace(/[()\s]/g, '');
+            dataDepurada = dataSabor.split(',');
+
+            var sabor = dataDepurada[0].replace(/'/g, '');
+            var costoId = parseInt(dataDepurada[1]);
+            var precioUnitario = parseFloat(dataDepurada[2]);
+            var stock = parseInt(dataDepurada[3]);
+            let subtotal = 0;
+
+            // revisar en la tabla si hay un producto con el mismo costoId
+            var celdas = document.getElementById('tabla_productos').getElementsByTagName('tr');
+            var cantidadEvaluar = 0;
+            if (tipoVenta === 'gramos') {
+                cantidadEvaluar = (parseFloat(cantidad) / 30)
+            }
+
+            if (tipoVenta === 'pieza') {
+                cantidadEvaluar = cantidad;
+            }
+
+            if (tipoVenta === 'paquete') {
+                paquete = document.getElementById('paquete').value;
+                console.log(paquete);
+                let cantidadxpaquete = 0;
+
+                if (paquete == '1'){
+                    cantidadxpaquete = parseFloat(cantidad) * 700;
+                }
+
+                if (paquete == '2'){
+                    cantidadxpaquete = parseFloat(cantidad) * 1000;
+                }
+
+                cantidadEvaluar =  parseFloat(cantidadxpaquete) / 30;
+            }
+
+            var cantGalletasTabla = cantidadEvaluar;
+            for (var i = 1; i < celdas.length; i++) {
+                var cells = celdas[i].getElementsByTagName('td');
+                var currentCostoId = parseInt(cells[6].innerText);
+                if (currentCostoId === costoId) {
+                    cantGalletasTabla += parseInt(cells[4].innerText / cells[3].innerText); 
+                    if (cantGalletasTabla > stock) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No hay suficientes galletas en el inventario, ingresa otra cantidad.'
+                        });
+                        return;
+                    }
+                }
+            }
 
             // Verificar que todos los campos estén completos
             if (tipoVenta === '' || cantidad === '' || sabor === '') {
@@ -211,26 +312,107 @@
                 return; // Detener la ejecución si falta algún campo
             }
 
+            if (tipoVenta === 'paquete') {
+                if (document.getElementById('paquete').value === '0'){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Por favor selecciona una presentación de paquete.'
+                    });
+                    return;
+                }
+            }
+
+            if (tipoVenta === 'pieza') {
+                if (cantidad >= stock) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No hay suficientes galletas en el inventario, ingresa otra cantidad.'
+                    });
+                    return;
+                }
+
+                subtotal = '$' + (Math.ceil(parseFloat(cantidad)) * parseFloat(precioUnitario));
+            }
+
+            if (tipoVenta === 'gramos') {
+                unidades = (parseFloat(cantidad) / 30)
+                //redondear la cantidad de unidades en un valor entero por ejemplo: 1.5 = 2, 1.1 = 2
+                subtotal = '$' + (Math.ceil(parseFloat(unidades)) * parseFloat(precioUnitario));
+            }
+
+            if (tipoVenta === 'paquete') {
+                paquete = document.getElementById('paquete').value;
+                console.log(paquete);
+
+                if (paquete == '1'){
+                    cantidadTotal = parseFloat(cantidad) * 700;
+                }
+
+                if (paquete == '2'){
+                    cantidadTotal = parseFloat(cantidad) * 1000;
+                }
+
+                unidades =  parseFloat(cantidadTotal) / 30
+                subtotal = '$' + (parseFloat(Math.ceil(parseFloat(unidades)) * parseFloat(precioUnitario)));
+            }
+
             // Crear nueva fila en la tabla
             var tabla = document.getElementById('tabla_productos').getElementsByTagName('tbody')[0];
             var nuevaFila = tabla.insertRow();
 
             // Insertar celdas en la nueva fila
-            var celdaTipoVenta = nuevaFila.insertCell(0);
-            var celdaCantidad = nuevaFila.insertCell(1);
-            var celdaSabor = nuevaFila.insertCell(2);
-            var celdaAcciones = nuevaFila.insertCell(3);
+            var celdaCantidad = nuevaFila.insertCell(0);
+            var celdaSabor = nuevaFila.insertCell(1);
+            var celdaTipoVenta = nuevaFila.insertCell(2);
+            var celdaPrecio = nuevaFila.insertCell(3);
+            var celdaSubtotal = nuevaFila.insertCell(4);
+            var celdaAcciones = nuevaFila.insertCell(5);
+            var celdaReceta = nuevaFila.insertCell(6);
+            celdaReceta.innerHTML = costoId;
+            celdaReceta.style = "display: none";
 
             // Agregar valores a las celdas
-            celdaTipoVenta.innerHTML = tipoVenta;
+            if (tipoVenta === 'paquete') {
+                paquete = document.getElementById('paquete').value;
+
+                if (paquete == '1'){
+                    cantidadTotal = parseFloat(cantidad) * 700
+                    celdaTipoVenta.innerHTML = tipoVenta + ' 700g';
+                }
+
+                if (paquete == '2'){
+                    cantidadTotal = parseFloat(cantidad) * 1000
+                    celdaTipoVenta.innerHTML = tipoVenta + ' 1Kg';
+                }
+            }else{
+                celdaTipoVenta.innerHTML = tipoVenta;
+            }
+
+            celdaSubtotal.innerHTML = subtotal;
             celdaCantidad.innerHTML = cantidad;
             celdaSabor.innerHTML = sabor;
+            celdaPrecio.innerHTML = precioUnitario;
+
             celdaAcciones.innerHTML = '<button type="button" class="btn btn-danger eliminar-fila">Eliminar</button>';
 
             // Limpiar campos del formulario
             document.getElementById('tipo_venta').value = '';
             document.getElementById('cantidad').value = '';
             document.getElementById('sabor').value = '';
+
+            // Calcular el total de la venta
+            let rows = tabla.getElementsByTagName('tr');
+            let total = 0;
+
+            for (let i = 0; i < rows.length; i++) {
+                // Get the cells in the current row
+                let cells = rows[i].getElementsByTagName('td');
+                total += parseFloat(cells[4].innerText.replace('$', ''));
+            }
+
+            document.getElementById('totalVenta').innerHTML = total;
         });
 
         // Capturar evento clic en botón Eliminar
@@ -243,8 +425,23 @@
         });
     });
 
-    $(document).on('click', '#closeModalConfirmacion', function() {
+    $(document).on('click', '#closeModalConfirmacion', function () {
         $('#modalConfirmacion').modal('hide');
+    });
+
+    document.getElementById('paquete').disabled = true;
+    document.getElementById('paquete').value = '0';
+    document.getElementById('totalVenta').innerHTML = '0.00';
+
+    document.getElementById('tipo_venta').addEventListener('change', function () {
+        let selected = this.value;
+
+        if (selected === 'pieza' || selected === 'gramos') {
+            document.getElementById('paquete').disabled = true;
+            document.getElementById('paquete').value = '0';
+        } else {
+            document.getElementById('paquete').disabled = false;
+        }
     });
 
 </script>
