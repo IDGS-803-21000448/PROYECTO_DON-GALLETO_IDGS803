@@ -24,6 +24,11 @@ def agregar_solicitud():
     # id_receta = request.form.get("receta_id")
     id_receta = request.form['receta_id']
     
+    receta = Receta.query.get(id_receta)
+    if not receta or receta.id_precio is None:
+        flash('La receta no tiene precio, debe asignar un precio antes de procesar la solicitud.', 'error')
+        return redirect(url_for("solicitudProduccion.vista_recetas"))
+    
     nueva_solicitud = Produccion(
         receta_id=id_receta,
         estatus='solicitud',
