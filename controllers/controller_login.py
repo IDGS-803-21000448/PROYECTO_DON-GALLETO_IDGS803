@@ -22,21 +22,31 @@ def requiere_token(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = None
-        # Verifica si hay un token en el encabezado de autorización
-        if 'Cookie' in request.headers:
-            cookie = request.headers['Cookie'].split(";")[0]
-            if 'auth_token=' in cookie:
-                token = cookie.split('auth_token=')[1].strip()
+        # Obtener todas las cookies de la solicitud
+        cookies = request.cookies
+        # Verificar si la cookie de autenticación está presente
+        if 'auth_token' in cookies:
+            token = cookies['auth_token']
+        # Si no se encuentra el token, redirige al usuario al logout
         if not token:
             return redirect(url_for('login.logout'))
         try:
             # Intenta decodificar el token
             data = jwt.decode(token, 'llavesecreta12345', algorithms=["HS256"])
             current_user = data['sub']
-        except:
+        except jwt.ExpiredSignatureError:
+            flash('El token de autenticación ha expirado.')
+            return redirect(url_for('login.logout'))
+        except jwt.InvalidTokenError:
+            flash('El token de autenticación es inválido.')
+            return redirect(url_for('login.logout'))
+        except Exception as e:
+            print("Excepcion Token:", e)
+            flash('Ha ocurrido un error al validar el token de autenticación.')
             return redirect(url_for('login.logout'))
         return f(*args, **kwargs)
     return decorated
+
 
 def generate_jwt_token(user_id):
     try:
