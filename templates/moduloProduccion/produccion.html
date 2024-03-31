@@ -35,8 +35,9 @@
                             <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
                             <button type="submit" class="btn btn-success">Procesar</button>
                         </form>
-                        <form action="{{url_for('produccion_blueprint.cancelar_produccion')}}" method="post" class="d-inline">
+                        <form action="{{url_for('produccion_blueprint.cancelar_solicitud')}}" method="post" class="d-inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
                             <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
                             <button type="submit" class="btn btn-warning">Cancelar</button>
                         </form>
@@ -44,6 +45,46 @@
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                             <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
                             <button type="submit" class="btn btn-danger">Postergar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h2 class="h5 mb-2 text-gray"><i class="fas fa-table"></i> Solicitudes Postergadas</h2>
+        <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar...">
+        <table class="table table-striped table-bordered table-hover" id="solicitudesTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Receta</th>
+                    <th>Fecha de Solicitud</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for solicitud in solicitudes_postergadas %}
+                <tr>
+                    <td>{{ solicitud.id }}</td>
+                    <td>{{ solicitud.receta.nombre }}</td>
+                    <td>{{ solicitud.fecha_solicitud }}</td>
+                    <td>
+                        <form action="{{url_for('produccion_blueprint.solicitar_produccion')}}" method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
+                            <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
+                            <button type="submit" class="btn btn-success">Procesar</button>
+                        </form>
+                        <form action="{{url_for('produccion_blueprint.cancelar_solicitud')}}" method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
+                            <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
+                            <button type="submit" class="btn btn-warning">Cancelar</button>
                         </form>
                     </td>
                 </tr>
@@ -74,7 +115,7 @@
                     <td>{{ solicitud.receta.nombre }}</td>
                     <td>{{ solicitud.fecha_solicitud }}</td>
                     <td>
-                        <form action="{{url_for('produccion_blueprint.procesar_solicitud')}}" method="post" class="d-inline">
+                        <form action="{{url_for('produccion_blueprint.terminar_produccion')}}" method="post" class="d-inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                             <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
                             <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
@@ -82,13 +123,9 @@
                         </form>
                         <form action="{{url_for('produccion_blueprint.cancelar_produccion')}}" method="post" class="d-inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
                             <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
                             <button type="submit" class="btn btn-warning">Cancelar</button>
-                        </form>
-                        <form action="{{url_for('produccion_blueprint.postergar_produccion')}}" method="post" class="d-inline">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                            <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
-                            <button type="submit" class="btn btn-danger">Postergar</button>
                         </form>
                     </td>
                 </tr>
