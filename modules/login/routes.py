@@ -4,7 +4,7 @@ from formularios.formLogin import LoginForm
 import flask_login as fl
 from flask_login import current_user
 from models import db, User, LogLogin
-from controllers.controller_login import generate_jwt_token, verificar_contraseña
+from controllers.controller_login import generate_jwt_token, verificar_contrasena
 import datetime
 
 
@@ -45,8 +45,8 @@ def login_view():  # Cambia el nombre de la función para evitar conflictos
         db.session.add(log)
         db.session.commit()
 
-        
-        if user and verificar_contraseña(contrasena, user.contrasena):
+        validPass = verificar_contrasena(contrasena, user.contrasena)
+        if user and validPass:
             # Usuario autenticado correctamente
             res = fl.login_user(user, force=True)
 

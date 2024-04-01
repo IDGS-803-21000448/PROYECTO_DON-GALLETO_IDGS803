@@ -3,7 +3,8 @@ import datetime
 from functools import wraps
 from flask_login import current_user
 from flask import redirect, url_for, flash, jsonify, request
-import re, bcrypt
+import re
+import bcrypt
 
 contrasenas_inseguras = {
     "password": True,
@@ -121,8 +122,16 @@ def encriptar_contrasena(contrasena):
     contraseña_encriptada = bcrypt.hashpw(contrasena.encode('utf-8'), salt)
     return contraseña_encriptada
 
-def verificar_contraseña(contraseña_ingresada, contraseña_encriptada):
+
+def verificar_contrasena(contraseña_ingresada, contraseña_encriptada):
+    # Asegurarse de que la contraseña encriptada esté en formato bytes
+    if isinstance(contraseña_encriptada, str):
+        contraseña_encriptada_bytes = contraseña_encriptada.encode('utf-8')
+    else:
+        contraseña_encriptada_bytes = contraseña_encriptada
+    
     # Verifica si la contraseña ingresada coincide con la contraseña encriptada
-    return bcrypt.checkpw(contraseña_ingresada.encode('utf-8'), contraseña_encriptada.encode('utf-8'))
+    return bcrypt.checkpw(contraseña_ingresada.encode('utf-8'), contraseña_encriptada_bytes)
+
 
 

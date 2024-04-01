@@ -40,6 +40,8 @@ def agregar_usuarios():
                 user.rol = form_usuarios.rol.data
                 user.estatus = 'Activo'
                 user.usuario = form_usuarios.usuario.data
+                crypted = encriptar_contrasena(contrasena)
+                user.contrasena = crypted
             else:
                 controller_usuarios.agregarUsuario(form_usuarios)
         else:
