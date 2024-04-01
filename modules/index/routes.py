@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import render_template, redirect, url_for
 from flask_login import login_required
 from controllers.controller_login import requiere_rol, requiere_token
 from flask_login import current_user
@@ -12,5 +12,4 @@ from . import index
 def index():
     print(f"USUARIO: {current_user}")
     controller_mermas.verificarCaducidades()
-    alertas = Alerta.query.filter_by(estatus = 0).all()
-    return render_template("index.html", countAlertas = len(alertas))
+    return redirect(url_for('dashboard.dashboard'))
