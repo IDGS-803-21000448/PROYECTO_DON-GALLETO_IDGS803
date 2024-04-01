@@ -13,6 +13,15 @@ def login_view():  # Cambia el nombre de la función para evitar conflictos
     if request.method == "POST":
         usuario = request.form['usuario']
         contrasena = request.form['contrasena']
+
+        if not usuario:
+            flash('El campo usuario es requerido', 'error')
+            return render_template("moduloLogin/login.html", form=form)
+        
+        if not request.form['contrasena']:
+            flash('El campo contraseña es requerido', 'error')
+            return render_template("moduloLogin/login.html", form=form)
+
         user = User.query.filter_by(usuario=usuario).first()  # Asegúrate de que este campo coincida con tu modelo
         if user and user.contrasena == contrasena:
             # Usuario autenticado correctamente
@@ -30,7 +39,9 @@ def login_view():  # Cambia el nombre de la función para evitar conflictos
             #enviar token al localstorage de la web
             response.set_cookie('auth_token', token, samesite='None', secure=True, httponly=True)
             print(f"------------------ REDIRECCIONANDO ------------------")
-            return response        
+            return response    
+        else:
+            flash('Usuario o contraseña incorrectos. Verifiquelo y vuelva a intentarlo', 'error')    
 
     return render_template("moduloLogin/login.html", form=form)
 

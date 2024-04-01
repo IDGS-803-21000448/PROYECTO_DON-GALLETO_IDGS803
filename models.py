@@ -192,4 +192,12 @@ class CostoGalleta(db.Model):
     mano_obra = db.Column(db.Float)
     fecha_utlima_actualizacion = db.Column(db.DateTime, default=datetime.datetime.now)
 
-
+# -------LOGS-------
+class LogLogin(db.Model):
+    __tablename__ = 'log_login'
+    id = db.Column(db.Integer, primary_key=True)
+    log = db.Column(db.Text, nullable=False)
+    fecha = db.Column(db.DateTime, default=datetime.datetime.now, nullable=False)
+    ip = db.Column(db.String(15), nullable=False)
+    direccion = db.Column(db.String(255), nullable=False)
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

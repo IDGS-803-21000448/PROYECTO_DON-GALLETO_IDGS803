@@ -9,7 +9,7 @@ def requiere_rol(*roles_permitidos):
     def decorador(f):
         @wraps(f)
         def decorado(*args, **kwargs):
-            if not current_user.is_authenticated:
+            if not current_user.is_authenticated: 
                 return redirect(url_for('login.login'))
             if current_user.rol not in roles_permitidos:
                 flash('No tienes permiso para acceder a esta página.')
