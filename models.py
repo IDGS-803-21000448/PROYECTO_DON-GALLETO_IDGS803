@@ -42,6 +42,8 @@ class Receta(db.Model):
     create_date = db.Column(db.DateTime, default=datetime.datetime.now)
     estatus = db.Column(db.Integer, default=1)
     id_precio = db.Column(db.Integer, db.ForeignKey('costoGalletas.id'))
+    Costo_Galleta = db.relationship('CostoGalleta', backref=db.backref('usos', lazy=True))
+
 
 class RecetaDetalle(db.Model):
     __tablename__ = 'receta_detalle'
@@ -132,7 +134,7 @@ class MemraGalleta(db.Model):
     fecha = db.Column(db.DateTime, default=datetime.datetime.now)
     tipo = db.Column(db.String(50))
     estatus = db.Column(db.Integer, default=1)
-    materia_prima = db.relationship('Receta', backref=db.backref('mermas', lazy=True))
+    receta = db.relationship('Receta', backref=db.backref('mermas', lazy=True))
     
 
 #-------PROVEEDORES--------
