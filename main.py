@@ -8,10 +8,12 @@ from modules import (galletas, index, proveedores, usuarios, recetas, dashboard,
                      mermas, ventas, compras, login, materiaPrima,solicitudProduccion, stock)
 from models import *
 import flask_login as fl
+from flask_cors import CORS
 
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
 csrf=CSRFProtect()
+CORS(app, resources={r"/*": {"origins": "127.0.0.1:8080"}})
 app.config['SECRET_KEY'] = 'llavesecreta1234'
 
 login_manager = fl.LoginManager()
@@ -60,4 +62,4 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
 
-    app.run(debug=True, port=8080)
+    app.run(debug=False, port=8080)
