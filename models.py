@@ -200,4 +200,5 @@ class LogLogin(db.Model):
     fecha = db.Column(db.DateTime, default=datetime.datetime.now, nullable=False)
     ip = db.Column(db.String(15), nullable=False)
     direccion = db.Column(db.String(255), nullable=False)
+    estatus = db.Column(db.String(50), nullable=False) # correcto, incorrecto
     id_user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

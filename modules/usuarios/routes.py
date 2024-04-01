@@ -2,7 +2,7 @@ from flask import render_template, request, redirect, url_for, flash
 from models import db, User
 from controllers import controller_usuarios
 from . import usuarios
-from controllers.controller_login import requiere_rol, requiere_token
+from controllers.controller_login import requiere_rol, requiere_token, es_contrasena_segura, encriptar_contrasena
 from flask_login import login_required
 from formularios import formUsuario
 from formularios.formUsuario import UsersForm
@@ -43,6 +43,20 @@ def agregar_usuarios():
             else:
                 controller_usuarios.agregarUsuario(form_usuarios)
         else:
+            safePass = es_contrasena_segura(contrasena)
+            print(safePass)
+            if not safePass[0]:
+                if safePass[1] == 0:
+                    flash("La contraseña es una de las contraseñas inseguras", "warning")
+                elif safePass[1] == 1:
+                    flash("La contraseña debe tener al menos un número", "warning")
+                elif safePass[1] == 2:
+                    flash("La contraseña debe tener al menos una mayúscula", "warning")
+                elif safePass[1] == 3:
+                    flash("La contraseña debe tener al menos un carácter especial", "warning")
+                listado_usuarios = User.query.all()
+                return render_template("moduloUsuarios/crudUsuarios.html", form=form_usuarios, users=listado_usuarios)
+
             # Si al menos uno de los campos de contraseña no está vacío, actualiza la contraseña
             if contrasena == confirmar_contrasena:
                 if form_usuarios.id.data != 0:
@@ -52,7 +66,8 @@ def agregar_usuarios():
                     user.rol = form_usuarios.rol.data
                     user.estatus = 'Activo'
                     user.usuario = form_usuarios.usuario.data
-                    user.contrasena = contrasena
+                    crypted = encriptar_contrasena(contrasena)
+                    user.contrasena = crypted
                 else:
                     controller_usuarios.agregarUsuario(form_usuarios)
             else:
