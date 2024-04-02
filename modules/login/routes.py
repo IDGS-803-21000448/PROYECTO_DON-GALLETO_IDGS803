@@ -8,7 +8,7 @@ from controllers.controller_login import generate_jwt_token, verificar_contrasen
 import datetime
 
 
-@login_bp.route("/", methods=["GET", "POST"])
+@login_bp.route("/login", methods=["GET", "POST"])
 def login_view():  # Cambia el nombre de la función para evitar conflictos
     form = LoginForm(request.form)
 
@@ -82,3 +82,7 @@ def logout():
     response.set_cookie('auth_token', '')
     flash('Has cerrado sesión', 'success')
     return response  # Asegúrate de que el nombre del endpoint sea correcto
+
+@login_bp.route("/")
+def login():
+    return redirect(url_for('login.login_view'))
