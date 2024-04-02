@@ -35,7 +35,7 @@
     {%if current_user.is_authenticated%}
 
         <!-- Sidebar - Brand -->
-     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/index">
         <div class="sidebar-brand-icon">
             <img class="rounded-circle" src="{{ url_for('static', filename='src/galletosaurio.jpg') }}" alt="" style="height: 50px"/>
         </div>
@@ -112,17 +112,6 @@
         <a class="nav-link" href="/produccion">
             <i class="fas fa-gears"></i>
             <span>Producción</span></a>
-    </li>
-
-    {%endif%}
-
-    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'inventario'%}
-
-    <!-- Nav Item - Ingredientes -->
-    <li class="nav-item">
-        <a class="nav-link" href="/inventarioTerminado">
-            <i class="fas fa-cookie-bite"></i>
-            <span>Producto Terminado</span></a>
     </li>
 
     {%endif%}

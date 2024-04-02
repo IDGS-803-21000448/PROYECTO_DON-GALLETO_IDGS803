@@ -5,6 +5,7 @@ from models import *
 from datetime import datetime, date
 from controllers.controller_alertas import insertarAlertas
 from controllers.controller_materia_prima import actualizar_cantidades_tipo
+
 def verificarCaducidades():
     materiasPrimas = MateriaPrima.query.filter_by(estatus = 1).all()  #Obtiene La materia prima que no esta en merma Aún
     fecha_actual = date.today() # Fecha De Hoy
@@ -28,14 +29,14 @@ def verificarCaducidades():
                 db.session.commit()
                 actualizar_cantidades_tipo()
                 insertarMermaMateriaPrima(datos)
-                insertarAlertas(nombre, descripcion)
+                insertarAlertas(nombre, descripcion, True)
 
             elif dias_para_caducar <= 6: # Si Tiene 6 o menos dias a la fecha de caducidad manda la alerta
 
                 nombre = f"Tienes {materiaPrima.tipo_materia.nombre} por caducar"
                 descripcion = (f"Hay {materiaPrima.cantidad_disponible}{materiaPrima.tipo} de {materiaPrima.tipo_materia.nombre} que esta a "
                                f"{dias_para_caducar} dias de caducar del lote {materiaPrima.lote}")
-                insertarAlertas(nombre, descripcion)
+                insertarAlertas(nombre, descripcion, True)
 
     except Exception as e:
         print("Error al verificar las caducidades: ", e)
