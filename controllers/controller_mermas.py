@@ -14,8 +14,8 @@ def verificarCaducidades():
 
             if dias_para_caducar <= 0: # Si Caduco Se Agrega la Alerta y se inserta en mermas
                 nombre = f"Tienes {materiaPrima.tipo_materia.nombre} caducada"
-                descripcion = (f"Hay {materiaPrima.cantidad_disponible} de {materiaPrima.tipo_materia.nombre} que esta "
-                               f"caducada, y fue colocada como merma ")
+                descripcion = (f"Hay {materiaPrima.cantidad_disponible}{materiaPrima.tipo} de {materiaPrima.tipo_materia.nombre} que esta "
+                               f"caducada del lote {materiaPrima.lote}, y fue colocada como merma ")
 
                 datos = {
                     "materia_prima": materiaPrima.id,
@@ -33,8 +33,8 @@ def verificarCaducidades():
             elif dias_para_caducar <= 6: # Si Tiene 6 o menos dias a la fecha de caducidad manda la alerta
 
                 nombre = f"Tienes {materiaPrima.tipo_materia.nombre} por caducar"
-                descripcion = (f"Hay {materiaPrima.cantidad_disponible} de {materiaPrima.nombre} que esta a "
-                               f"{dias_para_caducar} dias de caducar")
+                descripcion = (f"Hay {materiaPrima.cantidad_disponible}{materiaPrima.tipo} de {materiaPrima.tipo_materia.nombre} que esta a "
+                               f"{dias_para_caducar} dias de caducar del lote {materiaPrima.lote}")
                 insertarAlertas(nombre, descripcion)
 
     except Exception as e:
