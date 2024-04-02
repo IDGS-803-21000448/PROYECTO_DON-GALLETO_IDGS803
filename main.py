@@ -1,3 +1,4 @@
+from sqlite3 import OperationalError
 from flask import Flask, render_template
 from flask_wtf import CSRFProtect
 from flask_admin import Admin
@@ -62,6 +63,10 @@ def page_not_found(e):
 def handle_attribute_error(e):
     return render_template('errorScreen.html', error=e), 500
 
+# @app.errorhandler(OperationalError)
+# def handle_attribute_error(e):
+#     return render_template('errorScreen.html', error=e), 500
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id)) 
@@ -74,5 +79,4 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
 
-    app.run(debug=True, port=8080)
     app.run(debug=True, port=8080)

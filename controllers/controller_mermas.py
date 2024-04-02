@@ -5,6 +5,7 @@ from models import *
 from datetime import datetime, date
 from controllers.controller_alertas import insertarAlertas
 from controllers.controller_materia_prima import actualizar_cantidades_tipo
+
 def verificarCaducidades():
     materiasPrimas = MateriaPrima.query.filter_by(estatus = 1).all()  #Obtiene La materia prima que no esta en merma Aún
     fecha_actual = date.today() # Fecha De Hoy
