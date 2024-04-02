@@ -129,6 +129,8 @@ def verificar_contrasena(contraseña_ingresada, contraseña_encriptada):
         contraseña_encriptada_bytes = contraseña_encriptada.encode('utf-8')
     else:
         contraseña_encriptada_bytes = contraseña_encriptada
+
+    print(contraseña_encriptada_bytes)
     
     # Verifica si la contraseña ingresada coincide con la contraseña encriptada
     return bcrypt.checkpw(contraseña_ingresada.encode('utf-8'), contraseña_encriptada_bytes)

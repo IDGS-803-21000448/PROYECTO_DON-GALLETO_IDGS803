@@ -8,7 +8,7 @@ from controllers.controller_login import generate_jwt_token, verificar_contrasen
 import datetime
 
 
-@login_bp.route("/login", methods=["GET", "POST"])
+@login_bp.route("/", methods=["GET", "POST"])
 def login_view():  # Cambia el nombre de la función para evitar conflictos
     form = LoginForm(request.form)
 
