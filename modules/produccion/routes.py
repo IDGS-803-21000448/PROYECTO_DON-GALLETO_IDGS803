@@ -4,7 +4,7 @@ from models import db, Receta, Produccion, RecetaDetalle, MateriaPrima, MermaMat
 from . import produccion
 from controllers.controller_login import requiere_rol
 from flask_login import login_required
-from datetime import datetime
+from datetime import datetime, date
 from sqlalchemy import asc
 
 @produccion.route("/produccion", methods=["GET"])
@@ -138,7 +138,9 @@ def terminar_produccion():
     solicitud = Produccion.query.get(id_solicitud)
     solicitud.estatus = 'terminada'
     solicitud.fecha_producido = datetime.now()
-    
+    solicitud.lote = "prod-"+date.today().strftime('%d/%m/%Y')+'-'+solicitud.receta.nombre
+
+
     # Recuperar los detalles de la receta
     detalles_receta = RecetaDetalle.query.filter_by(receta_id=receta_id).all()
     

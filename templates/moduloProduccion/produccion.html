@@ -3,6 +3,137 @@
 {%block content %}
 {% from "_macros.html" import render_field %}
 
+
+<style>
+  #modalProcesar, #modalCancelarSolicitud, #modalPostergarSolicitud,
+  #modalTerminarProduccion, #modalCancelarProduccion, 
+  #modalProcesarProduccionPostergada, #modalCancelarProduccionPostergada{
+    display: none; 
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    margin: 10% auto; 
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; 
+    max-width: 500px;
+  }
+
+  .close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: zoom-out;
+  }
+
+  .button-container {
+    text-align: center;
+    margin-top: 20px;
+  }
+</style>
+
+<div id="modalProcesar" class="modal">
+  <div class="modal-content">
+    <span class="closeProcesar">&times;</span>
+    <h3 class="text-center">¿Estás seguro de que deseas procesar la solicitud?</h3>
+    <p class="text-center">Se procesara la solicitud.</p>
+    <div class="button-container">
+      <button id="confirmarBtnProcesar" class="btn btn-success">Confirmar</button>
+      <button id="cancelarBtnProcesar" class="btn btn-danger">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalCancelarSolicitud" class="modal">
+  <div class="modal-content">
+    <span class="closeCancelarSolicitud">&times;</span>
+    <h3 class="text-center">¿Estás seguro de que deseas cancelar la solicitud?</h3>
+    <p class="text-center">Se cancelará la solicitud.</p>
+    <div class="button-container">
+      <button id="confirmarBtnCancelarSolicitud" class="btn btn-success">Confirmar</button>
+      <button id="cancelarBtnCancelarSolicitud" class="btn btn-danger">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalPostergarSolicitud" class="modal">
+  <div class="modal-content">
+    <span class="closePostergarSolicitud">&times;</span>
+    <h3 class="text-center">¿Estás seguro de que deseas postergar la solicitud?</h3>
+    <p class="text-center">Se postergará la solicitud.</p>
+    <div class="button-container">
+      <button id="confirmarBtnPostergarSolicitud" class="btn btn-success">Confirmar</button>
+      <button id="cancelarBtnPostergarSolicitud" class="btn btn-danger">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalTerminarProduccion" class="modal">
+  <div class="modal-content">
+    <span class="closeTerminarProduccion">&times;</span>
+    <h3 class="text-center">¿Estás seguro de que deseas terminar la produccion?</h3>
+    <p class="text-center">Se terminará la produccion.</p>
+    <div class="button-container">
+      <button id="confirmarBtnTerminarProduccion" class="btn btn-success">Confirmar</button>
+      <button id="cancelarBtnTerminarProduccion" class="btn btn-danger">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalCancelarProduccion" class="modal">
+  <div class="modal-content">
+    <span class="closeCancelarProduccion">&times;</span>
+    <h3 class="text-center">¿Estás seguro de que deseas cancelar la produccion?</h3>
+    <p class="text-center">Se cancelará la produccion y se devolverán las materias primas a sus respectivos inventarios.</p>
+    <div class="button-container">
+      <button id="confirmarBtnCancelarProduccion" class="btn btn-success">Confirmar</button>
+      <button id="cancelarBtnCancelarProduccion" class="btn btn-danger">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalProcesarProduccionPostergada" class="modal">
+  <div class="modal-content">
+    <span class="closeProcesarPostergada">&times;</span>
+    <h3 class="text-center">¿Estás seguro de que deseas procesar la produccion?</h3>
+    <p class="text-center">Se procesará la produccion.</p>
+    <div class="button-container">
+      <button id="confirmarBtnProducirPostergada" class="btn btn-success">Confirmar</button>
+      <button id="cancelarBtnProducirPostergada" class="btn btn-danger">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="modalCancelarProduccionPostergada" class="modal">
+  <div class="modal-content">
+    <span class="closeCancelarPostergada">&times;</span>
+    <h3 class="text-center">¿Estás seguro de que deseas cancelar la produccion?</h3>
+    <p class="text-center">Se cancelará la produccion.</p>
+    <div class="button-container">
+      <button id="confirmarBtnCancelarPostergada" class="btn btn-success">Confirmar</button>
+      <button id="cancelarBtnCancelarPostergada" class="btn btn-danger">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <div class="row">
     <div class="col-md-6 my-3">
         <h1 class="h3 mb-2 text-gray"><i class="fas fa-cog"></i> Producción</h1>
@@ -29,22 +160,22 @@
                     <td>{{ solicitud.receta.nombre }}</td>
                     <td>{{ solicitud.fecha_solicitud }}</td>
                     <td>
-                        <form action="{{url_for('produccion_blueprint.solicitar_produccion')}}" method="post" class="d-inline">
+                        <form id="formProcesar" action="{{url_for('produccion_blueprint.solicitar_produccion')}}" method="post" class="d-inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                             <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
                             <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
-                            <button type="submit" class="btn btn-success">Procesar</button>
+                            <button id="procesarBtn" type="button" class="btn btn-success" onclick="gestionarProcesar()" >Procesar</button>
                         </form>
-                        <form action="{{url_for('produccion_blueprint.cancelar_solicitud')}}" method="post" class="d-inline">
+                        <form id="formCancelarSolicitud" action="{{url_for('produccion_blueprint.cancelar_solicitud')}}" method="post" class="d-inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                             <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
                             <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
-                            <button type="submit" class="btn btn-warning">Cancelar</button>
+                            <button id="cancelarSolicitudBtn" type="button" class="btn btn-warning" onclick="gestionarCancelarSolicitud()">Cancelar</button>
                         </form>
-                        <form action="{{url_for('produccion_blueprint.postergar_produccion')}}" method="post" class="d-inline">
+                        <form id="formPostergarSolicitud" action="{{url_for('produccion_blueprint.postergar_produccion')}}" method="post" class="d-inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                             <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
-                            <button type="submit" class="btn btn-danger">Postergar</button>
+                              <button id="postergarSolicitudBtn" type="button" class="btn btn-danger" onclick="gestionarPostergarSolicitud()">Postergar</button>
                         </form>
                     </td>
                 </tr>
@@ -76,17 +207,17 @@
                     <td>{{ solicitud.receta.nombre }}</td>
                     <td>{{ solicitud.fecha_solicitud }}</td>
                     <td>
-                        <form action="{{url_for('produccion_blueprint.terminar_produccion')}}" method="post" class="d-inline">
+                        <form id="formTerminarProduccion" action="{{url_for('produccion_blueprint.terminar_produccion')}}" method="post" class="d-inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                             <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
                             <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
-                            <button type="submit" class="btn btn-success">Terminar</button>
+                            <button id="terminarProduccionBtn" type="button" class="btn btn-success" onclick="gestionarTerminarProduccion()" >Terminar</button>
                         </form>
-                        <form action="{{url_for('produccion_blueprint.cancelar_produccion')}}" method="post" class="d-inline">
+                        <form id="formCancelarProduccion" action="{{url_for('produccion_blueprint.cancelar_produccion')}}" method="post" class="d-inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                             <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
                             <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
-                            <button type="submit" class="btn btn-warning">Cancelar</button>
+                            <button id="cancelarProduccionBtn" type="button" class="btn btn-warning" onclick="gestionarCancelarProduccion()">Cancelar</button>
                         </form>
                     </td>
                 </tr>
@@ -116,17 +247,17 @@
                     <td>{{ solicitud.receta.nombre }}</td>
                     <td>{{ solicitud.fecha_solicitud }}</td>
                     <td>
-                        <form action="{{url_for('produccion_blueprint.solicitar_produccion')}}" method="post" class="d-inline">
+                        <form id="formProdPostergar" action="{{url_for('produccion_blueprint.solicitar_produccion')}}" method="post" class="d-inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                             <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
                             <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
-                            <button type="submit" class="btn btn-success">Procesar</button>
-                        </form>
-                        <form action="{{url_for('produccion_blueprint.cancelar_solicitud')}}" method="post" class="d-inline">
+                            <button id="prodPostergarBtn" type="button" class="btn btn-success" onclick="gestionarProduccionPostergada()">Procesar</button>
+                          </form>
+                        <form id="formCancelarPostergar" action="{{url_for('produccion_blueprint.cancelar_solicitud')}}" method="post" class="d-inline">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                             <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
                             <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
-                            <button type="submit" class="btn btn-warning">Cancelar</button>
+                            <button id="cancelarPostergarBtn" type="button" class="btn btn-warning" onclick="gestionarCancelarProduccionPostergada()" >Cancelar</button>
                         </form>
                     </td>
                 </tr>
@@ -164,129 +295,7 @@
     </div>
 </div>
 
+<script src="{{ url_for('static', filename='js/controllerProduccion.js') }}"></script>
 
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const searchInput = document.getElementById('searchInput1');
-        const userTable = document.getElementById('solicitudesTable');
-        const rows = userTable.getElementsByTagName('tr');
-    
-        searchInput.addEventListener('input', function() {
-          const searchText = this.value.toLowerCase();
-          for (let i = 1; i < rows.length; i++) {
-            const row = rows[i];
-            const cells = row.getElementsByTagName('td');
-            let found = false;
-            for (let j = 0; j < cells.length; j++) {
-              const cell = cells[j];
-              if (cell.textContent.toLowerCase().indexOf(searchText) > -1) {
-                found = true;
-                break;
-              }
-            }
-            if (found) {
-              row.style.display = '';
-            } else {
-              row.style.display = 'none';
-            }
-          }
-        });
-      });
-
-      document.addEventListener("DOMContentLoaded", function() {
-        const searchInput = document.getElementById('searchInput2');
-        const userTable = document.getElementById('procesoTable');
-        const rows = userTable.getElementsByTagName('tr');
-    
-        searchInput.addEventListener('input', function() {
-          const searchText = this.value.toLowerCase();
-          for (let i = 1; i < rows.length; i++) {
-            const row = rows[i];
-            const cells = row.getElementsByTagName('td');
-            let found = false;
-            for (let j = 0; j < cells.length; j++) {
-              const cell = cells[j];
-              if (cell.textContent.toLowerCase().indexOf(searchText) > -1) {
-                found = true;
-                break;
-              }
-            }
-            if (found) {
-              row.style.display = '';
-            } else {
-              row.style.display = 'none';
-            }
-          }
-        });
-      });
-
-      document.addEventListener("DOMContentLoaded", function() {
-        const searchInput = document.getElementById('searchInput3');
-        const userTable = document.getElementById('postergadasTable');
-        const rows = userTable.getElementsByTagName('tr');
-    
-        searchInput.addEventListener('input', function() {
-          const searchText = this.value.toLowerCase();
-          for (let i = 1; i < rows.length; i++) {
-            const row = rows[i];
-            const cells = row.getElementsByTagName('td');
-            let found = false;
-            for (let j = 0; j < cells.length; j++) {
-              const cell = cells[j];
-              if (cell.textContent.toLowerCase().indexOf(searchText) > -1) {
-                found = true;
-                break;
-              }
-            }
-            if (found) {
-              row.style.display = '';
-            } else {
-              row.style.display = 'none';
-            }
-          }
-        });
-      });
-
-      document.addEventListener("DOMContentLoaded", function() {
-        const searchInput = document.getElementById('searchInput4');
-        const userTable = document.getElementById('canceladasTable');
-        const rows = userTable.getElementsByTagName('tr');
-    
-        searchInput.addEventListener('input', function() {
-          const searchText = this.value.toLowerCase();
-          for (let i = 1; i < rows.length; i++) {
-            const row = rows[i];
-            const cells = row.getElementsByTagName('td');
-            let found = false;
-            for (let j = 0; j < cells.length; j++) {
-              const cell = cells[j];
-              if (cell.textContent.toLowerCase().indexOf(searchText) > -1) {
-                found = true;
-                break;
-              }
-            }
-            if (found) {
-              row.style.display = '';
-            } else {
-              row.style.display = 'none';
-            }
-          }
-        });
-      });
-
-// Adjunta el evento al botón que abre el modal, no al botón de cierre del modal
-$(document).on('click', '#confirmarProcesamiento', function() {
-    var proveedorId = $(this).data('id');
-    $('#idEliminar').val(proveedorId);
-  $('#modalConfirmacion').modal('show');  // Muestra el modal
-});
-
-// Adjunta el evento al botón de cierre del modal
-$('#closeModalConfirmacion').click(function() {
-    $('#modalConfirmacion').modal('hide');  // Oculta el modal
-});
-
-
-    </script>
 {% endblock %}
