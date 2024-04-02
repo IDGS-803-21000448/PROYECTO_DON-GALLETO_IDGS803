@@ -77,6 +77,7 @@ class Produccion(db.Model):
     fecha_producido = db.Column(db.DateTime, nullable=True)
     fecha_postergado = db.Column(db.DateTime, nullable=True)
     fecha_cancelado = db.Column(db.DateTime, nullable=True)
+    lote = db.Column(db.String(50), nullable = True)
     receta = db.relationship('Receta', backref=db.backref('produccion', lazy=True))
     
 # class solicitudProduccion(db.Model):
@@ -185,6 +186,7 @@ class DetalleVenta(db.Model):
     precio_unitario = db.Column(db.Float, nullable=False)
     cantidad = db.Column(db.Integer, nullable=False)
     subtotal = db.Column(db.Float, nullable=False)
+    produccion =  db.Column(db.Integer, db.ForeignKey('produccion.id'), nullable=False)
     venta_id = db.Column(db.Integer, db.ForeignKey('venta.id'), nullable=False)
 
 class CostoGalleta(db.Model):
