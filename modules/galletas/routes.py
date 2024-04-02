@@ -96,81 +96,81 @@ def detalles_costo():
     id_galleta = request.form.get('id')
     form = formCosto.CalculoCompraForm(request.form)
     mano_obra = form.precio_mano_obra.data
-    fecha_actual = datetime.now()
 
     materias_primas = []
     suma_costos = 0
-    unidades_recetas_procesadas = set()  # Conjunto para rastrear las unidades de recetas procesadas
+    unidades_recetas_procesadas = set() 
+
+    cantidad_materias = 0
 
     for id_materia in id_materia_lista:
-        materia_prima = MateriaPrima.query.filter_by(id_tipo_materia=id_materia)\
-        .order_by(desc(MateriaPrima.create_date))\
-        .filter(MateriaPrima.create_date <= fecha_actual)\
-        .first()
+        materias = MateriaPrima.query.filter_by(id_tipo_materia=id_materia, estatus=1).all()
+        factor_ajuste_mano_obra = 0.5 
 
-        if materia_prima:
-            cantidad_galleta = cantidades[id_materia_lista.index(id_materia)]
-            detalles_procesados = set() 
+        if materias:
+            total_precio_materia = sum(m.precio_compra for m in materias)
+            cantidad_materias += len(materias)
 
-            for detalle_receta in RecetaDetalle.query.filter_by(receta_id=id_galleta).all():
-                if detalle_receta not in unidades_recetas_procesadas:
-                    unidades_recetas_procesadas.add(detalle_receta)
-                    unidad_medida_galleta = detalle_receta.unidad_medida
-                    unidad_medida_materia = materia_prima.tipo
+            for materia in materias:
+                cantidad_galleta = cantidades[id_materia_lista.index(id_materia)]
+                unidad_medida_galleta = RecetaDetalle.query.filter_by(receta_id=id_galleta).first().unidad_medida
+                cantidad_materia = convertirCantidades(materia.tipo, unidad_medida_galleta, cantidad_galleta)
 
-                    cantidad_materia = convertirCantidades(unidad_medida_materia, unidad_medida_galleta, cantidad_galleta)
+                precio_por_kg = total_precio_materia / cantidad_materia
 
-                    detalle_materia_prima = {
-                        'id': materia_prima.id,
-                        'precio_compra': materia_prima.precio_compra,
-                        'cantidad_compra': materia_prima.cantidad_compra,
-                        'cantidad_disponible': materia_prima.cantidad_disponible,
-                        'fecha_caducidad': materia_prima.fecha_caducidad,
-                        'lote': materia_prima.lote,
-                        'tipo': materia_prima.tipo,
-                        'unidad_receta': unidad_medida_galleta,
-                        'costo_ingredientes': (cantidad_materia * materia_prima.precio_compra + mano_obra) / materia_prima.cantidad_compra
-                    }
+                # Aplicar el factor de ajuste a la mano de obra
+                costo_mano_obra = mano_obra * factor_ajuste_mano_obra
 
-                    if detalle_receta not in detalles_procesados:
-                        detalles_procesados.add(detalle_receta)
-                        materias_primas.append(detalle_materia_prima)
-                        suma_costos += detalle_materia_prima['costo_ingredientes']
+                # Calcular el costo de los ingredientes utilizados en la receta con el ajuste de la mano de obra
+                costo_ingredientes = ((cantidad_materia * precio_por_kg) + costo_mano_obra) / materia.cantidad_compra
+
+                detalle_materia_prima = {
+                    'id': materia.id,
+                    'precio_compra': materia.precio_compra,
+                    'cantidad_compra': materia.cantidad_compra,
+                    'cantidad_disponible': materia.cantidad_disponible,
+                    'precio_por_kg': precio_por_kg, 
+                    'fecha_caducidad': materia.fecha_caducidad,
+                    'lote': materia.lote,
+                    'tipo': materia.tipo,
+                    'unidad_receta': unidad_medida_galleta,
+                    'costo_ingredientes': costo_ingredientes
+                }
+                materias_primas.append(detalle_materia_prima)
+                suma_costos += costo_ingredientes
         else:
-            flash('Aún no has agregado algunos ingredientes, compralos primero en el módulo de compras', 'success')
+            flash('No se encontraron materias primas activas para este tipo de materia', 'warning')
 
-    # Calcula el promedio de costos y el precio de la galleta
-    promedio_costos = suma_costos / len(materias_primas)
-    precio_galleta = math.ceil(promedio_costos * 0.2)
+    if cantidad_materias > 0:
+        promedio_costos = suma_costos / cantidad_materias
+        precio_galleta = math.ceil(promedio_costos * 0.2)
 
-    # Verifica si ya existe un registro con el mismo id_precio en la tabla CostoGalleta
-    costo_existente = CostoGalleta.query.filter_by(id=id_galleta).first()
+        costo_existente = CostoGalleta.query.filter_by(id=id_galleta).first()
 
-    if costo_existente:
-        # Si ya existe, actualiza el precio de la galleta en lugar de crear uno nuevo
-        costo_existente.precio = precio_galleta
-        costo_existente.mano_obra = mano_obra
-        costo_existente.fecha_utlima_actualizacion = datetime.now()
-    else:
-        # Si no existe, crea un nuevo registro en la tabla CostoGalleta
-        nuevo_costo_galleta = CostoGalleta(
-            id=id_galleta,
-            precio=precio_galleta,
-            galletas_disponibles=0,
-            mano_obra=mano_obra,
-            fecha_utlima_actualizacion=datetime.now()
-        )
-        db.session.add(nuevo_costo_galleta)
+        if costo_existente:
+            costo_existente.precio = precio_galleta
+            costo_existente.mano_obra = mano_obra
+            costo_existente.fecha_utlima_actualizacion = datetime.now()
+        else:
+            nuevo_costo_galleta = CostoGalleta(
+                id=id_galleta,
+                precio=precio_galleta,
+                galletas_disponibles=0,
+                mano_obra=mano_obra,
+                fecha_utlima_actualizacion=datetime.now()
+            )
+            db.session.add(nuevo_costo_galleta)
 
-    # Actualiza la tabla Recetas con el nuevo id_precio correspondiente
-    receta_a_actualizar = Receta.query.filter_by(id=id_galleta).first()
-    if receta_a_actualizar:
-        receta_a_actualizar.id_precio = costo_existente.id if costo_existente else nuevo_costo_galleta.id
+        receta_a_actualizar = Receta.query.filter_by(id=id_galleta).first()
+        if receta_a_actualizar:
+            receta_a_actualizar.id_precio = costo_existente.id if costo_existente else nuevo_costo_galleta.id
+            db.session.commit()
+        else:
+            print("Receta no encontrada")
+
         db.session.commit()
     else:
-        print("Receta no encontrada")
-
-    db.session.commit()
+        flash('No se encontraron detalles de materia prima para calcular el costo de la galleta', 'warning')
 
     return redirect(url_for('galletas.costo_galleta'))
 

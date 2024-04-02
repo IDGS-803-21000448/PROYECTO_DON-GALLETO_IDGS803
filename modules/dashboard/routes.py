@@ -1,8 +1,9 @@
-from flask import render_template
+from flask import render_template, session
 from . import dashboard
 from flask_login import login_required, current_user
 from controllers.controller_login import requiere_token
-from models import LogLogin
+from models import LogLogin, Alerta
+
 
 @dashboard.route("/dashboard", methods=["GET"])
 @login_required
@@ -17,5 +18,6 @@ def dashboard():
         lastSession = logs[1].fecha.strftime("%d/%m/%Y %H:%M:%S")
     else:
         lastSession = None
-
+    alertas = Alerta.query.filter_by(estatus = 0).all()
+    session['countAlertas'] = len(alertas)
     return render_template("moduloDashboard/dashboard.html", lastSession=lastSession)
