@@ -58,9 +58,9 @@ def handle_zero_division_error(e):
 def page_not_found(e):
     return render_template('errorScreen.html'),500
 
-# @app.errorhandler(AttributeError)
-# def handle_attribute_error(e):
-#     return render_template('errorScreen.html', error=e), 500
+@app.errorhandler(AttributeError)
+def handle_attribute_error(e):
+    return render_template('errorScreen.html', error=e), 500
 
 @login_manager.user_loader
 def load_user(user_id):
