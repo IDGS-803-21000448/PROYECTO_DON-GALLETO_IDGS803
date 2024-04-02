@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for
 from flask_login import login_required
 from controllers.controller_login import requiere_rol, requiere_token
 from flask_login import current_user
-from controllers import controller_mermas
+from controllers import controller_mermas, controller_costo
 from models import Alerta
 from . import index
 
@@ -11,5 +11,6 @@ from . import index
 @requiere_token
 def index():
     print(f"USUARIO: {current_user}")
+    controller_costo.actualizar_costos()
     controller_mermas.verificarCaducidades()
     return redirect(url_for('dashboard.dashboard'))

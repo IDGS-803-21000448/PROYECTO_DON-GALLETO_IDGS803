@@ -50,6 +50,18 @@ app.register_blueprint(stock.stock)
 def page_not_found(e):
     return render_template('404.html'),404
 
+@app.errorhandler(ZeroDivisionError)
+def handle_zero_division_error(e):
+    return render_template('errorScreen.html', error=e), 500
+
+@app.errorhandler(500)
+def page_not_found(e):
+    return render_template('errorScreen.html'),500
+
+# @app.errorhandler(AttributeError)
+# def handle_attribute_error(e):
+#     return render_template('errorScreen.html', error=e), 500
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id)) 
@@ -62,4 +74,4 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
 
-    app.run(debug=False, port=8080)
+    app.run(debug=True, port=8080)
