@@ -17,6 +17,9 @@
                 <tr class="text-center">
                     <th>Nombre de la galleta</th>
                     <th>Cantidad disponible</th>
+                    <td>Precio Unitario</td>
+                    <td>Precio Paquete 700g</td>
+                    <td>Precio Paquete 1Kg</td>
                 </tr>
             </thead>
             <tbody>
@@ -24,6 +27,9 @@
                 <tr class="text-center">
                     <td>{{ galleta.nombre }}</td>
                     <td>{{ galleta.cantidad_disponible }}</td>
+                    <td>{{ galleta.precio_unitario }}</td>
+                    <td>{{ galleta.precio_pkt_700 }}</td>
+                    <td>{{ galleta.precio_pkt_1000 }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
