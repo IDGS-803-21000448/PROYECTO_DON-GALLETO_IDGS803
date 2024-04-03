@@ -51,34 +51,13 @@
             <span>Dashboard</span></a>
     </li>
 
-    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador'%}
-    <!-- Nav Item - Usuarios -->
+    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'venta'%}
+
+    <!-- Nav Item - Ventas -->
     <li class="nav-item">
-        <a class="nav-link" href="/crudUsuarios">
-            <i class="fas fa-fw fa-users"></i>
-            <span>Usuarios</span></a>
-    </li>
-
-    {%endif%}
-
-    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'inventario'%}
-
-    <!-- Nav Item - Proveedores -->
-    <li class="nav-item">
-        <a class="nav-link" href="/crudProveedores">
-            <i class="fas fa-truck"></i>
-            <span>Proveedores</span></a>
-    </li>
-
-    {%endif%}
-
-    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'inventario'%}
-
-    <!-- Nav Item - Compras -->
-    <li class="nav-item">
-        <a class="nav-link" href="/moduloCompras">
-            <i class="fas fa-fw fa-bag-shopping"></i>
-            <span>Compras</span></a>
+        <a class="nav-link" href="/turnos">
+            <i class="fas fa-fw fa-store"></i>
+            <span>Ventas</span></a>
     </li>
 
     {%endif%}
@@ -94,6 +73,17 @@
 
     {%endif%}
 
+    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'inventario'%}
+
+    <!-- Nav Item - Compras -->
+    <li class="nav-item">
+        <a class="nav-link" href="/moduloCompras">
+            <i class="fas fa-fw fa-bag-shopping"></i>
+            <span>Compras</span></a>
+    </li>
+
+    {%endif%}
+
     {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'produccion'%}
 
     <!-- Nav Item - Ingredientes -->
@@ -101,28 +91,6 @@
         <a class="nav-link" href="/vistaRecetas">
             <i class="fas fa-receipt"></i>
             <span>Recetas</span></a>
-    </li>
-
-    {%endif%}
-
-    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'produccion'%}
-
-    <!-- Nav Item - Ingredientes -->
-    <li class="nav-item">
-        <a class="nav-link" href="/produccion">
-            <i class="fas fa-gears"></i>
-            <span>Producción</span></a>
-    </li>
-
-    {%endif%}
-
-    {%if current_user.rol == 'admin' or current_user.rol == 'venta' or current_user.rol == 'inventario'%}
-
-    <!-- Nav Item - Ingredientes -->
-    <li class="nav-item">
-        <a class="nav-link" href="/solicitudProduccion">
-            <i class="fas fa-bell-concierge"></i>
-            <span>Solicitud de Producción</span></a>
     </li>
 
     {%endif%}
@@ -138,13 +106,24 @@
 
     {%endif%}
 
-    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'venta'%}
+    {%if current_user.rol == 'admin' or current_user.rol == 'venta' or current_user.rol == 'inventario'%}
 
-    <!-- Nav Item - Ventas -->
+    <!-- Nav Item - Ingredientes -->
     <li class="nav-item">
-        <a class="nav-link" href="/turnos">
-            <i class="fas fa-fw fa-store"></i>
-            <span>Ventas</span></a>
+        <a class="nav-link" href="/solicitudProduccion">
+            <i class="fas fa-bell-concierge"></i>
+            <span>Solicitud de Producción</span></a>
+    </li>
+
+    {%endif%}
+
+    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'produccion'%}
+
+    <!-- Nav Item - Ingredientes -->
+    <li class="nav-item">
+        <a class="nav-link" href="/produccion">
+            <i class="fas fa-gears"></i>
+            <span>Producción</span></a>
     </li>
 
     {%endif%}
@@ -167,6 +146,27 @@
         <a class="nav-link" href="/moduloMermas">
             <i class="fas fa-times-circle"></i>
             <span>Mermas</span></a>
+    </li>
+
+    {%endif%}
+
+    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador' or current_user.rol == 'inventario'%}
+
+    <!-- Nav Item - Proveedores -->
+    <li class="nav-item">
+        <a class="nav-link" href="/crudProveedores">
+            <i class="fas fa-truck"></i>
+            <span>Proveedores</span></a>
+    </li>
+
+    {%endif%}
+
+    {%if current_user.rol == 'admin' or current_user.rol == 'Administrador'%}
+    <!-- Nav Item - Usuarios -->
+    <li class="nav-item">
+        <a class="nav-link" href="/crudUsuarios">
+            <i class="fas fa-fw fa-users"></i>
+            <span>Usuarios</span></a>
     </li>
 
     {%endif%}

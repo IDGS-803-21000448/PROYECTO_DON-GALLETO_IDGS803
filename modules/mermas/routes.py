@@ -4,7 +4,7 @@ from flask import render_template, request, flash, redirect, url_for
 
 from controllers import controller_mermas
 from controllers.controller_materia_prima import actualizar_cantidades_tipo
-from models import MermaMateriaPrima, db, MemraGalleta, MateriaPrima, CostoGalleta, Receta
+from models import MermaMateriaPrima, db, MemraGalleta, MateriaPrima, CostoGalleta, Receta, Produccion
 from . import mermas
 from formularios.formsMerma import MermaMateriaPrimaForm, tipoMermaForm
 from controllers.controller_login import requiere_rol
@@ -22,7 +22,7 @@ def merma_galletas():
     mermas = MemraGalleta.query.filter_by(estatus=1).all()
     originalForm.tipo_merma.data = "galletas"
     form.tipo_merma.data = "galletas"
-    recetas = Receta.query.filter_by(estatus=1).all()
+    recetas = Produccion.query.filter_by(estatus='terminada').all()
     materiasPrimas = []
 
     return render_template('moduloMermas/crudMermas.html', mermas=mermas, form=originalForm,
@@ -39,7 +39,7 @@ def merma_materia_prima():
     originalForm.tipo_merma.data = "materiaPrima"
     form.tipo_merma.data = "materiaPrima"
     materiasPrimas = controller_mermas.getMateriasPrimasSinMerma()
-    recetas = Receta.query.filter_by(estatus=1).all()
+    recetas = Produccion.query.filter_by(estatus='terminada').all()
 
     return render_template('moduloMermas/crudMermas.html', mermas=mermas, form=originalForm,
                            formTipo=form, materiasPrimas=materiasPrimas, recetas=recetas)
@@ -73,7 +73,7 @@ def agregar_merma():
                     formTipo = tipoMermaForm()
                     mermas = MermaMateriaPrima.query.filter_by(estatus=1)
                     materiasPrimas = controller_mermas.getMateriasPrimasSinMerma()
-                    recetas = Receta.query.filter_by(estatus=1).all()
+                    recetas = Produccion.query.filter_by(estatus='terminada').all()
 
                     return render_template('moduloMermas/crudMermas.html', mermas=mermas, form=form,
                                            formTipo=formTipo, materiasPrimas=materiasPrimas, recetas=recetas)
@@ -89,25 +89,28 @@ def agregar_merma():
                 )
             else:
 
-                receta = Receta.query.get_or_404(form.materia_prima_id.data)
+                receta = Produccion.query.get_or_404(form.materia_prima_id.data)
 
                 cantidad = convertirCantidadaPz(form.tipo.data, form.cantidad.data)
 
-                if receta.Costo_Galleta.galletas_disponibles < cantidad:
+                if receta.galletas_disponibles < cantidad:
                     flash("No se puede agregar una merma mayor a la cantidad existente.", "danger")
                     formTipo = tipoMermaForm()
                     mermas = MemraGalleta.query.filter_by(estatus=1)
                     materiasPrimas = controller_mermas.getMateriasPrimasSinMerma()
-                    recetas = Receta.query.filter_by(estatus=1).all()
+                    recetas = Produccion.query.filter_by(estatus='terminada').all()
 
                     return render_template('moduloMermas/crudMermas.html', mermas=mermas, form=form,
                                            formTipo=formTipo, materiasPrimas=materiasPrimas, recetas=recetas)
 
-                receta.Costo_Galleta.galletas_disponibles -= cantidad
+                receta.galletas_disponibles -= cantidad
+                receta.receta.Costo_Galleta.galletas_disponibles -= cantidad
+
+
 
                 db.session.commit()
                 nueva_merma = MemraGalleta(
-                        receta_id=form.materia_prima_id.data,
+                        produccion_id=form.materia_prima_id.data,
                         tipo=form.tipo.data,
                         cantidad=form.cantidad.data,
                         descripcion=form.descripcion.data,
@@ -130,7 +133,7 @@ def agregar_merma():
                     formTipo = tipoMermaForm()
                     mermas = MermaMateriaPrima.query.filter_by(estatus=1)
                     materiasPrimas = controller_mermas.getMateriasPrimasSinMerma()
-                    recetas = Receta.query.filter_by(estatus=1).all()
+                    recetas = Produccion.query.filter_by(estatus='terminada').all()
 
                     return render_template('moduloMermas/crudMermas.html', mermas=mermas, form=form,
                                            formTipo=formTipo, materiasPrimas=materiasPrimas, recetas=recetas)
@@ -146,26 +149,29 @@ def agregar_merma():
                 merma = MemraGalleta.query.get_or_404(form.id.data)
 
                 cantidad = convertirCantidadaPz( merma.tipo,  merma.cantidad)
-                receta = Receta.query.get_or_404(merma.receta_id)
-                receta.Costo_Galleta.galletas_disponibles += cantidad
+                receta = Receta.query.get_or_404(merma.produccion_id)
+                receta.galletas_disponibles += cantidad
+                receta.receta.Costo_Galleta.galletas_disponibles += cantidad
+
+
                 db.session.commit()
 
-                receta = Receta.query.get_or_404(form.materia_prima_id.data)
+                receta = Produccion.query.get_or_404(form.materia_prima_id.data)
 
                 cantidad = convertirCantidadaPz(form.tipo.data, form.cantidad.data)
-                if receta.Costo_Galleta.galletas_disponibles < cantidad:
+                if receta.galletas_disponibles < cantidad:
                     flash("No se puede agregar una merma mayor a la cantidad existente.", "danger")
                     formTipo = tipoMermaForm()
                     mermas = MemraGalleta.query.filter_by(estatus=1)
                     materiasPrimas = controller_mermas.getMateriasPrimasSinMerma()
-                    recetas = Receta.query.filter_by(estatus=1).all()
+                    recetas = Produccion.query.filter_by(estatus='terminada').all()
 
                     return render_template('moduloMermas/crudMermas.html', mermas=mermas, form=form,
                                            formTipo=formTipo, materiasPrimas=materiasPrimas, recetas=recetas)
 
-                receta.Costo_Galleta.galletas_disponibles -= cantidad
+                receta.galletas_disponibles -= cantidad
                 db.session.commit()
-                merma.receta_id = form.materia_prima_id.data,
+                merma.produccion_id = form.materia_prima_id.data,
                 merma.tipo = form.tipo.data,
                 merma.cantidad = form.cantidad.data,
                 merma.descripcion = form.descripcion.data,
@@ -178,7 +184,7 @@ def agregar_merma():
         formTipo = tipoMermaForm()
         mermas = MermaMateriaPrima.query.filter_by(estatus=1)
         materiasPrimas = controller_mermas.getMateriasPrimasSinMerma()
-        recetas = Receta.query.filter_by(estatus=1).all()
+        recetas = Produccion.query.filter_by(estatus='terminada').all()
 
         return render_template('moduloMermas/crudMermas.html', mermas=mermas, form=form,
                                formTipo=formTipo, materiasPrimas=materiasPrimas, recetas=recetas)
@@ -203,19 +209,19 @@ def seleccionar_merma():
             mermas = MermaMateriaPrima.query.filter_by(estatus=1)
             originalForm.tipo_merma.data = "materiaPrima"
             materiasPrimas = controller_mermas.getMateriasPrimasSinMerma()
-            recetas = Receta.query.filter_by(estatus=1).all()
+            recetas = Produccion.query.filter_by(estatus='terminada').all()
 
         else:
             form = tipoMermaForm()
             mermas = MemraGalleta.query.filter_by(estatus=1)
             originalForm.tipo_merma.data = "galletas"
-            recetas = Receta.query.filter_by(estatus=1).all()
+            recetas = Produccion.query.filter_by(estatus='terminada').all()
 
             materiasPrimas = []
             merma = MemraGalleta.query.get_or_404(id)
 
         originalForm.id.data = merma.id
-        originalForm.materia_prima_id.data = merma.materia_prima_id if tipo_merma == "materiaPrima" else merma.receta_id
+        originalForm.materia_prima_id.data = merma.materia_prima_id if tipo_merma == "materiaPrima" else merma.produccion_id
         originalForm.tipo.data = merma.tipo
         originalForm.cantidad.data = merma.cantidad
         originalForm.descripcion.data = merma.descripcion
@@ -240,10 +246,13 @@ def eliminar_merma():
     else:
         merma = MemraGalleta.query.get_or_404(id)
 
-        receta = Receta.query.get_or_404(merma.receta_id)
-        cantidad = convertirCantidadaPz(merma.tipo.data, merma.cantidad.data)
+        receta = Produccion.query.get_or_404(merma.produccion_id)
+        cantidad = convertirCantidadaPz(merma.tipo, merma.cantidad)
 
-        receta.Costo_Galleta.galletas_disponibles += cantidad
+        receta.galletas_disponibles += cantidad
+        receta.receta.Costo_Galleta.galletas_disponibles += cantidad
+
+
 
 
     db.session.commit()

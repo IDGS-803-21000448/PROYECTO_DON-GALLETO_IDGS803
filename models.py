@@ -73,6 +73,7 @@ class Produccion(db.Model):
     receta_id = db.Column(db.Integer, db.ForeignKey('recetas.id'))
     estatus = db.Column(db.String(50)) # 4 Estatus solicitud, produccion, producido, postergado
     cantidad = db.Column(db.Integer)
+    galletas_disponibles = db.Column(db.Integer, default = 0)
     fecha_solicitud = db.Column(db.DateTime, default=datetime.datetime.now)
     fecha_producido = db.Column(db.DateTime, nullable=True)
     fecha_postergado = db.Column(db.DateTime, nullable=True)
@@ -130,13 +131,13 @@ class Alerta(db.Model):
 class MemraGalleta(db.Model):
     __tablename__ = 'mermaGalletas'
     id = db.Column(db.Integer, primary_key=True)
-    receta_id = db.Column(db.Integer, db.ForeignKey('recetas.id'))
+    produccion_id = db.Column(db.Integer, db.ForeignKey('produccion.id'))
     cantidad = db.Column(db.Float)
     descripcion = db.Column(db.String(200), nullable=True)
     fecha = db.Column(db.DateTime, default=datetime.datetime.now)
     tipo = db.Column(db.String(50))
     estatus = db.Column(db.Integer, default=1)
-    receta = db.relationship('Receta', backref=db.backref('mermas', lazy=True))
+    produccion = db.relationship('Produccion', backref=db.backref('mermas', lazy=True))
     
 
 #-------PROVEEDORES--------
