@@ -154,7 +154,7 @@
                         <td>{{ merma.materia_prima.tipo_materia.nombre }}</td>
                     {% endif %}
                     {% if form.tipo_merma.data == "galletas" %}
-                        <td>{{ merma.receta.nombre }}</td>
+                        <td>{{ merma.produccion.receta.nombre }}</td>
                     {% endif %}
                     <td>{{ merma.tipo }}</td>
                     <td>{{ merma.cantidad }}</td>
@@ -237,17 +237,21 @@
             <tr>
                 <th>Nombre</th>
                 <th>Cantidad Disponible</th>
+                <th>Lote</th>
+
               <th>Seleccionar</th>
             </tr>
           </thead>
           <tbody>
             {% for receta in recetas %}
             <tr>
-                <td>{{receta.nombre }}</td>
-                <td>{{ receta.Costo_Galleta.galletas_disponibles }}</td>
+                <td>{{receta.receta.nombre }}</td>
+                <td>{{ receta.galletas_disponibles }}</td>
+                                <td>{{ receta.lote }}</td>
+
               <td>
                 <button type="button" class="btn btn-success select-galleta" data-id="{{ receta.id }}"
-                        data-cantidad-disponible="{{ receta.Costo_Galleta.galletas_disponibles }}" data-bs-dismiss="modal">
+                        data-cantidad-disponible="{{ receta.galletas_disponibles }}" data-bs-dismiss="modal">
                   Seleccionar
                 </button>
               </td>

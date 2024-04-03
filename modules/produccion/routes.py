@@ -172,6 +172,7 @@ def terminar_produccion():
         
     # Actualizar stock de las galletas
     costo_galleta.galletas_disponibles += receta.num_galletas
+    solicitud.galletas_disponibles = receta.num_galletas
 
     # Realizar el commit de todas las actualizaciones de la materia prima
     try:
