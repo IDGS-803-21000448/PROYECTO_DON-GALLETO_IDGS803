@@ -24,7 +24,7 @@ class RecetaForm(Form):
     ])
     unidad_medida = SelectField('Unidad de Medida', [
         validators.DataRequired(message='El campo es requerido')
-    ],choices=[('g', 'g'),('kg', 'kg'), ('ml', 'ml'), ('l', 'l')])
+    ],choices=[('g', 'g'),('kg', 'kg'), ('ml', 'ml'), ('l', 'l'), ('pz', 'pz')])
     porcentaje_merma = FloatField('Porcentaje de Merma', [
         validators.number_range(min = 10.0, max=100.0, message = "Ingrese un porcentaje valido")
     ])
