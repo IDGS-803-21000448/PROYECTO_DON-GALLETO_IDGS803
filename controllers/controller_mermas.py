@@ -55,7 +55,7 @@ def insertarMermaMateriaPrima(datos: dict):
 
 def insertarMermaGalleta(produccion: Produccion):
     nuevaMerma = models.MemraGalleta(
-        id_produccion= produccion.id,
+        produccion_id= produccion.id,
         cantidad= produccion.galletas_disponibles,
         descripcion= "Merma por Caducidad",
         tipo = "pz"
@@ -73,11 +73,11 @@ def getMateriasPrimasSinMerma():
 
 
 def verificarCaducidadesGalletas():
-    producciones = Produccion.query.filter_by(estatus = "terminado").all()  #Obtiene La materia prima que no esta en merma Aún
+    producciones = Produccion.query.filter_by(estatus = "terminada").all()  #Obtiene La materia prima que no esta en merma Aún
     fecha_actual = date.today() # Fecha De Hoy
     try:
         for produccion in producciones:
-            dias_para_caducar = (fecha_actual -produccion.fecha_producido).days # Cuanros días faltan para que la materia prima Caduque
+            dias_para_caducar = (fecha_actual -produccion.fecha_producido.date()).days # Cuanros días faltan para que la materia prima Caduque
 
             if dias_para_caducar >= 14 and produccion.galletas_disponibles != 0: # Si Caduco Se Agrega la Alerta y se inserta en mermas
                 nombre = f"Tienes Galletas de {produccion.receta.nombre} caducada"
