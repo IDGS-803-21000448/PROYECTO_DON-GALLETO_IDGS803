@@ -24,7 +24,16 @@ def login_view():  # Cambia el nombre de la función para evitar conflictos
             flash('El campo contraseña es requerido', 'error')
             return render_template("moduloLogin/login.html", form=form)
 
-        user = User.query.filter_by(usuario=usuario).first()
+        try:
+            user = User.query.filter_by(usuario=usuario).first()
+        except Exception as e:
+            flash('Error al iniciar sesion', 'error')
+            return render_template("moduloLogin/login.html", form=form)
+
+        if not user:
+            flash('El usuario no se puede identificar, vuelve a intentarlo', 'error')
+            return render_template("moduloLogin/login.html", form=form)
+
         # obtener los logs de inicio de sesion del usuario
         logs = LogLogin.query.filter_by(id_user=user.id).order_by(LogLogin.id.desc()).limit(5).all()
 
