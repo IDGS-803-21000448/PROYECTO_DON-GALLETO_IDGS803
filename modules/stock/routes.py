@@ -12,7 +12,7 @@ import math
 @requiere_token
 def modulo_stock():
     # Consulta para obtener nombre de galletas y id_precio de Receta
-    recetas_con_precio = db.session.query(Receta.nombre, Receta.id_precio).filter(Receta.id_precio.isnot(None)).all()
+    recetas_con_precio = db.session.query(Receta.nombre, Receta.id_precio).filter(Receta.id_precio.isnot(None), Receta.estatus==1).all()
 
     galletas = []
 
