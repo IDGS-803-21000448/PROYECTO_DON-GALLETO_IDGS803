@@ -85,7 +85,10 @@
                             <th>ID</th>
                             <th>Receta</th>
                             <th>Fecha de Solicitud</th>
+                            <th>Lote</th>
+                            <th>Estatus</th>
                             <th>Empleado</th>
+                            <th>Empleado produccion</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -94,7 +97,10 @@
                             <td>{{ solicitud.id }}</td>
                             <td>{{ solicitud.receta.nombre }}</td>
                             <td>{{ solicitud.fecha_solicitud }}</td>
+                            <td>{{ solicitud.lote }}</td>
+                            <td>{{ solicitud.estatus }}</td>
                             <td>{{ solicitud.empleadoSolicitante }}</td>
+                            <td>{{ solicitud.empleadoProduccion }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

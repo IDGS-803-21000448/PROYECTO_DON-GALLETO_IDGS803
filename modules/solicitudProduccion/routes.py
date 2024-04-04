@@ -13,7 +13,7 @@ from datetime import datetime
 @requiere_rol("admin")
 def vista_recetas():
     recetas = Receta.query.filter_by(estatus=1).all()
-    solcitudes = Produccion.query.filter_by(estatus='solicitud').all()
+    solcitudes = Produccion.query.all()
     
     return render_template("moduloProduccion/solicitudProduccion.html", recetas=recetas, solicitudes=solcitudes)
 
