@@ -28,8 +28,7 @@ contrasenas_inseguras = {
     "letmein": True,
     "football": True,
     "iloveyou": True,
-    "adminadmin": True,
-    "123qwe": True,
+    "adminadmin": True
 }
 
 
