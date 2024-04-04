@@ -1,3 +1,4 @@
+from controllers.controller_materia_prima import actualizar_cantidades_tipo
 from formularios import formMateriaPrima
 from . import materia_prima
 from flask import render_template, request, flash, redirect, url_for
@@ -31,6 +32,7 @@ def agregar_materia():
             materia.tipo = form.tipo.data
 
         db.session.commit()
+        actualizar_cantidades_tipo()
         return redirect(url_for('materiaPrima.modulo_materia_prima'))
 
     return render_template("moduloMateria/moduloMateria.html", form=form,
