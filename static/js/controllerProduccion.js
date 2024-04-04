@@ -385,3 +385,41 @@ function gestionarCancelarProduccionPostergada() {
         cerrarModalCancelarPostergar();
     }
 }
+
+function gestionarAgregarMerma() {
+  let modalAgregarMerma = document.getElementById("modalAgregarMerma");
+  let btnAgregarMerma = document.getElementById("mandarAMermaBtn");
+  let confirmarAgregarMermaBtn = document.getElementById("confirmarBtnAgregarMerma");
+  let cancelarAgregarMerma = document.getElementById("cancelarBtnAgregarMerma");
+  let spanAgregarMerma = document.getElementsByClassName("closeAgregarMerma")[0];
+
+  function mostrarModalAgregarMerma() {
+      modalAgregarMerma.style.display = "block";
+  }
+
+  function cerrarModalAgregarMerma() {
+      modalAgregarMerma.style.display = "none";
+  }
+
+  btnAgregarMerma.onclick = function () {
+      mostrarModalAgregarMerma();
+  }
+
+  spanAgregarMerma.onclick = function () {
+      cerrarModalAgregarMerma();
+  }
+
+  cancelarAgregarMerma.onclick = function () {
+      cerrarModalAgregarMerma();
+  }
+
+  function confirmarAgregarMerma() {
+      let form = document.getElementById("formMandarAMerma");
+      form.submit();
+      cerrarModalAgregarMerma();
+  }
+
+  confirmarAgregarMermaBtn.onclick = function () {
+      confirmarAgregarMerma();
+  }
+}

@@ -7,7 +7,7 @@
 <style>
   #modalProcesar, #modalCancelarSolicitud, #modalPostergarSolicitud,
   #modalTerminarProduccion, #modalCancelarProduccion, 
-  #modalProcesarProduccionPostergada, #modalCancelarProduccionPostergada{
+  #modalProcesarProduccionPostergada, #modalCancelarProduccionPostergada, #modalAgregarMerma{
     display: none; 
     position: fixed;
     z-index: 1000;
@@ -88,8 +88,8 @@
 <div id="modalTerminarProduccion" class="modal">
   <div class="modal-content">
     <span class="closeTerminarProduccion">&times;</span>
-    <h3 class="text-center">¿Estás seguro de que deseas terminar la produccion?</h3>
-    <p class="text-center">Se terminará la produccion.</p>
+    <h3 class="text-center">¿Estás seguro de que deseas terminar la producción?</h3>
+    <p class="text-center">Se terminará la producción.</p>
     <div class="button-container">
       <button id="confirmarBtnTerminarProduccion" class="btn btn-success">Confirmar</button>
       <button id="cancelarBtnTerminarProduccion" class="btn btn-danger">Cancelar</button>
@@ -100,8 +100,8 @@
 <div id="modalCancelarProduccion" class="modal">
   <div class="modal-content">
     <span class="closeCancelarProduccion">&times;</span>
-    <h3 class="text-center">¿Estás seguro de que deseas cancelar la produccion?</h3>
-    <p class="text-center">Se cancelará la produccion y se devolverán las materias primas a sus respectivos inventarios.</p>
+    <h3 class="text-center">¿Estás seguro de que deseas cancelar la producción?</h3>
+    <p class="text-center">Se cancelará la producción y se devolverán las materias primas a sus respectivos inventarios.</p>
     <div class="button-container">
       <button id="confirmarBtnCancelarProduccion" class="btn btn-success">Confirmar</button>
       <button id="cancelarBtnCancelarProduccion" class="btn btn-danger">Cancelar</button>
@@ -113,7 +113,7 @@
   <div class="modal-content">
     <span class="closeProcesarPostergada">&times;</span>
     <h3 class="text-center">¿Estás seguro de que deseas procesar la produccion?</h3>
-    <p class="text-center">Se procesará la produccion.</p>
+    <p class="text-center">Se procesará la producción.</p>
     <div class="button-container">
       <button id="confirmarBtnProducirPostergada" class="btn btn-success">Confirmar</button>
       <button id="cancelarBtnProducirPostergada" class="btn btn-danger">Cancelar</button>
@@ -121,12 +121,23 @@
   </div>
 </div>
 
+<div id="modalAgregarMerma" class="modal">
+  <div class="modal-content">
+    <span class="closeAgregarMerma">&times;</span>
+    <h3 class="text-center">¿Estás seguro de que deseas agregar a merma los ingredientes de la producción?</h3>
+    <p class="text-center">Se agregarán a merma los ingredientes de la producción.</p>
+    <div class="button-container">
+      <button id="confirmarBtnAgregarMerma" class="btn btn-success">Confirmar</button>
+      <button id="cancelarBtnAgregarMerma" class="btn btn-danger">Cancelar</button>
+    </div>
+  </div>
+</div>
 
 <div id="modalCancelarProduccionPostergada" class="modal">
   <div class="modal-content">
     <span class="closeCancelarPostergada">&times;</span>
-    <h3 class="text-center">¿Estás seguro de que deseas cancelar la produccion?</h3>
-    <p class="text-center">Se cancelará la produccion.</p>
+    <h3 class="text-center">¿Estás seguro de que deseas cancelar la producción?</h3>
+    <p class="text-center">Se cancelará la producción.</p>
     <div class="button-container">
       <button id="confirmarBtnCancelarPostergada" class="btn btn-success">Confirmar</button>
       <button id="cancelarBtnCancelarPostergada" class="btn btn-danger">Cancelar</button>
@@ -172,12 +183,12 @@
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                     <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
                                     <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
-                                    <button id="cancelarSolicitudBtn" type="button" class="btn btn-warning" onclick="gestionarCancelarSolicitud()">Cancelar</button>
+                                    <button id="cancelarSolicitudBtn" type="button" class="btn btn-danger" onclick="gestionarCancelarSolicitud()">Cancelar</button>
                                 </form>
                                 <form id="formPostergarSolicitud" action="{{url_for('produccion_blueprint.postergar_produccion')}}" method="post" class="d-inline">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                     <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
-                                    <button id="postergarSolicitudBtn" type="button" class="btn btn-danger" onclick="gestionarPostergarSolicitud()">Postergar</button>
+                                    <button id="postergarSolicitudBtn" type="button" class="btn btn-warning" onclick="gestionarPostergarSolicitud()">Postergar</button>
                                 </form>
                             </td>
                         </tr>
@@ -221,8 +232,14 @@
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                     <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
                                     <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
-                                    <button id="cancelarProduccionBtn" type="button" class="btn btn-warning" onclick="gestionarCancelarProduccion()">Cancelar</button>
+                                    <button id="cancelarProduccionBtn" type="button" class="btn btn-danger" onclick="gestionarCancelarProduccion()">Cancelar</button>
                                 </form>
+                                <form id="formMandarAMerma" action="{{url_for('produccion_blueprint.agregar_merma')}}" method="post" class="d-inline">
+                                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                  <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
+                                  <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
+                                  <button id="mandarAMermaBtn" type="button" class="btn btn-warning" onclick="gestionarAgregarMerma()">Mandar a merma</button>
+                              </form>
                             </td>
                         </tr>
                         {% endfor %}
@@ -265,7 +282,7 @@
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                     <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
                                     <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
-                                    <button id="cancelarPostergarBtn" type="button" class="btn btn-warning" onclick="gestionarCancelarProduccionPostergada()" >Cancelar</button>
+                                    <button id="cancelarPostergarBtn" type="button" class="btn btn-danger" onclick="gestionarCancelarProduccionPostergada()" >Cancelar</button>
                                 </form>
                             </td>
                         </tr>
