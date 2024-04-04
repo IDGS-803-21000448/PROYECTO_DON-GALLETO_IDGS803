@@ -24,7 +24,16 @@ def login_view():  # Cambia el nombre de la función para evitar conflictos
             flash('El campo contraseña es requerido', 'error')
             return render_template("moduloLogin/login.html", form=form)
 
-        user = User.query.filter_by(usuario=usuario).first()
+        try:
+            user = User.query.filter_by(usuario=usuario).first()
+        except Exception as e:
+            flash('Error al iniciar sesion', 'error')
+            return render_template("moduloLogin/login.html", form=form)
+
+        if not user:
+            flash('El usuario no se puede identificar, vuelve a intentarlo', 'error')
+            return render_template("moduloLogin/login.html", form=form)
+
         # obtener los logs de inicio de sesion del usuario
         logs = LogLogin.query.filter_by(id_user=user.id).order_by(LogLogin.id.desc()).limit(5).all()
 
@@ -82,3 +91,7 @@ def logout():
     response.set_cookie('auth_token', '')
     flash('Has cerrado sesión', 'success')
     return response  # Asegúrate de que el nombre del endpoint sea correcto
+
+@login_bp.route("/")
+def login():
+    return redirect(url_for('login.login_view'))

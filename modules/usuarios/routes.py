@@ -43,6 +43,8 @@ def agregar_usuarios():
                 crypted = encriptar_contrasena(contrasena)
                 user.contrasena = crypted
             else:
+                crypted = encriptar_contrasena(contrasena)
+                form_usuarios.contrasena.data = crypted
                 controller_usuarios.agregarUsuario(form_usuarios)
         else:
             safePass = es_contrasena_segura(contrasena)
@@ -71,6 +73,8 @@ def agregar_usuarios():
                     crypted = encriptar_contrasena(contrasena)
                     user.contrasena = crypted
                 else:
+                    crypted = encriptar_contrasena(contrasena)
+                    form_usuarios.contrasena.data = crypted
                     controller_usuarios.agregarUsuario(form_usuarios)
             else:
                 flash("Las contraseñas no coinciden. Inténtalo de nuevo.", "error")
