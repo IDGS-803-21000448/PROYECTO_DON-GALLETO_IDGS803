@@ -79,6 +79,8 @@ class Produccion(db.Model):
     fecha_postergado = db.Column(db.DateTime, nullable=True)
     fecha_cancelado = db.Column(db.DateTime, nullable=True)
     lote = db.Column(db.String(50), nullable = True)
+    empleadoSolicitante = db.Column(db.String(50), nullable = True)
+    empleadoProduccion = db.Column(db.String(50), nullable = True)
     receta = db.relationship('Receta', backref=db.backref('produccion', lazy=True))
     
 # class solicitudProduccion(db.Model):

@@ -2,7 +2,7 @@ from . import solicitud_produccion
 from flask import render_template, request, jsonify, url_for, redirect, flash
 #from formularios import formSolicitudProduccion
 from controllers.controller_login import requiere_rol
-from flask_login import login_required
+from flask_login import login_required, current_user
 from models import db, Receta, Produccion
 import json
 from datetime import datetime
@@ -35,7 +35,8 @@ def agregar_solicitud():
         cantidad=1, # Este dato falta por confirmar qué es
         fecha_solicitud=datetime.now(),
         fecha_producido=None,
-        fecha_postergado=None
+        fecha_postergado=None,
+        empleadoSolicitante = current_user.nombre
     )
     
     db.session.add(nueva_solicitud)

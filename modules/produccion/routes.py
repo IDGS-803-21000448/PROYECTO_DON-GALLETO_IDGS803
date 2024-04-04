@@ -3,7 +3,7 @@ from flask import render_template, request, jsonify, url_for, redirect, flash
 from models import db, Receta, Produccion, RecetaDetalle, MateriaPrima, MermaMateriaPrima, CostoGalleta, Tipo_Materia
 from . import produccion
 from controllers.controller_login import requiere_rol, requiere_token
-from flask_login import login_required
+from flask_login import login_required, current_user
 from datetime import datetime, date
 from sqlalchemy import asc
 from controllers.controller_materia_prima import actualizar_cantidades_tipo
@@ -33,6 +33,8 @@ def solicitar_produccion():
     # Actualizar el estatus de la solicitud a 'proceso'
     solicitud = Produccion.query.get(id_solicitud)
     solicitud.estatus = 'proceso'
+    solicitud.empleadoProduccion = current_user.nombre
+
     
     # Recuperar los detalles de la receta
     detalles_receta = RecetaDetalle.query.filter_by(receta_id=receta_id).all()

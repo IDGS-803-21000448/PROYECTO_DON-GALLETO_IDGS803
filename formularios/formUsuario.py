@@ -8,11 +8,11 @@ class UsersForm(Form):
     id = IntegerField('id', widget=HiddenInput(), default=0)
     nombre=StringField('Nombre', [
         validators.DataRequired(message='El campo es requerido'),
-        validators.length(min=4, max=15, message='Ingresa un nombre valido')
+        validators.length(min=4, max=40, message='Ingresa un nombre valido')
     ])
     puesto=StringField('Puesto', [
         validators.DataRequired(message='El campo es requerido'),
-        validators.length(min=4, max=15, message='Ingresa un apellido paterno valido')
+        validators.length(min=4, max=20, message='Ingresa un apellido paterno valido')
     ])
     rol = SelectField('Rol', choices=[
         ('admin', 'Administrador'), ('venta', 'Ventas'), ('produccion', 'Producción'), ('inventario', 'Inventario')
@@ -25,22 +25,22 @@ class UsersForm(Form):
     ])
     contrasena = PasswordField('Contraseña', [
         #validators.DataRequired(message='El campo es requerido'),
-        validators.length(max=15, message='Ingresa una contraseña valida')
+        validators.length(min= 4, max=15, message='Ingresa una contraseña valida')
     ])
     confirmar_contrasena = PasswordField('Confirmar contraseña', [
         #validators.DataRequired(message='El campo es requerido'),
-        validators.length(max=15, message='Ambas contraseñas deben de coincidir.')
+        validators.length(min= 4, max=15, message='Ambas contraseñas deben de coincidir.')
     ])
     
 class UsersFormModificar(Form):
     id = IntegerField('')
     nombre=StringField('Nombre', [
         validators.DataRequired(message='El campo es requerido'),
-        validators.length(min=4, max=15, message='Ingresa un nombre valido')
+        validators.length(min=4, max=40, message='Ingresa un nombre valido')
     ])
     puesto=StringField('Puesto', [
         validators.DataRequired(message='El campo es requerido'),
-        validators.length(min=4, max=15, message='Ingresa un apellido paterno valido')
+        validators.length(min=4, max=20, message='Ingresa un apellido paterno valido')
     ])
     rol = SelectField('Rol', choices=[
         ('admin', 'Administrador'), ('venta', 'Ventas'), ('produccion', 'Producción'), ('inventario', 'Inventario')

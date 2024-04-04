@@ -85,6 +85,7 @@
                             <th>ID</th>
                             <th>Receta</th>
                             <th>Fecha de Solicitud</th>
+                            <th>Empleado</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -93,6 +94,7 @@
                             <td>{{ solicitud.id }}</td>
                             <td>{{ solicitud.receta.nombre }}</td>
                             <td>{{ solicitud.fecha_solicitud }}</td>
+                            <td>{{ solicitud.empleadoSolicitante }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
