@@ -53,9 +53,52 @@ def insertarMermaMateriaPrima(datos: dict):
     db.session.add(nuevaMerma)
     db.session.commit()
 
+def insertarMermaGalleta(produccion: Produccion):
+    nuevaMerma = models.MemraGalleta(
+        id_produccion= produccion.id,
+        cantidad= produccion.galletas_disponibles,
+        descripcion= "Merma por Caducidad",
+        tipo = "pz"
+    )
+
+    db.session.add(nuevaMerma)
+    db.session.commit()
 
 def getMateriasPrimasSinMerma():
 
     materiasPrimas = MateriaPrima.query.filter_by(estatus = 1).all()
 
     return materiasPrimas
+
+
+
+def verificarCaducidadesGalletas():
+    producciones = Produccion.query.filter_by(estatus = "terminado").all()  #Obtiene La materia prima que no esta en merma Aún
+    fecha_actual = date.today() # Fecha De Hoy
+    try:
+        for produccion in producciones:
+            dias_para_caducar = (fecha_actual -produccion.fecha_producido).days # Cuanros días faltan para que la materia prima Caduque
+
+            if dias_para_caducar >= 14 and produccion.galletas_disponibles != 0: # Si Caduco Se Agrega la Alerta y se inserta en mermas
+                nombre = f"Tienes Galletas de {produccion.receta.nombre} caducada"
+                descripcion = (f"Hay {produccion.galletas_disponibles} galletas de {produccion.receta.nombre} que esta "
+                               f"caducada del lote {produccion.lote}, y fue colocada como merma ")
+
+                produccion.receta.Costo_Galleta.galletas_disponibles -=  produccion.galletas_disponibles
+                db.session.commit()
+
+                produccion.galletas_disponibles = 0
+                db.session.commit()
+
+                insertarMermaGalleta(produccion)
+                insertarAlertas(nombre, descripcion, True)
+
+            elif dias_para_caducar >= 10 and produccion.galletas_disponibles != 0:
+
+                nombre = f"Tienes galletas {produccion.receta.nombre} por caducar"
+                descripcion = (f"Hay {produccion.galletas_disponibles} galletas de {produccion.receta.nombre}  que estan a "
+                               f"{14 - dias_para_caducar} dias de caducar del lote {produccion.lote}")
+                insertarAlertas(nombre, descripcion, True)
+
+    except Exception as e:
+        print("Error al verificar las caducidades: ", e)
