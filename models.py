@@ -187,7 +187,6 @@ class DetalleVenta(db.Model):
     precio_unitario = db.Column(db.Float, nullable=False)
     cantidad = db.Column(db.Integer, nullable=False)
     subtotal = db.Column(db.Float, nullable=False)
-    produccion =  db.Column(db.Integer, db.ForeignKey('produccion.id'), nullable=False)
     venta_id = db.Column(db.Integer, db.ForeignKey('venta.id'), nullable=False)
 
 class CostoGalleta(db.Model):

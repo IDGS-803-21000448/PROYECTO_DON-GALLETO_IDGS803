@@ -172,6 +172,7 @@
                 var precio_unitario = celdas[3].innerText;
                 var subtotal = celdas[4].innerText;
                 var costoId = parseInt(celdas[6].innerText);
+                var recetaId = parseInt(celdas[7].innerText);
                 var total = parseFloat(document.getElementById("totalVenta").innerHTML.replace('$', ''));
 
                 if (nombre === '' || fechaInput === '') {
@@ -183,7 +184,7 @@
                     return;
                 }
 
-                datosVenta.push({ nombre: nombre, tipoVenta: tipoVenta, cantidad: cantidad, sabor: sabor, fecha: fechaInput, precio_unitario: precio_unitario, subtotal: subtotal, total: total, galleta_id: costoId });
+                datosVenta.push({ nombre: nombre, tipoVenta: tipoVenta, cantidad: cantidad, sabor: sabor, fecha: fechaInput, precio_unitario: precio_unitario, subtotal: subtotal, total: total, galleta_id: costoId, receta_id: recetaId });
             }
 
             console.log(datosVenta);
@@ -256,13 +257,14 @@
             var costoId = parseInt(dataDepurada[1]);
             var precioUnitario = parseFloat(dataDepurada[2]);
             var stock = parseInt(dataDepurada[3]);
+            var receta = parseInt(dataDepurada[4]);
             let subtotal = 0;
 
             // revisar en la tabla si hay un producto con el mismo costoId
             var celdas = document.getElementById('tabla_productos').getElementsByTagName('tr');
             var cantidadEvaluar = 0;
             if (tipoVenta === 'gramos') {
-                cantidadEvaluar = (parseFloat(cantidad) / 30)
+                cantidadEvaluar = Math.ceil((parseFloat(cantidad) / 30));
             }
 
             if (tipoVenta === 'pieza') {
@@ -282,25 +284,53 @@
                     cantidadxpaquete = parseFloat(cantidad) * 1000;
                 }
 
-                cantidadEvaluar =  parseFloat(cantidadxpaquete) / 30;
+                cantidadEvaluar =  Math.ceil(parseFloat(cantidadxpaquete) / 30);
             }
-
             var cantGalletasTabla = cantidadEvaluar;
-            for (var i = 1; i < celdas.length; i++) {
-                var cells = celdas[i].getElementsByTagName('td');
-                var currentCostoId = parseInt(cells[6].innerText);
-                if (currentCostoId === costoId) {
-                    cantGalletasTabla += parseInt(cells[4].innerText / cells[3].innerText); 
-                    if (cantGalletasTabla > stock) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'No hay suficientes galletas en el inventario, ingresa otra cantidad.'
-                        });
-                        return;
+
+            console.log(celdas.length);
+
+            if (celdas.length === 1) {
+                if (cantidadEvaluar > stock) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No hay suficientes galletas en el inventario, ingresa otra cantidad.'
+                    });
+                    return;
+                }
+            }else{
+                for (var i = 1; i < celdas.length; i++) {
+                    var cells = celdas[i].getElementsByTagName('td');
+                    var currentCostoId = parseInt(cells[6].innerText);
+                    if (currentCostoId === costoId) {
+                        //cantGalletasTabla += parseInt(cells[4].innerText / cells[3].innerText); 
+    
+                        if ( tipoVenta === 'gramos') {
+                            cantGalletasTabla += Math.ceil(parseInt(cells[0].innerText / 30));
+                        }else if ( tipoVenta === 'pieza') {
+                            cantGalletasTabla += parseInt(cells[0].innerText);
+                        }else if ( tipoVenta === 'paquete') {
+                            if (paquete == '1'){
+                                cantGalletasTabla += Math.ceil(Math.ceil(700 / 30) * parseInt(cells[0].innerText));
+                            }
+    
+                            if (paquete == '2'){
+                                cantGalletasTabla += Math.ceil(Math.ceil(1000 / 30) * parseInt(cells[0].innerText));
+                            }
+                        }
+    
+                        if (cantGalletasTabla > stock) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'No hay suficientes galletas en el inventario, ingresa otra cantidad.'
+                            });
+                            return;
+                        }
                     }
                 }
-            }
+            }            
 
             // Verificar que todos los campos estén completos
             if (tipoVenta === '' || cantidad === '' || sabor === '') {
@@ -342,20 +372,25 @@
                 subtotal = '$' + (Math.ceil(parseFloat(unidades)) * parseFloat(precioUnitario));
             }
 
+            // precio por paquete
             if (tipoVenta === 'paquete') {
                 paquete = document.getElementById('paquete').value;
                 console.log(paquete);
 
                 if (paquete == '1'){
-                    cantidadTotal = parseFloat(cantidad) * 700;
+                    // precio por paquete
+                    cantGalletasPaquete = Math.ceil(700 / 30);
+                    precioPaquete = Math.ceil((parseFloat(cantGalletasPaquete) * parseFloat(precioUnitario)) * 0.9);
                 }
 
                 if (paquete == '2'){
-                    cantidadTotal = parseFloat(cantidad) * 1000;
+                    cantGalletasPaquete = Math.ceil(1000 / 30);
+                    precioPaquete = Math.ceil((parseFloat(cantGalletasPaquete) * parseFloat(precioUnitario)) * 0.85);
                 }
 
-                unidades =  parseFloat(cantidadTotal) / 30
-                subtotal = '$' + (parseFloat(Math.ceil(parseFloat(unidades)) * parseFloat(precioUnitario)));
+                unidades =  cantidad;
+                subtotal = '$' + Math.ceil((Math.ceil(parseFloat(unidades)) * parseFloat(precioPaquete)));
+                //subtotal = '$' + (parseFloat(Math.ceil(Math.ceil(parseFloat(unidades)) * parseFloat(precioUnitario) * descuento)));
             }
 
             // Crear nueva fila en la tabla
@@ -370,6 +405,9 @@
             var celdaSubtotal = nuevaFila.insertCell(4);
             var celdaAcciones = nuevaFila.insertCell(5);
             var celdaReceta = nuevaFila.insertCell(6);
+            var celdaGalleta = nuevaFila.insertCell(7);
+            celdaGalleta.innerHTML = receta;
+            celdaGalleta.style = "display: none";
             celdaReceta.innerHTML = costoId;
             celdaReceta.style = "display: none";
 
@@ -386,16 +424,19 @@
                     cantidadTotal = parseFloat(cantidad) * 1000
                     celdaTipoVenta.innerHTML = tipoVenta + ' 1Kg';
                 }
+                celdaPrecio.innerHTML = Math.ceil(precioPaquete);
             }else{
                 celdaTipoVenta.innerHTML = tipoVenta;
+                celdaPrecio.innerHTML = precioUnitario;
             }
 
             celdaSubtotal.innerHTML = subtotal;
             celdaCantidad.innerHTML = cantidad;
             celdaSabor.innerHTML = sabor;
-            celdaPrecio.innerHTML = precioUnitario;
 
             celdaAcciones.innerHTML = '<button type="button" class="btn btn-danger eliminar-fila">Eliminar</button>';
+
+            console.log(nuevaFila);
 
             // Limpiar campos del formulario
             document.getElementById('tipo_venta').value = '';

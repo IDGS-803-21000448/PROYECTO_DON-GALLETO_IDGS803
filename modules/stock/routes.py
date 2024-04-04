@@ -27,11 +27,13 @@ def modulo_stock():
             cantidad_1000_gramos = math.ceil(1000 / 30.0)
             print(cantidad_1000_gramos)
 
-            # calcula el precio por cantidad de galletas en 700 gramos con ganancia de 10%
-            precio_700_gramos = math.ceil((costo_galleta.precio * cantidad_700_gramos) * 1.1)
+            # calcula el precio por cantidad de galletas en 700 gramos con un descuento del 10%
+            precio_700_gramos = math.ceil((costo_galleta.precio * cantidad_700_gramos) * 0.9)
+            print(precio_700_gramos)
 
-            # calcula el precio por cantidad de galletas en 1000 gramos con ganancia de 15%
-            precio_1000_gramos = math.ceil((costo_galleta.precio * cantidad_1000_gramos) * 1.15)
+            # calcula el precio por cantidad de galletas en 1000 gramos con descuento de 15%
+            precio_1000_gramos = math.ceil((costo_galleta.precio * cantidad_1000_gramos) * 0.85)
+            print(precio_1000_gramos)
 
             galletas.append({
                 'nombre': nombre_galleta,
