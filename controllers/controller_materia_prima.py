@@ -33,3 +33,6 @@ def convertirCantidades(tipo1, tipo2, cantidad):
         cantidad = cantidad / 1000
 
     return cantidad
+
+
+

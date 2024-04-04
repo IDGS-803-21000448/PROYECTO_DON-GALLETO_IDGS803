@@ -2,10 +2,11 @@ from flask import render_template
 from flask import render_template, request, jsonify, url_for, redirect, flash
 from models import db, Receta, Produccion, RecetaDetalle, MateriaPrima, MermaMateriaPrima, CostoGalleta, Tipo_Materia
 from . import produccion
-from controllers.controller_login import requiere_rol
+from controllers.controller_login import requiere_rol, requiere_token
 from flask_login import login_required
 from datetime import datetime, date
 from sqlalchemy import asc
+from controllers.controller_materia_prima import actualizar_cantidades_tipo
 
 @produccion.route("/produccion", methods=["GET"])
 @login_required
@@ -78,9 +79,11 @@ def solicitar_produccion():
     # Realizar el commit de todas las actualizaciones de la materia prima
     try:
         db.session.commit()
+        actualizar_cantidades_tipo()
         flash('La solicitud de producción se ha procesado correctamente.', 'success')
     except Exception as e:
         db.session.rollback()
+        actualizar_cantidades_tipo()
         flash('Error al procesar la solicitud de producción. Inténtelo de nuevo más tarde.', 'error')
         #current_app.logger.error(f'Error al procesar la solicitud de producción: {str(e)}')
 
@@ -95,6 +98,12 @@ def convertir_unidades(cantidad, unidad_origen, unidad_destino):
         ('kg', 'g'): lambda x: x * 1000,
         ('ml', 'l'): lambda x: x / 1000,
         ('l', 'ml'): lambda x: x * 1000,
+        ('kg', 'pz'): lambda x: (x / 1000)  / 50,
+        ('g', 'pz'): lambda x: x /50,
+        ('pz', 'g'): lambda x: x * 50,
+        ('pz', 'kg'): lambda x: x * 0.050,
+        
+        
     }
     
     if unidad_origen == unidad_destino:
@@ -219,15 +228,64 @@ def cancelar_produccion():
                 db.session.add(materia_prima)  # Asegura que los cambios se preparan para el commit
 
         db.session.commit()  # Realiza un único commit después de actualizar todas las materias primas
+        actualizar_cantidades_tipo()
         flash('La solicitud de producción se ha cancelado correctamente. Se ha regresado la materia prima al inventario.', 'info')
     except Exception as e:
         db.session.rollback()
+        actualizar_cantidades_tipo()
         flash(f'Error al regresar la materia prima al inventario. Inténtelo de nuevo más tarde. {e}', 'error')
 
     return redirect(url_for("produccion_blueprint.vista_produccion"))
 
 
+@produccion.route("/agregarMerma", methods=["POST"])
+@login_required
+@requiere_token
+@requiere_rol("admin")
+def agregar_merma():
+    id_solicitud = request.form['solicitud_id']
+    receta_id = request.form['receta_id']
+    
+    solicitud = Produccion.query.get(id_solicitud)
+    
+    solicitud.fecha_cancelado = datetime.now()
+    solicitud.estatus = 'merma'
+    
+    
+    # Recuperar los detalles de la receta
+    detalles_receta = RecetaDetalle.query.filter_by(receta_id=receta_id).all()
+    try:
+        for detalle in detalles_receta:
+            materias_primas = MateriaPrima.query.filter_by(id_tipo_materia=detalle.tipo_materia_id)\
+                                                    .order_by(MateriaPrima.fecha_caducidad.asc()).all()
+                
+            #cantidad_a_merma = convertir_unidades(detalle.cantidad_necesaria, detalle.unidad_medida, materias_primas[0].tipo) if materias_primas else 0
 
+            cantidad_a_merma = detalle.cantidad_necesaria
+            
+            tipo_materia = Tipo_Materia.query.get(detalle.tipo_materia_id)
+            
+            nueva_merma = MermaMateriaPrima(
+                materia_prima_id=detalle.tipo_materia_id,
+                cantidad = cantidad_a_merma,
+                descripcion = f' {tipo_materia.nombre} enviado a merma por la solicitud de la receta con id {receta_id}',
+                tipo = detalle.unidad_medida, # investigar qué dato va en esta variable
+                fecha = datetime.now(),
+                estatus = 1
+            )
+            db.session.add(nueva_merma)
+    
+        db.session.commit()  # Realiza un único commit después de actualizar todas las materias primas
+        actualizar_cantidades_tipo()
+        flash('La solicitud de producción se ha enviado a merma correctamente.', 'info')
+    except Exception as e:
+        db.session.rollback()
+        actualizar_cantidades_tipo()
+        flash(f'Error al mandar a merma la materia prima al inventario. Inténtelo de nuevo más tarde. {e}', 'error')
+
+    return redirect(url_for("produccion_blueprint.vista_produccion"))
+    
+    
 
 @produccion.route("/cancelarSolicitud", methods=["POST"])
 @requiere_rol("admin")
