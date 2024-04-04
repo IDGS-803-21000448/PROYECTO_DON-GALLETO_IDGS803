@@ -8,7 +8,7 @@ class MateriaPrimaForm(Form):
     nombre = StringField('Nombre Materia Prima', [
         DataRequired(message='El campo es requerido')
     ])
-    cantidad = FloatField('Cantidad')
+    cantidad = FloatField('Cantidad', render_kw={"readonly": True})
     tipo = SelectField('Unidad de Medida', [
                         validators.DataRequired(message='El campo es requerido')
                             ],choices=[('g', 'g'),('kg', 'kg'), ('ml', 'ml'), ('l', 'l')])
