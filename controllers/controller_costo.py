@@ -72,7 +72,6 @@ def insertar_costos(cantidad_materias, suma_costos, receta_id, costo_mano_obra):
         # Calcular el promedio del total de todos los ingredientes entre la cantidad de ingredientes registrados
         promedio_costos = suma_costos / cantidad_materias
         # Redondear el promedio del costo al siguiente numero entero, se multiplica por 0.2 para darle una ganancia del 20%
-        print(promedio_costos * 0.20)
         precio_galleta = math.ceil(promedio_costos * 0.2)
 
         #Comprobamos que la galleta ya tenga un precio establecido previamente

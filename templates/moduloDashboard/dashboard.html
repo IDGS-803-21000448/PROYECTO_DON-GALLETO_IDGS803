@@ -49,6 +49,17 @@
             </div>
         </div>
 
+        <div class="row">
+            <div class="card shadow mb-4 col-12">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Costo de Producción por Galleta</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="myChartCostoGalleta"></canvas>
+                </div>
+            </div>
+        </div>
+
         <script>
             // Producción Anual
             var ctxYear = document.getElementById('myChart').getContext('2d');
@@ -73,7 +84,7 @@
                     }
                 }
             });
-
+        
             // Producción Semanal
             var ctxWeek = document.getElementById('myChartWeek').getContext('2d');
             var myChartWeek = new Chart(ctxWeek, {
@@ -96,7 +107,7 @@
                     }
                 }
             });
-
+        
             // Producción Mensual por Tipo
             var ctxMonth = document.getElementById('myChartMonth').getContext('2d');
             var myChartMonth = new Chart(ctxMonth, {
@@ -126,6 +137,41 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                }
+            });
+        
+            // Costo de Producción por Galleta
+            var ctxCostoGalleta = document.getElementById('myChartCostoGalleta').getContext('2d');
+            var nombres_galletas = ['Chocolate', 'Vainilla', 'Fresa', 'Limón', 'Nuez'];
+            var costos_galletas = [150, 200, 180, 250, 300];
+            var myChartCostoGalleta = new Chart(ctxCostoGalleta, {
+                type: 'bar',
+                data: {
+                    labels: nombres_galletas,
+                    datasets: [{
+                        label: 'Costo de Producción por Galleta',
+                        data: costos_galletas,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Costo ($)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Galletas'
+                            }
+                        }
+                    }
                 }
             });
         </script>
