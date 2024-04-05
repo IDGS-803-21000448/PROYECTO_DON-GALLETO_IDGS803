@@ -1,6 +1,7 @@
 
 {%extends 'layout.html' %}
 {%block content %}
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 {% from "_macros.html" import render_field %}
 
 <div class="row">
@@ -13,5 +14,122 @@
         {% endif %}
     </div>
 </div>
+
+        <!-- Producción Anual -->
+        <div class="row">
+            <div class="card shadow mb-4 col-6">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Producción de Galletas (Año)</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+            <div class="card shadow mb-4 col-6">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Producción de Galletas (Semana)</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="myChartWeek"></canvas>
+            </div>
+        </div>
+
+        </div>
+
+
+        <!-- Producción Semanal -->
+
+        <!-- Producción Mensual por Tipo -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Producción de Galletas (Mes)</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="myChartMonth"></canvas>
+            </div>
+        </div>
+
+        <script>
+            // Producción Anual
+            var ctxYear = document.getElementById('myChart').getContext('2d');
+            var myChartYear = new Chart(ctxYear, {
+                type: 'line',
+                data: {
+                    labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                    datasets: [{
+                        label: 'Producción Anual de Galletas',
+                        data: [120, 190, 300, 500, 200, 300, 450, 480, 320, 560, 590, 300], // Datos de ejemplo
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Producción Semanal
+            var ctxWeek = document.getElementById('myChartWeek').getContext('2d');
+            var myChartWeek = new Chart(ctxWeek, {
+                type: 'bar',
+                data: {
+                    labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+                    datasets: [{
+                        label: 'Producción Semanal de Galletas',
+                        data: [120, 150, 180, 120, 105, 90, 100], // Datos de ejemplo
+                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Producción Mensual por Tipo
+            var ctxMonth = document.getElementById('myChartMonth').getContext('2d');
+            var myChartMonth = new Chart(ctxMonth, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Chocolate', 'Vainilla', 'Fresa', 'Limón', 'Nuez'],
+                    datasets: [{
+                        label: 'Producción por Tipo',
+                        data: [300, 250, 100, 150, 200], // Datos de ejemplo
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                }
+            });
+        </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 {% endblock %}
