@@ -11,7 +11,7 @@ from models import LogLogin, Alerta, CostoGalleta, Receta, RecetaDetalle, Materi
 def dashboard():
     # obtener logs de inicio de sesión correctos del usuario
     logs = LogLogin.query.filter_by(id_user=current_user.id, estatus='correcto').order_by(LogLogin.id.desc()).limit(2).all()
-    obtenerCostos()
+    costos_galletas = obtenerCostos()
 
     # obtener el segundo ultimo log de inicio de sesion correcto del usuario
     if len(logs) > 1:
@@ -21,7 +21,7 @@ def dashboard():
         lastSession = None
     alertas = Alerta.query.filter_by(estatus = 0).all()
     session['countAlertas'] = len(alertas)
-    return render_template("moduloDashboard/dashboard.html", lastSession=lastSession)
+    return render_template("moduloDashboard/dashboard.html", lastSession=lastSession, costos_galletas=costos_galletas)
 
 def obtenerCostos():
     # Lista para almacenar los costos de recetas
