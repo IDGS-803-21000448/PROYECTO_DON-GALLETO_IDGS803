@@ -62,7 +62,7 @@
         </div>
 
         <div class="row">
-            <div class="card shadow mb-4 col-12">
+            <div class="card shadow mb-4 col-6">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold">Galleta con mayor merma</h6>
                 </div>
@@ -70,11 +70,7 @@
                     <canvas id="myChartMermaCantidad"></canvas>
                 </div>
             </div>
-        </div>
-
-
-        <div class="row">
-            <div class="card shadow mb-4 col-12">
+         <div class="card shadow mb-4 col-6">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold">Galleta con mayor porcentaje de merma</h6>
                 </div>
@@ -249,36 +245,12 @@
                     }]
                 },
                 options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Costo de producción($)'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Galletas'
-                            }
-                        }
-                    },
+                    responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            display: false
+                            display: true
                         },
-                        tooltip: {
-                            callbacks: {
-                                footer: function(tooltipItems, data) {
-                                    // Obtener el índice del precio mínimo
-                                    var minIndex = cantidades_merma.indexOf(Math.min(...cantidades_merma));
-                                    // Obtener el nombre de la galleta con menor costo
-                                    var mejorGalleta = nombres_galletas[minIndex];
-                                    document.getElementById('mejorGalleta').textContent = "La galleta con mejor rendimiento económico es: " + mejorGalleta;
-                                }
-                            }
-                        }
                     }
                 }
             });
@@ -298,7 +270,7 @@
                 data: {
                     labels: nombres_galletas,
                     datasets: [{
-                        label: 'Cantidad de galletas en merma',
+                        label: 'Porcentaje de galletas en merma',
                         data: cantidades_merma,
                         backgroundColor: [
                             'rgba(255, 99, 132, 0.2)',
@@ -312,42 +284,17 @@
                     }]
                 },
                 options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Costo de producción($)'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Galletas'
-                            }
-                        }
-                    },
+                    responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            display: false
+                            display: true
                         },
-                        tooltip: {
-                            callbacks: {
-                                footer: function(tooltipItems, data) {
-                                    // Obtener el índice del precio mínimo
-                                    var minIndex = cantidades_merma.indexOf(Math.min(...cantidades_merma));
-                                    // Obtener el nombre de la galleta con menor costo
-                                    var mejorGalleta = nombres_galletas[minIndex];
-                                    document.getElementById('mejorGalleta').textContent = "La galleta con mejor rendimiento económico es: " + mejorGalleta;
-                                }
-                            }
-                        }
                     }
                 }
             });
 
         </script>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 {% endblock %}
