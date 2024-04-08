@@ -71,7 +71,7 @@ class CerrarTurnoForm(Form):
 
 # Prueba venta por paquete de diferentes sabores
 class MultisaborForm(Form):
-    sabor = SelectField('Sabores', validators=[
+    saborPaquete = SelectField('Sabores', validators=[
         validators.DataRequired(message='El campo es requerido'),
         validators.Length(min=4, max=50, message='Ingresa un sabor válido')
     ])
