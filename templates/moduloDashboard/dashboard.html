@@ -49,6 +49,18 @@
             </div>
         </div>
 
+        <div class="row">
+            <div class="card shadow mb-4 col-12">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Costo de Producción por Galleta</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="myChartCostoGalleta"></canvas>
+                    <h3 class="text-center" id="mejorGalleta"></h3>
+                </div>
+            </div>
+        </div>
+
         <script>
             // Producción Anual
             var ctxYear = document.getElementById('myChart').getContext('2d');
@@ -73,7 +85,7 @@
                     }
                 }
             });
-
+        
             // Producción Semanal
             var ctxWeek = document.getElementById('myChartWeek').getContext('2d');
             var myChartWeek = new Chart(ctxWeek, {
@@ -96,7 +108,7 @@
                     }
                 }
             });
-
+        
             // Producción Mensual por Tipo
             var ctxMonth = document.getElementById('myChartMonth').getContext('2d');
             var myChartMonth = new Chart(ctxMonth, {
@@ -126,6 +138,63 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                }
+            });
+        
+             // Costo de Producción por Galleta
+            var costos_galletas = JSON.parse('{{ costos_galletas|tojson|safe }}');
+            var nombres_galletas = costos_galletas.map(function(galleta) {
+                return galleta[0];
+            });
+            var precios_galletas = costos_galletas.map(function(galleta) {
+                return galleta[1];
+            });
+
+            var ctxCostoGalleta = document.getElementById('myChartCostoGalleta').getContext('2d');
+            var myChartCostoGalleta = new Chart(ctxCostoGalleta, {
+                type: 'bar',
+                data: {
+                    labels: nombres_galletas,
+                    datasets: [{
+                        label: 'Costo de Producción por Receta',
+                        data: precios_galletas,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Costo de producción($)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Galletas'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                footer: function(tooltipItems, data) {
+                                    // Obtener el índice del precio mínimo
+                                    var minIndex = precios_galletas.indexOf(Math.min(...precios_galletas));
+                                    // Obtener el nombre de la galleta con menor costo
+                                    var mejorGalleta = nombres_galletas[minIndex];
+                                    document.getElementById('mejorGalleta').textContent = "La galleta con mejor rendimiento económico es: " + mejorGalleta;
+                                }
+                            }
+                        }
+                    }
                 }
             });
         </script>
