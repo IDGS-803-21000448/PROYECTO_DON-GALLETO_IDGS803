@@ -59,10 +59,10 @@ def modulo_mermas():
         return redirect(url_for('mermas.merma_materia_prima'))
 
 
-@mermas.route("/agregarMerma", methods=["GET", "POST"])
+@mermas.route("/mermas/agregarMerma", methods=["GET", "POST"])
 @login_required
 @requiere_rol("admin")
-def agregar_merma():
+def agregar_nueva_merma():
     form = MermaMateriaPrimaForm(request.form)
     if request.method == "POST" and form.validate():
         if form.id.data == 0:
@@ -149,7 +149,7 @@ def agregar_merma():
                 merma = MemraGalleta.query.get_or_404(form.id.data)
 
                 cantidad = convertirCantidadaPz( merma.tipo,  merma.cantidad)
-                receta = Receta.query.get_or_404(merma.produccion_id)
+                receta = Produccion.query.get_or_404(merma.produccion_id)
                 receta.galletas_disponibles += cantidad
                 receta.receta.Costo_Galleta.galletas_disponibles += cantidad
 

@@ -1,3 +1,4 @@
+from controllers import controller_costo
 from . import recetas
 from models import Receta, MateriaPrima, RecetaDetalle, Tipo_Materia
 from flask import render_template, request, jsonify, url_for, redirect, flash
@@ -105,12 +106,13 @@ def guardar_receta():
                 db.session.add(detalle)
                 db.session.commit()
         # Redirigir a la página de vista de recetas después de guardar la receta
+        controller_costo.actualizar_costos()
         return redirect(url_for('recetas.vista_recetas'))
 
     return render_template("404.html"), 404
 
 def allowed_file(filename):
-    ALLOWED_EXTENSIONS = {'png'}
+    ALLOWED_EXTENSIONS = {'png','jpeg'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @recetas.route("/detalleReceta", methods=["GET", "POST"])
@@ -247,7 +249,7 @@ def editar_receta():
                     db.session.add(detalle)
                     db.session.commit()
 
-
+        controller_costo.actualizar_costos()
         return redirect(url_for('recetas.vista_recetas'))
     return render_template("404.html"), 404
 

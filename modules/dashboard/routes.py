@@ -1,8 +1,10 @@
 from flask import render_template, session
+from sqlalchemy import func
+
 from . import dashboard
 from flask_login import login_required, current_user
 from controllers.controller_login import requiere_token
-from models import LogLogin, Alerta, CostoGalleta, Receta, RecetaDetalle, MateriaPrima
+from models import LogLogin, Alerta, CostoGalleta, Receta, RecetaDetalle, MateriaPrima, MemraGalleta, db, Produccion
 
 
 @dashboard.route("/dashboard", methods=["GET"])
@@ -11,6 +13,8 @@ from models import LogLogin, Alerta, CostoGalleta, Receta, RecetaDetalle, Materi
 def dashboard():
     # obtener logs de inicio de sesión correctos del usuario
     logs = LogLogin.query.filter_by(id_user=current_user.id, estatus='correcto').order_by(LogLogin.id.desc()).limit(2).all()
+    mermas_mayor = obtenerMayorMerma()
+    merma_porcentaje = obtenerMermaPorcentaje()
     costos_galletas = obtenerCostos()
 
     # obtener el segundo ultimo log de inicio de sesion correcto del usuario
@@ -21,7 +25,61 @@ def dashboard():
         lastSession = None
     alertas = Alerta.query.filter_by(estatus = 0).all()
     session['countAlertas'] = len(alertas)
-    return render_template("moduloDashboard/dashboard.html", lastSession=lastSession, costos_galletas=costos_galletas)
+    return render_template("moduloDashboard/dashboard.html", lastSession=lastSession, costos_galletas=costos_galletas, merma_mayor=mermas_mayor, merma_porcentaje = merma_porcentaje)
+
+
+
+def obtenerMayorMerma():
+    result = db.session.query(
+        Receta.nombre,
+        func.sum(MemraGalleta.cantidad).label('total_merma')
+    ).join(
+        Produccion, MemraGalleta.produccion_id == Produccion.id
+    ).join(
+        Receta, Produccion.receta_id == Receta.id
+    ).group_by(
+        Receta.nombre
+    ).order_by(
+        func.sum(MemraGalleta.cantidad).desc()
+    ).all()
+    resultados_serializables = []
+    for nombre, total_merma in result:
+
+        resultados_serializables.append((nombre, total_merma))
+
+    return resultados_serializables
+
+
+def obtenerMermaPorcentaje():
+    cantidad_producciones_subq = db.session.query(
+        Receta.id.label('id_receta'),
+        func.count('*').label('cantidad_producciones')
+    ).join(
+        Produccion, Produccion.receta_id == Receta.id
+    ).group_by(
+        Receta.id
+    ).subquery()
+
+    result = db.session.query(
+        Receta.nombre,
+        (func.sum(MemraGalleta.cantidad) * 100) / (
+                    func.max(cantidad_producciones_subq.c.cantidad_producciones) * func.max(
+                Receta.num_galletas)).label('porcentaje_merma')
+    ).join(
+        Produccion, MemraGalleta.produccion_id == Produccion.id
+    ).join(
+        Receta, Produccion.receta_id == Receta.id
+    ).join(
+        cantidad_producciones_subq, Receta.id == cantidad_producciones_subq.c.id_receta
+    ).group_by(
+        Receta.nombre
+    ).all()
+
+    resultados_serializables = []
+    for nombre, total_merma in result:
+        resultados_serializables.append((nombre, total_merma))
+
+    return resultados_serializables
 
 def obtenerCostos():
     # Lista para almacenar los costos de recetas

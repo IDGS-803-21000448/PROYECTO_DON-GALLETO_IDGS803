@@ -39,7 +39,7 @@
             </div>
         </form>
     <hr>
-        <form action="/agregarMerma" method="post" class="mt-3">
+        <form action="/mermas/agregarMerma" method="POST" class="mt-3">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <div class="row mb-3">
                 {{ render_field(form.id, class="form-control", placeholder="Tipo de Merma") }}
