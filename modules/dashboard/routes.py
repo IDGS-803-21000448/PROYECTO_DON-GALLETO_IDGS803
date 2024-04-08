@@ -4,7 +4,8 @@ from sqlalchemy import func
 from . import dashboard
 from flask_login import login_required, current_user
 from controllers.controller_login import requiere_token
-from models import LogLogin, Alerta, CostoGalleta, Receta, RecetaDetalle, MateriaPrima, MemraGalleta, db, Produccion
+from models import LogLogin, Alerta, CostoGalleta, Receta, RecetaDetalle, MateriaPrima, MemraGalleta, db, Produccion, \
+    DetalleVenta
 
 receta_menor_costo = None
 costo_menor = float('inf')
@@ -18,7 +19,7 @@ def dashboard():
     mermas_mayor = obtenerMayorMerma()
     merma_porcentaje = obtenerMermaPorcentaje()
     costos_galletas = obtenerCostos()
-
+    datos_presentaciones = obtenerPresentación()
     # obtener el segundo ultimo log de inicio de sesion correcto del usuario
     if len(logs) > 1:
         # regresar lastSession en formato dd/mm/yyyy hh:mm:ss
@@ -27,9 +28,20 @@ def dashboard():
         lastSession = None
     alertas = Alerta.query.filter_by(estatus = 0).all()
     session['countAlertas'] = len(alertas)
-    return render_template("moduloDashboard/dashboard.html", lastSession=lastSession, costos_galletas=costos_galletas, menor_costo=receta_menor_costo, merma_mayor=mermas_mayor, merma_porcentaje = merma_porcentaje)
+    return render_template("moduloDashboard/dashboard.html", lastSession=lastSession, costos_galletas=costos_galletas, menor_costo=receta_menor_costo, merma_mayor=mermas_mayor, merma_porcentaje = merma_porcentaje, datos_presentaciones = datos_presentaciones)
 
 
+def obtenerPresentación():
+    result = db.session.query(
+        DetalleVenta.tipo_venta,
+        func.count('*').label('cant_vendida')
+    ).group_by( DetalleVenta.tipo_venta)
+
+    resultados_serializables = []
+    for nombre, total_merma in result:
+        resultados_serializables.append((nombre, total_merma))
+
+    return resultados_serializables
 
 def obtenerMayorMerma():
     result = db.session.query(

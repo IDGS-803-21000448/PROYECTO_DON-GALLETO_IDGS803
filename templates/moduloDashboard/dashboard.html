@@ -80,6 +80,18 @@
             </div>
         </div>
 
+        <div class="row">
+            <div class="card shadow mb-4 col-6">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Presentación mas vendida</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="myChartPresentaciones"></canvas>
+                </div>
+            </div>
+
+        </div>
+
         <script>
             // Producción Anual
             var ctxYear = document.getElementById('myChart').getContext('2d');
@@ -271,6 +283,44 @@
                     datasets: [{
                         label: 'Porcentaje de galletas en merma',
                         data: cantidades_merma,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                        ],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                    }
+                }
+            });
+
+            var precentaciones = JSON.parse('{{ datos_presentaciones|tojson|safe }}');
+            var nombres_presentaciones = precentaciones.map(function(precentacion) {
+                return precentacion[0];
+            });
+            var cantidad_presentaciones = precentaciones.map(function(precentacion) {
+                return precentacion[1];
+            });
+
+            var ctxPrecentaciones = document.getElementById('myChartPresentaciones').getContext('2d');
+            var myChartPrecentaciones = new Chart(ctxPrecentaciones, {
+                type: 'doughnut',
+                data: {
+                    labels: nombres_presentaciones,
+                    datasets: [{
+                        label: 'Número de presentaciones vendidas',
+                        data: cantidad_presentaciones,
                         backgroundColor: [
                             'rgba(255, 99, 132, 0.2)',
                             'rgba(54, 162, 235, 0.2)',
