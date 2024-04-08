@@ -68,6 +68,8 @@
                 <div class="col-md-6 text-center">
                     <button type="button" class="btn btn-primary" id="agregar_producto" name="agregar_producto">Agregar
                         Producto</button>
+                        <button id="confirmarVenta" class="btn btn-success" data-toggle="modal"
+                        data-target="#modalMultisabor">Modal Sabores</button>
                 </div>
             </div>
         </div>
@@ -137,6 +139,69 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modalMultisabor" tabindex="-1" aria-labelledby="modalMultisabor" aria-hidden="true"
+        role="dialog">
+        <div class="container mt-5 modal-dialog" role="document">
+            <div class="row modal-content" style="display: contents;">
+                <div class="col-md-12 offset-md-3 mx-0">
+                    <div class="card">
+                        <div class="card-body">
+                            <h1 class="card-title text-center">Selecciona los sabores</h1>
+                            <p class="card-text text-center" id="warningSabores">El paquete solo puede tener X sabores</p>
+
+                            <div class="row">
+                                <!-- Lado izquierdo: Select y Botón -->
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <select class="form-control" id="seleccionSabores">
+                                            <option>Seleccione un sabor</option>
+                                            <option>Sabor 1</option>
+                                            <option>Sabor 2</option>
+                                            <option>Sabor 3</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <button id="agregarSabor" class="btn btn-success">Agregar Sabor</button>
+                                    </div>
+                                </div>
+            
+                                <div class="col-md-6">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Sabor</th>
+                                                <th scope="col">Cantidad</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">1</th>
+                                                <td>Sabor Ejemplo 1</td>
+                                                <td>2</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <button id="guardarSabores" type="button" class="btn btn-success">Realizar
+                                    Guardar</button>
+                                <button type="button" id="closeModalMultisabor"
+                                    class="closeModalMultisabor btn btn-danger"
+                                    onclick="$('#closeModalMultisabor').modal('hide');">
+                                    Cancelar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 </form>
 
 <script src="{{ url_for('static', filename='jquery/jquery.min.js') }}"></script>
@@ -482,6 +547,7 @@
             document.getElementById('paquete').value = '0';
         } else {
             document.getElementById('paquete').disabled = false;
+
         }
     });
 
