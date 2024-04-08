@@ -6,6 +6,8 @@ from flask_login import login_required, current_user
 from controllers.controller_login import requiere_token
 from models import LogLogin, Alerta, CostoGalleta, Receta, RecetaDetalle, MateriaPrima, MemraGalleta, db, Produccion
 
+receta_menor_costo = None
+costo_menor = float('inf')
 
 @dashboard.route("/dashboard", methods=["GET"])
 @login_required
@@ -25,7 +27,7 @@ def dashboard():
         lastSession = None
     alertas = Alerta.query.filter_by(estatus = 0).all()
     session['countAlertas'] = len(alertas)
-    return render_template("moduloDashboard/dashboard.html", lastSession=lastSession, costos_galletas=costos_galletas, merma_mayor=mermas_mayor, merma_porcentaje = merma_porcentaje)
+    return render_template("moduloDashboard/dashboard.html", lastSession=lastSession, costos_galletas=costos_galletas, menor_costo=receta_menor_costo, merma_mayor=mermas_mayor, merma_porcentaje = merma_porcentaje)
 
 
 
@@ -82,6 +84,7 @@ def obtenerMermaPorcentaje():
     return resultados_serializables
 
 def obtenerCostos():
+    global receta_menor_costo, costo_menor
     # Lista para almacenar los costos de recetas
     costos_recetas = []
 
@@ -144,6 +147,11 @@ def obtenerCostos():
         costo_receta = round(suma_costos / cantidad_materias, 2)
         # Guardar el costo de la receta junto con su nombre en la lista
         costos_recetas.append((receta.nombre, costo_receta))
+
+        # Actualizar la receta de menor costo si corresponde
+        if costo_receta < costo_menor:
+            receta_menor_costo = receta.nombre
+            costo_menor = costo_receta
 
     return costos_recetas
 

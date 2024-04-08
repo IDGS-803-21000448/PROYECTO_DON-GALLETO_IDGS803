@@ -56,7 +56,7 @@
                 </div>
                 <div class="card-body">
                     <canvas id="myChartCostoGalleta"></canvas>
-                    <h3 class="text-center" id="mejorGalleta"></h3>
+                    <h3 class="text-center" id="mejorGalleta">La galleta con mejor rendimiento económico es: {{ menor_costo }}</h3>
                 </div>
             </div>
         </div>
@@ -213,7 +213,6 @@
                                     var minIndex = precios_galletas.indexOf(Math.min(...precios_galletas));
                                     // Obtener el nombre de la galleta con menor costo
                                     var mejorGalleta = nombres_galletas[minIndex];
-                                    document.getElementById('mejorGalleta').textContent = "La galleta con mejor rendimiento económico es: " + mejorGalleta;
                                 }
                             }
                         }
