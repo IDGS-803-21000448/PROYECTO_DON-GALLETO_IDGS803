@@ -30,14 +30,11 @@ def dashboard():
         lastSession = None
     alertas = Alerta.query.filter_by(estatus = 0).all()
     session['countAlertas'] = len(alertas)
-<<<<<<< HEAD
     return render_template("moduloDashboard/dashboard.html", lastSession=lastSession, costos_galletas=costos_galletas,
                            menor_costo=receta_menor_costo, merma_mayor=mermas_mayor,
                            merma_porcentaje = merma_porcentaje, 
                            datos_presentaciones = datos_presentaciones)
-=======
     return render_template("moduloDashboard/dashboard.html", lastSession=lastSession, costos_galletas=costos_galletas, menor_costo=receta_menor_costo, merma_mayor=mermas_mayor, merma_porcentaje = merma_porcentaje, datos_presentaciones = datos_presentaciones, galletas_vendias = galletas_vendias)
->>>>>>> main
 
 
 def obtenerPresentación():
@@ -192,7 +189,6 @@ def convertirCantidades(tipo1, tipo2, cantidad):
         cantidad = cantidad * 0.050
     return cantidad
 
-<<<<<<< HEAD
 def obtenerProveedorPorLote():
     producciones = Produccion.query.all()
     
@@ -207,7 +203,6 @@ def obtenerProveedorPorLote():
 
     
     return True
-=======
 
 def obtenerGalletasMasVendidas():
     recetas = Receta.query.filter_by(estatus=1).all()
@@ -232,4 +227,3 @@ def obtenerGalletasMasVendidas():
     return galletas_mas_vendidas
     
     
->>>>>>> main
