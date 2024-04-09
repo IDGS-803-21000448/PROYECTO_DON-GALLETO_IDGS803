@@ -5,7 +5,7 @@ from . import dashboard
 from flask_login import login_required, current_user
 from controllers.controller_login import requiere_token
 from models import LogLogin, Alerta, CostoGalleta, Receta, RecetaDetalle, MateriaPrima, MemraGalleta, db, Produccion, \
-    DetalleVenta
+    DetalleVenta, Proveedor
 
 receta_menor_costo = None
 costo_menor = float('inf')
@@ -186,3 +186,17 @@ def convertirCantidades(tipo1, tipo2, cantidad):
         cantidad = cantidad * 0.050
     return cantidad
 
+def obtenerProveedorPorLote():
+    producciones = Produccion.query.all()
+    
+    for produccion in producciones:
+            receta_detalle = RecetaDetalle.query.filter_by(receta_id = produccion.receta_id).all()
+    
+            materia_prima = MateriaPrima.query.filter_by(id_tipo_materia = receta_detalle.tipo_materia_id).first()
+            
+            proveedores = Proveedor.query.filter_by(id = materia_prima.id_proveedor).first()
+            
+            
+
+    
+    return True
