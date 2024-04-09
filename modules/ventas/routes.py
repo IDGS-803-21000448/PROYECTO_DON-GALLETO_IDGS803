@@ -9,6 +9,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.lib.units import inch
 from controllers.controller_login import requiere_rol
+from controllers.controller_login import requiere_token
 from flask_login import login_required, current_user
 import datetime
 import math
@@ -17,7 +18,8 @@ ventas_array = []
 
 @ventas.route("/moduloVenta", methods=["GET"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "venta")
 def modulo_venta():
     form_filtro = formVenta.FiltroVentaForm()
     form_salida = formVenta.SalidaForm()
@@ -64,7 +66,8 @@ def modulo_venta():
 
 @ventas.route("/nuevaVenta", methods=["GET"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "venta")
 def nueva_venta():
     form_venta = formVenta.VentaForm()
     form_venta.sabor.choices = get_sabores()  # Actualiza las opciones del campo sabor
@@ -82,7 +85,8 @@ def get_sabores():
 
 @ventas.route("/realizarVenta", methods=["POST"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "venta")
 def realizar_venta():
     datos = request.json
 
@@ -208,7 +212,8 @@ def generar_folio():
 
 @ventas.route("/generarTicket", methods=["GET"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "venta")
 def generar_ticket():
     folio = request.args.get('folio')
 
@@ -275,6 +280,8 @@ def generar_ticket():
 
 @ventas.route("/turnos", methods=["GET"])
 @login_required
+@requiere_token
+@requiere_rol("admin", "venta")
 def turnos():
     form_turnos = formVenta.TurnoForm()
     id_usuario = current_user.id
@@ -283,6 +290,7 @@ def turnos():
 
 @ventas.route("/abrirNuevoTurno", methods=["POST"])
 @login_required
+@requiere_token
 @requiere_rol("admin", "venta")
 def abrir_nuevo_turno():
     turno_form = formVenta.TurnoForm(request.form)
@@ -313,6 +321,7 @@ def abrir_nuevo_turno():
 
 @ventas.route("/cerrarTurno", methods=["POST"])
 @login_required
+@requiere_token
 @requiere_rol("admin", "venta")
 def cerrar_turno():
     datos = formVenta.CerrarTurnoForm(request.form)
@@ -354,6 +363,7 @@ def cerrar_turno():
 
 @ventas.route("/registrarSalidas", methods=["POST"])
 @login_required
+@requiere_token
 @requiere_rol("admin", "venta")
 def registrar_salidas():
     form_salida = formVenta.SalidaForm(request.form)
