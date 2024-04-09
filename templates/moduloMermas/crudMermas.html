@@ -65,6 +65,7 @@
                     <label for="tipo">
                         {{ form.tipo.label }}
                     </label>
+                    <input type="text" id="nombre" name="nombre" readonly required placeholder="Nombre" class="form-control mt-2" value="{{ form.nombre.data or '' }}">
                     {% if form.tipo_merma.data == "materiaPrima" %}
                     <input type="text" id="tipo" name="tipo" readonly required placeholder="Tipo de medida" class="form-control mt-2" value="{{ form.tipo.data or '' }}">
                     {% endif %}
@@ -72,15 +73,6 @@
                         <select type="text" id="tipo" name="tipo" required placeholder="Tipo de medida" class="form-control mt-2" value="{{ form.tipo.data or '' }}">
                             <option value="pz">
                                 pz
-                            </option>
-                            <option value="kg">
-                                kg
-                            </option>
-                            <option value="g">
-                                g
-                            </option>
-                            <option value="pkg">
-                                pkg
                             </option>
                         </select>
                     {% endif %}
@@ -207,7 +199,7 @@
               <td>
                 <button type="button" class="btn btn-success select-materia" data-id="{{ materia.id }}"
                         data-tipo="{{ materia.tipo }}"
-                        data-cantidad-disponible="{{ materia.cantidad_disponible }}" data-bs-dismiss="modal">
+                        data-cantidad-disponible="{{ materia.cantidad_disponible }}" data-nombre="{{ materia.tipo_materia.nombre }}" data-bs-dismiss="modal">
                   Seleccionar
                 </button>
               </td>
@@ -251,7 +243,7 @@
 
               <td>
                 <button type="button" class="btn btn-success select-galleta" data-id="{{ receta.id }}"
-                        data-cantidad-disponible="{{ receta.galletas_disponibles }}" data-bs-dismiss="modal">
+                        data-cantidad-disponible="{{ receta.galletas_disponibles }}"  data-nombre="{{ receta.receta.nombre }}" data-bs-dismiss="modal">
                   Seleccionar
                 </button>
               </td>
@@ -303,9 +295,10 @@ $(document).ready(function() {
     var materiaPrimaId = $(this).data('id');
     var tipo = $(this).data('tipo');
     var cantidadDisponible = $(this).data('cantidad-disponible');
-
+    var nombre = $(this).data('nombre');
     $('#materia_prima_id').val(materiaPrimaId);
     $('#tipo').val(tipo);
+    $('#nombre').val(nombre);
     $('#cantidad').val(cantidadDisponible);
     $('#materiaPrimaModal').modal('hide')
   });
@@ -314,8 +307,10 @@ $(document).ready(function() {
     $('.select-galleta').click(function() {
     var materiaPrimaId = $(this).data('id');
     var cantidadDisponible = $(this).data('cantidad-disponible');
+    var nombre = $(this).data('nombre');
 
     $('#materia_prima_id').val(materiaPrimaId);
+    $('#nombre').val(nombre);
     $('#cantidad').val(cantidadDisponible);
     $('#galletaModal').modal('hide')
   });

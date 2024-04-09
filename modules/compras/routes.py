@@ -101,7 +101,7 @@ def seleccionar_compra():
         form_compras.nombre_proveedor.data = compra.proveedor.nombre_vendedor
         form_compras.proveedor_id.data = compra.id_proveedor
         form_compras.id_tipo_materia.data = compra.id_tipo_materia
-        form_compras.cantidad.data = compra.cantidad_disponible
+        form_compras.cantidad.data = compra.cantidad_compra
         form_compras.tipo.data = compra.tipo
         form_compras.precio_compra.data = compra.precio_compra
         form_compras.fecha.data = compra.create_date

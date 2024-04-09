@@ -7,6 +7,7 @@ from wtforms.widgets import HiddenInput
 class MermaMateriaPrimaForm(Form):
     id = IntegerField('id', widget=HiddenInput(), default=0)
     materia_prima_id = IntegerField('ID de Materia Prima', validators=[DataRequired()])
+    nombre = StringField('Nombre Producto', render_kw={"readonly": True})
     cantidad = FloatField('Cantidad')
     descripcion = TextAreaField('Descripción', validators=[DataRequired()])
     fecha = StringField('Fecha Registro', [
