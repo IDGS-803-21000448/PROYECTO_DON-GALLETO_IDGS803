@@ -4,8 +4,14 @@ from . import materia_prima
 from flask import render_template, request, flash, redirect, url_for
 import models
 from models import db, Tipo_Materia
+from controllers.controller_login import requiere_rol
+from flask_login import login_required
+from controllers.controller_login import requiere_token
 
 @materia_prima.route("/moduloMateriaPrima", methods=["GET"])
+@login_required
+@requiere_token
+@requiere_rol("admin", "inventario")
 def modulo_materia_prima():
     form = formMateriaPrima.MateriaPrimaForm()
     listado_materias = Tipo_Materia.query.filter_by(estatus=1).all()
@@ -14,6 +20,9 @@ def modulo_materia_prima():
 
 
 @materia_prima.route("/agregarMateriaPrima", methods=["POST"])
+@login_required
+@requiere_token
+@requiere_rol("admin", "inventario")
 def agregar_materia():
     form = formMateriaPrima.MateriaPrimaForm(request.form)
     listado_materias = Tipo_Materia.query.filter_by(estatus=1).all()
@@ -40,6 +49,9 @@ def agregar_materia():
 
 
 @materia_prima.route('/seleccionarMateria', methods=['GET', 'POST'])
+@login_required
+@requiere_token
+@requiere_rol("admin", "inventario")
 def seleccionar_materia():
     id = request.form['id']
     originalForm = formMateriaPrima.MateriaPrimaForm()
@@ -55,6 +67,9 @@ def seleccionar_materia():
                            form=originalForm, materias_primas=materias_primas)
 
 @materia_prima.route('/eliminarMateria', methods=['POST'])
+@login_required
+@requiere_token
+@requiere_rol("admin", "inventario")
 def eliminar_materia():
     id = request.form['id']
     materia = Tipo_Materia.query.get_or_404(id)

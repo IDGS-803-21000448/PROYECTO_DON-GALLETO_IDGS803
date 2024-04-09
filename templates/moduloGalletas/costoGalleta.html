@@ -23,7 +23,7 @@
                                     <th class="text-center" style="display: none;">ID</th>
                                     <th class="text-center">Nombre</th>
                                     <th class="text-center">Precio</th>
-                                    <th class="text-center">Editar</th>
+                                    <th class="text-center">Ver detalles</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -35,7 +35,7 @@
                                         <td>
                                             <form action="{{ url_for('galletas.actualizar_precio') }}" method="POST">
                                                 <input type="hidden" name="id" value="{{ galleta.id }}">
-                                                <button type="submit" class="btn btn-sm btn-primary">Modificar precio</button>
+                                                <button type="submit" class="btn btn-sm btn-primary">Ver detalle</button>
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                             </form>
                                         </td>                                        

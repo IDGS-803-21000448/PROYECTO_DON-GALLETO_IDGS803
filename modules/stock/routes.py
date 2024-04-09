@@ -10,6 +10,7 @@ import math
 @stock.route('/moduloStock')
 @login_required
 @requiere_token
+@requiere_rol('admin', "inventario", "produccion")
 def modulo_stock():
     # Consulta para obtener nombre de galletas y id_precio de Receta
     recetas_con_precio = db.session.query(Receta.nombre, Receta.id_precio).filter(Receta.id_precio.isnot(None), Receta.estatus==1).all()

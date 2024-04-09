@@ -54,6 +54,14 @@
                     <canvas id="myChartPresentaciones"></canvas>
                 </div>
             </div>
+            <div class="card shadow mb-4 col-6">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Galleta mas vendida</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="myChartGalletasVendidas"></canvas>
+                </div>
+            </div>
 
         </div>
 
@@ -241,6 +249,47 @@
                         legend: {
                             display: true
                         },
+                    }
+                }
+            });
+
+            var galletas_vendidas = JSON.parse('{{ galletas_vendias|tojson|safe }}');
+            var nombres_galletas = Object.values(galletas_vendidas).map(function(galleta) {
+                return galleta.nombre;
+            });
+            
+            var cantidades_galletas = Object.values(galletas_vendidas).map(function(galleta) {
+                return galleta.cantidad;
+            });
+            
+            var ctx = document.getElementById('myChartGalletasVendidas').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: nombres_galletas,
+                    datasets: [{
+                        label: 'Cantidad de galletas vendidas',
+                        data: cantidades_galletas,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
             });

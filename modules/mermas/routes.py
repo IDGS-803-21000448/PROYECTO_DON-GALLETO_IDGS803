@@ -1,6 +1,7 @@
 import json
 
 from flask import render_template, request, flash, redirect, url_for
+from controllers.controller_login import requiere_token
 
 from controllers import controller_mermas
 from controllers.controller_materia_prima import actualizar_cantidades_tipo
@@ -15,7 +16,8 @@ from flask_login import login_required
 
 @mermas.route("/merma_galletas", methods=["GET"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "inventario", "produccion")
 def merma_galletas():
     form = tipoMermaForm()
     originalForm = MermaMateriaPrimaForm()
@@ -31,7 +33,8 @@ def merma_galletas():
 
 @mermas.route("/merma_materia_prima", methods=["GET"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "inventario", "produccion")
 def merma_materia_prima():
     form = tipoMermaForm()
     originalForm = MermaMateriaPrimaForm()
@@ -46,7 +49,8 @@ def merma_materia_prima():
 
 @mermas.route("/moduloMermas", methods=["POST", "GET"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "inventario", "produccion")
 def modulo_mermas():
     form = tipoMermaForm(request.form)
     if request.method == "POST" and form.validate():
@@ -61,7 +65,8 @@ def modulo_mermas():
 
 @mermas.route("/mermas/agregarMerma", methods=["GET", "POST"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "inventario", "produccion")
 def agregar_nueva_merma():
     form = MermaMateriaPrimaForm(request.form)
     if request.method == "POST" and form.validate():
@@ -197,7 +202,8 @@ def agregar_nueva_merma():
 
 @mermas.route("/seleccionar_merma", methods=["GET", "POST"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "inventario", "produccion")
 def seleccionar_merma():
     id = request.form.get('id')
     tipo_merma = request.form.get('tipo_merma')
@@ -234,7 +240,8 @@ def seleccionar_merma():
 
 @mermas.route("/eliminarMerma", methods=["POST"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "inventario", "produccion")
 def eliminar_merma():
     id = request.form.get('id')
     tipo_merma = request.form.get('tipoMerma')
@@ -265,7 +272,8 @@ def eliminar_merma():
 
 @mermas.route("/pruebaCaducidades", methods=["GET"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "inventario", "produccion")
 def pruebaCaducidades():
     resultado = controller_mermas.verificarCaducidades()
     return json.dumps(resultado)
