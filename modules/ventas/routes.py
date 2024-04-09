@@ -120,16 +120,36 @@ def realizar_venta():
 
         #validar si hay galletas disponibles segun la cantidad de en ventas_agrupadas
         for id_galleta, datos in ventas_agrupadas.items():
+
             id_costo = id_galleta
-            precio = float(datos.get('precio_unitario'))
-            subtotal = float(datos.get('subtotal'))
-            cantidadVendida = subtotal / precio
-            cantidadStock = CostoGalleta.query.filter_by(id=id_costo).first().galletas_disponibles
-            print(cantidadStock)
-            if cantidadVendida >= cantidadStock:
-                flash(f'No hay sufucientes galletas de {datos.get("sabor")} en stock', 'error')
-                respuesta = {'mensaje': 'Stock', 'galleta': f'{datos.get("sabor")}'}
-                return jsonify(respuesta)
+
+            if id_costo is None:
+                id_costo = 0
+                precio = float(datos.get('precio_unitario'))
+                subtotal = float(datos.get('subtotal'))
+                saboresMultiPaqueteEv = datos.get('saboresMulti')
+
+                for sabor in saboresMultiPaqueteEv:
+                    cantidadVendida = sabor.get('cantidad')
+                    cantidadStock = CostoGalleta.query.filter_by(id=int(sabor.get('idCosto'))).first().galletas_disponibles
+                    print(cantidadStock)
+                    if cantidadVendida >= cantidadStock:
+                        flash(f'No hay sufucientes galletas de {sabor.get("sabor")} en stock', 'error')
+                        respuesta = {'mensaje': 'Stock', 'galleta': f'{sabor.get("sabor")}'}
+                        return jsonify(respuesta)
+            else:
+                precio = float(datos.get('precio_unitario'))
+                subtotal = float(datos.get('subtotal'))
+
+                # calculo de cantidad vendida
+                cantidadVendida = subtotal / precio
+
+                cantidadStock = CostoGalleta.query.filter_by(id=id_costo).first().galletas_disponibles
+                print(cantidadStock)
+                if cantidadVendida >= cantidadStock:
+                    flash(f'No hay sufucientes galletas de {datos.get("sabor")} en stock', 'error')
+                    respuesta = {'mensaje': 'Stock', 'galleta': f'{datos.get("sabor")}'}
+                    return jsonify(respuesta)
             
         # obtener utlimo turno del usuario actual
         ultimo_turno_usuario = Turnos.query.filter_by(id_usuario=current_user.id).order_by(Turnos.id.desc()).first()
@@ -156,56 +176,120 @@ def realizar_venta():
             # Obtener el ID de la venta insertada para usarlo en DetalleVenta
             id_venta_insertada = nueva_venta.id
 
+            print(f"VENTA DATA: {venta_data}")
+
             #Restar cantidad de galletas en inventario
             id_costo = venta_data.get('galleta_id')
-            id_receta = venta_data.get('receta_id')
-            precio = float(venta_data.get('precio_unitario'))
-            subtotal = float(venta_data.get('subtotal').replace('$', ''))
 
-            cantidadVendida = subtotal / precio
-            # se obtienen las producciones con estatus 'terminada', el id de la receta de la venta_data, ordenados por fecha de la mas lejana a la mas cercana y que el campo galletas_disponibles sea mayor a 0
-            producciones = Produccion.query.filter_by(estatus='terminada', receta_id=id_receta).order_by(Produccion.fecha_producido.asc()).filter(Produccion.galletas_disponibles > 0).all()
+            if id_costo is None:
+                saboresMultiPaquete = venta_data.get('saboresMulti')
+                print(f"SABORES MULTI: {saboresMultiPaquete}")
 
-            if not producciones:
-                flash(f'No hay sufucientes galletas de {venta_data.get("sabor")} en stock', 'error')
-                db.session.rollback()
-                return redirect(url_for("ventas.terminar_produccion", id_solicitud=producciones[0].id, receta_id=id_receta))
-            
-            # Revisar si hay suficientes galletas disponibles para la venta
+                nuevo_detalle = DetalleVenta(
+                    sabor=venta_data.get('sabor'),
+                    tipo_venta=venta_data.get('tipoVenta'),
+                    precio_unitario=float(venta_data.get('precio_unitario')), 
+                    cantidad=int(venta_data.get('cantidad')),
+                    cantidad_galletas=0,
+                    subtotal=float(venta_data.get('subtotal').replace('$', '')), 
+                    venta_id=id_venta_insertada,
+                    receta_id=None,
+                )
 
-            if venta_data.get('tipoVenta') == 'pieza':
-                cantidadVentaFaltante = int(venta_data.get('cantidad'))
-            elif venta_data.get('tipoVenta') == 'gramos':
-                cantidadVentaFaltante = math.ceil(float(venta_data.get('cantidad')) / 30)
-            elif venta_data.get('tipoVenta') == 'paquete 700g':
-                cantidadVentaFaltante = math.ceil(math.ceil(700 / 30) * int(venta_data.get('cantidad')))
-            elif venta_data.get('tipoVenta') == 'paquete 1Kg':
-                cantidadVentaFaltante = math.ceil(math.ceil(1000 / 30) * int(venta_data.get('cantidad')))
+                db.session.add(nuevo_detalle)
 
-            #actualizar la cantidad de galletas_disponibles de la tabla costogalletas
-            costo_galletas = CostoGalleta.query.filter_by(id=id_costo).first()
-            costo_galletas.galletas_disponibles -= cantidadVentaFaltante
+                cantidadSabores = len(saboresMultiPaquete)
+                cantGalletasXSabor = 0
 
-            for produccion in producciones:
-                if int(produccion.galletas_disponibles) >= int(cantidadVentaFaltante):
-                    produccion.galletas_disponibles -= cantidadVentaFaltante
-                    break
-                else:
-                    cantidadVentaFaltante -= produccion.galletas_disponibles
-                    produccion.galletas_disponibles = 0
+                if venta_data.get('tipoVenta') == 'paquete 700g':
+                    cantGalletasXSabor = math.ceil(math.ceil(700 / 30) / cantidadSabores) * int(venta_data.get('cantidad'))
+                elif venta_data.get('tipoVenta') == 'paquete 1Kg':
+                    cantGalletasXSabor = math.ceil(math.ceil(1000 / 30) / cantidadSabores) * int(venta_data.get('cantidad'))
+                    
+                # obtener el porcentaje por sabor calculado como 1 / la cantidad de sabores y limitar el resultado a dos decimales
+                porcentajeXSabor = round(1 / cantidadSabores, 2) * int(venta_data.get('cantidad'))
 
-            # Insertar datos en la tabla DetalleVenta
-            nuevo_detalle = DetalleVenta(
-                sabor=venta_data.get('sabor'),
-                tipo_venta=venta_data.get('tipoVenta'),
-                precio_unitario=float(venta_data.get('precio_unitario')), 
-                cantidad=int(venta_data.get('cantidad')),
-                subtotal=float(venta_data.get('subtotal').replace('$', '')), 
-                venta_id=id_venta_insertada 
-            )
+                for sabor in saboresMultiPaquete:
 
-            db.session.add(nuevo_detalle)
-            db.session.commit()
+                    nuevo_detalle = DetalleVenta(
+                        sabor=sabor.get('sabor'),
+                        tipo_venta=venta_data.get('tipoVenta'),
+                        precio_unitario=float(sabor.get('precio')), 
+                        cantidad=porcentajeXSabor,
+                        cantidad_galletas=cantGalletasXSabor,
+                        subtotal=0, 
+                        venta_id=id_venta_insertada,
+                        receta_id=int(sabor.get('idReceta')),
+                    )
+                    db.session.add(nuevo_detalle)
+
+                    producciones = Produccion.query.filter_by(estatus='terminada', receta_id=int(sabor.get('idReceta'))).order_by(Produccion.fecha_producido.asc()).filter(Produccion.galletas_disponibles > 0).all()
+
+                    #actualizar la cantidad de galletas_disponibles de la tabla costogalletas
+                    costo_galletas = CostoGalleta.query.filter_by(id=int(sabor.get('idCosto'))).first()
+                    costo_galletas.galletas_disponibles -= cantGalletasXSabor
+
+                    for produccion in producciones:
+                        if int(produccion.galletas_disponibles) >= int(cantGalletasXSabor):
+                            produccion.galletas_disponibles -= cantGalletasXSabor
+                            break
+                    else:
+                        cantGalletasXSabor -= produccion.galletas_disponibles
+                        produccion.galletas_disponibles = 0     
+
+                db.session.commit()
+
+            else:
+                id_receta = venta_data.get('receta_id')
+                precio = float(venta_data.get('precio_unitario'))
+                subtotal = float(venta_data.get('subtotal').replace('$', ''))
+
+
+                cantidadVendida = int(venta_data.get('cantidadGalletas'))
+                # se obtienen las producciones con estatus 'terminada', el id de la receta de la venta_data, ordenados por fecha de la mas lejana a la mas cercana y que el campo galletas_disponibles sea mayor a 0
+                producciones = Produccion.query.filter_by(estatus='terminada', receta_id=id_receta).order_by(Produccion.fecha_producido.asc()).filter(Produccion.galletas_disponibles > 0).all()
+
+                if not producciones:
+                    flash(f'No hay sufucientes galletas de {venta_data.get("sabor")} en stock', 'error')
+                    db.session.rollback()
+                    return redirect(url_for("ventas.terminar_produccion", id_solicitud=producciones[0].id, receta_id=id_receta))
+                
+                # Revisar si hay suficientes galletas disponibles para la venta
+                if venta_data.get('tipoVenta') == 'pieza':
+                    cantidadVentaFaltante = int(venta_data.get('cantidad'))
+                elif venta_data.get('tipoVenta') == 'gramos':
+                    cantidadVentaFaltante = math.ceil(float(venta_data.get('cantidad')) / 30)
+                elif venta_data.get('tipoVenta') == 'paquete 700g':
+                    cantidadVentaFaltante = math.ceil(math.ceil(700 / 30) * int(venta_data.get('cantidad')))
+                elif venta_data.get('tipoVenta') == 'paquete 1Kg':
+                    cantidadVentaFaltante = math.ceil(math.ceil(1000 / 30) * int(venta_data.get('cantidad')))
+
+                # Insertar datos en la tabla DetalleVenta
+                nuevo_detalle = DetalleVenta(
+                    sabor=venta_data.get('sabor'),
+                    tipo_venta=venta_data.get('tipoVenta'),
+                    precio_unitario=float(venta_data.get('precio_unitario')), 
+                    cantidad=int(venta_data.get('cantidad')),
+                    cantidad_galletas=cantidadVentaFaltante,
+                    subtotal=float(venta_data.get('subtotal').replace('$', '')), 
+                    venta_id=id_venta_insertada,
+                    receta_id=id_receta,
+                )
+
+                #actualizar la cantidad de galletas_disponibles de la tabla costogalletas
+                costo_galletas = CostoGalleta.query.filter_by(id=id_costo).first()
+                costo_galletas.galletas_disponibles -= cantidadVentaFaltante
+
+                for produccion in producciones:
+                    if int(produccion.galletas_disponibles) >= int(cantidadVentaFaltante):
+                        produccion.galletas_disponibles -= cantidadVentaFaltante
+                        break
+                    else:
+                        cantidadVentaFaltante -= produccion.galletas_disponibles
+                        produccion.galletas_disponibles = 0
+
+                db.session.add(nuevo_detalle)
+                db.session.commit()
 
         respuesta = {'mensaje': 'Correcto'}
     else:

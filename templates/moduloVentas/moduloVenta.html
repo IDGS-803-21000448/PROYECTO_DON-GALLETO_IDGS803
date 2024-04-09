@@ -229,13 +229,16 @@
                 var costoId = parseInt(celdas[6].innerText);
                 var recetaId = parseInt(celdas[7].innerText);
                 var saboresMultiRaw = celdas[8].innerText;
+                var cantidadGalletas = celdas[9].innerText;
                 var total = parseFloat(document.getElementById("totalVenta").innerHTML.replace('$', ''));
 
-                if (saboresMultiRaw !== 'none') {
+
+                console.log(saboresMultiRaw.toString());
+                if (saboresMultiRaw !== '') {
                     console.log(saboresMultiRaw);
-                    var saboresMulti = JSON.parse(saboresMultiRaw);
-                }else{
-                    var saboresMulti = [];
+                    saboresMulti = JSON.parse(saboresMultiRaw); // Intentamos parsear si saboresMultiRaw tiene un valor "truthy" válido y no es 'none'
+                } else {
+                    saboresMulti = []; // Asignamos un arreglo vacío si saboresMultiRaw es "falsy" o igual a 'none'
                 }
 
                 if (nombre === '' || fechaInput === '') {
@@ -247,7 +250,7 @@
                     return;
                 }
 
-                datosVenta.push({ nombre: nombre, tipoVenta: tipoVenta, cantidad: cantidad, sabor: sabor, fecha: fechaInput, precio_unitario: precio_unitario, subtotal: subtotal, total: total, galleta_id: costoId, receta_id: recetaId, saboresMulti: saboresMulti });
+                datosVenta.push({ nombre: nombre, tipoVenta: tipoVenta, cantidad: cantidad, sabor: sabor, fecha: fechaInput, precio_unitario: precio_unitario, subtotal: subtotal, total: total, galleta_id: costoId, receta_id: recetaId, cantidadGalletas: cantidadGalletas, saboresMulti: saboresMulti });
             }
 
             console.log(datosVenta);
@@ -401,6 +404,9 @@
                             text: 'No hay suficientes galletas de ' + sabor.sabor +' en el inventario para armar el paquete. Vuelve a intentarlo mas tarde.'
                         });
                         return;
+                    }else{
+                        // agregar un nuevo atributo llamado cantidadGalletas a los sabores
+                        sabor.cantidadGalletas = cantidadxsabor;
                     }
                 })
 
@@ -418,12 +424,15 @@
                  var celdaReceta = nuevaFila.insertCell(6);
                  var celdaGalleta = nuevaFila.insertCell(7);
                  var celdaSaboresMulti = nuevaFila.insertCell(8);
+                 var celdaCantidadGalletas = nuevaFila.insertCell(9);
                  celdaSaboresMulti.innerText = JSON.stringify(sabores);
-                 celdaSaboresMulti.style = "display: none";
-                 celdaGalleta.innerHTML = '';
-                 celdaGalleta.style = "display: none";
+                 celdaSaboresMulti.style = "display: block";
+                 celdaGalleta.innerHTML = 0;
+                 celdaGalleta.style = "display: block";
                  celdaReceta.innerHTML = '';
-                 celdaReceta.style = "display: none";
+                 celdaReceta.style = "display: block";
+                 celdaCantidadGalletas.innerHTML = 0;
+                 celdaCantidadGalletas.style = "display: block";
 
                 precioRaw = 0.0;
                 sabores.forEach((sabor) => {
@@ -488,6 +497,7 @@
                 var precioUnitario = parseFloat(dataDepurada[2]);
                 var stock = parseInt(dataDepurada[3]);
                 var receta = parseInt(dataDepurada[4]);
+                var cantidadGalletas = 0;
                 let subtotal = 0;
 
                 // revisar en la tabla si hay un producto con el mismo costoId
@@ -495,10 +505,12 @@
                 var cantidadEvaluar = 0;
                 if (tipoVenta === 'gramos') {
                     cantidadEvaluar = Math.ceil((parseFloat(cantidad) / 30));
+                    cantidadGalletas = cantidadEvaluar;
                 }
 
                 if (tipoVenta === 'pieza') {
                     cantidadEvaluar = cantidad;
+                    cantidadGalletas = cantidadEvaluar;
                 }
 
                 if (tipoVenta === 'paquete') {
@@ -508,10 +520,12 @@
 
                     if (paquete == '1'){
                         cantidadxpaquete = parseFloat(cantidad) * 700;
+                        cantidadGalletas = cantidadxpaquete;
                     }
 
                     if (paquete == '2'){
                         cantidadxpaquete = parseFloat(cantidad) * 1000;
+                        cantidadGalletas = cantidadxpaquete;
                     }
 
                     cantidadEvaluar =  Math.ceil(parseFloat(cantidadxpaquete) / 30);
@@ -637,12 +651,15 @@
                 var celdaReceta = nuevaFila.insertCell(6);
                 var celdaGalleta = nuevaFila.insertCell(7);
                 var celdaSaboresMulti = nuevaFila.insertCell(8);
-                celdaSaboresMulti.innerHTML = 'none';
-                celdaSaboresMulti.style = "display: none";
+                var celdaCantidadGalletas = nuevaFila.insertCell(9);
+                celdaCantidadGalletas.innerHTML = cantidadGalletas;
+                celdaCantidadGalletas.style = "display: block";
+                celdaSaboresMulti.innerText = '';
+                celdaSaboresMulti.style = "display: block";
                 celdaGalleta.innerHTML = receta;
-                celdaGalleta.style = "display: none";
+                celdaGalleta.style = "display: block";
                 celdaReceta.innerHTML = costoId;
-                celdaReceta.style = "display: none";
+                celdaReceta.style = "display: block";
 
                 // Agregar valores a las celdas
                 if (tipoVenta === 'paquete') {
@@ -697,6 +714,17 @@
                 e.preventDefault();
                 var fila = e.target.closest('tr');
                 fila.remove();
+                var tabla = document.getElementById('tabla_productos').getElementsByTagName('tbody')[0];
+                let rows = tabla.getElementsByTagName('tr');
+                let total = 0;
+
+                for (let i = 0; i < rows.length; i++) {
+                    // Get the cells in the current row
+                    let cells = rows[i].getElementsByTagName('td');
+                    total += parseFloat(cells[4].innerText.replace('$', ''));
+                }
+
+                document.getElementById('totalVenta').innerHTML = total;
             }
         });
 

@@ -14,41 +14,6 @@
         {% endif %}
     </div>
 </div>
-
-        <!-- Producción Anual -->
-        <div class="row">
-            <div class="card shadow mb-4 col-6">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold">Producción de Galletas (Año)</h6>
-            </div>
-            <div class="card-body">
-                <canvas id="myChart"></canvas>
-            </div>
-        </div>
-            <div class="card shadow mb-4 col-6">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold">Producción de Galletas (Semana)</h6>
-            </div>
-            <div class="card-body">
-                <canvas id="myChartWeek"></canvas>
-            </div>
-        </div>
-
-        </div>
-
-
-        <!-- Producción Semanal -->
-
-        <!-- Producción Mensual por Tipo -->
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold">Producción de Galletas (Mes)</h6>
-            </div>
-            <div class="card-body">
-                <canvas id="myChartMonth"></canvas>
-            </div>
-        </div>
-
         <div class="row">
             <div class="card shadow mb-4 col-12">
                 <div class="card-header py-3">
@@ -56,13 +21,13 @@
                 </div>
                 <div class="card-body">
                     <canvas id="myChartCostoGalleta"></canvas>
-                    <h3 class="text-center" id="mejorGalleta"></h3>
+                    <h3 class="text-center" id="mejorGalleta">La galleta con mejor rendimiento económico es: {{ menor_costo }}</h3>
                 </div>
             </div>
         </div>
 
         <div class="row">
-            <div class="card shadow mb-4 col-12">
+            <div class="card shadow mb-4 col-6">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold">Galleta con mayor merma</h6>
                 </div>
@@ -70,11 +35,7 @@
                     <canvas id="myChartMermaCantidad"></canvas>
                 </div>
             </div>
-        </div>
-
-
-        <div class="row">
-            <div class="card shadow mb-4 col-12">
+         <div class="card shadow mb-4 col-6">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold">Galleta con mayor porcentaje de merma</h6>
                 </div>
@@ -84,9 +45,21 @@
             </div>
         </div>
 
+        <div class="row">
+            <div class="card shadow mb-4 col-6">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">Presentación mas vendida</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="myChartPresentaciones"></canvas>
+                </div>
+            </div>
+
+        </div>
+
         <script>
             // Producción Anual
-            var ctxYear = document.getElementById('myChart').getContext('2d');
+            /*var ctxYear = document.getElementById('myChart').getContext('2d');
             var myChartYear = new Chart(ctxYear, {
                 type: 'line',
                 data: {
@@ -107,63 +80,8 @@
                         }
                     }
                 }
-            });
-        
-            // Producción Semanal
-            var ctxWeek = document.getElementById('myChartWeek').getContext('2d');
-            var myChartWeek = new Chart(ctxWeek, {
-                type: 'bar',
-                data: {
-                    labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
-                    datasets: [{
-                        label: 'Producción Semanal de Galletas',
-                        data: [120, 150, 180, 120, 105, 90, 100], // Datos de ejemplo
-                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                        borderColor: 'rgba(255, 159, 64, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        
-            // Producción Mensual por Tipo
-            var ctxMonth = document.getElementById('myChartMonth').getContext('2d');
-            var myChartMonth = new Chart(ctxMonth, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Chocolate', 'Vainilla', 'Fresa', 'Limón', 'Nuez'],
-                    datasets: [{
-                        label: 'Producción por Tipo',
-                        data: [300, 250, 100, 150, 200], // Datos de ejemplo
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                }
-            });
-        
+            });*/
+
              // Costo de Producción por Galleta
             var costos_galletas = JSON.parse('{{ costos_galletas|tojson|safe }}');
             var nombres_galletas = costos_galletas.map(function(galleta) {
@@ -203,20 +121,11 @@
                         }
                     },
                     plugins: {
+                        responsive: true,
+                        maintainAspectRatio: false,
                         legend: {
                             display: false
                         },
-                        tooltip: {
-                            callbacks: {
-                                footer: function(tooltipItems, data) {
-                                    // Obtener el índice del precio mínimo
-                                    var minIndex = precios_galletas.indexOf(Math.min(...precios_galletas));
-                                    // Obtener el nombre de la galleta con menor costo
-                                    var mejorGalleta = nombres_galletas[minIndex];
-                                    document.getElementById('mejorGalleta').textContent = "La galleta con mejor rendimiento económico es: " + mejorGalleta;
-                                }
-                            }
-                        }
                     }
                 }
             });
@@ -249,36 +158,12 @@
                     }]
                 },
                 options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Costo de producción($)'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Galletas'
-                            }
-                        }
-                    },
+                    responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            display: false
+                            display: true
                         },
-                        tooltip: {
-                            callbacks: {
-                                footer: function(tooltipItems, data) {
-                                    // Obtener el índice del precio mínimo
-                                    var minIndex = cantidades_merma.indexOf(Math.min(...cantidades_merma));
-                                    // Obtener el nombre de la galleta con menor costo
-                                    var mejorGalleta = nombres_galletas[minIndex];
-                                    document.getElementById('mejorGalleta').textContent = "La galleta con mejor rendimiento económico es: " + mejorGalleta;
-                                }
-                            }
-                        }
                     }
                 }
             });
@@ -298,7 +183,7 @@
                 data: {
                     labels: nombres_galletas,
                     datasets: [{
-                        label: 'Cantidad de galletas en merma',
+                        label: 'Porcentaje de galletas en merma',
                         data: cantidades_merma,
                         backgroundColor: [
                             'rgba(255, 99, 132, 0.2)',
@@ -312,42 +197,55 @@
                     }]
                 },
                 options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Costo de producción($)'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Galletas'
-                            }
-                        }
-                    },
+                    responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            display: false
+                            display: true
                         },
-                        tooltip: {
-                            callbacks: {
-                                footer: function(tooltipItems, data) {
-                                    // Obtener el índice del precio mínimo
-                                    var minIndex = cantidades_merma.indexOf(Math.min(...cantidades_merma));
-                                    // Obtener el nombre de la galleta con menor costo
-                                    var mejorGalleta = nombres_galletas[minIndex];
-                                    document.getElementById('mejorGalleta').textContent = "La galleta con mejor rendimiento económico es: " + mejorGalleta;
-                                }
-                            }
-                        }
+                    }
+                }
+            });
+
+            var precentaciones = JSON.parse('{{ datos_presentaciones|tojson|safe }}');
+            var nombres_presentaciones = precentaciones.map(function(precentacion) {
+                return precentacion[0];
+            });
+            var cantidad_presentaciones = precentaciones.map(function(precentacion) {
+                return precentacion[1];
+            });
+
+            var ctxPrecentaciones = document.getElementById('myChartPresentaciones').getContext('2d');
+            var myChartPrecentaciones = new Chart(ctxPrecentaciones, {
+                type: 'doughnut',
+                data: {
+                    labels: nombres_presentaciones,
+                    datasets: [{
+                        label: 'Número de presentaciones vendidas',
+                        data: cantidad_presentaciones,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                        ],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
                     }
                 }
             });
 
         </script>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 {% endblock %}
