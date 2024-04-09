@@ -17,6 +17,7 @@ def actualizar_costos():
         ids_ingredientes = [detalle.tipo_materia_id for detalle in detalles_receta]
         # Obtener los costos de la receta y sus detalles
         costos = models.CostoGalleta.query.filter_by(id=receta.id).first()
+            
         factor_ajuste_mano_obra = 0.5  # Factor de ajuste para la mano de obra
 
         # Inicializar variables

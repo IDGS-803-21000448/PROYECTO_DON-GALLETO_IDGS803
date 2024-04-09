@@ -1,6 +1,7 @@
+from datetime import datetime
 from controllers import controller_costo
 from . import recetas
-from models import Receta, MateriaPrima, RecetaDetalle, Tipo_Materia
+from models import Receta, MateriaPrima, RecetaDetalle, Tipo_Materia, CostoGalleta
 from flask import render_template, request, jsonify, url_for, redirect, flash
 from formularios import formsReceta
 from controllers.controller_login import requiere_rol
@@ -63,6 +64,13 @@ def guardar_receta():
         # Aquí puedes realizar la lógica para guardar la receta en la base de datos
         # Por ejemplo:
         nueva_receta = Receta(nombre=nombre, num_galletas=num_galletas, create_date=fecha, imagen=imagen_base64, descripcion=descripcion)
+        nuevo_costo_galleta = CostoGalleta(
+                precio=0,
+                galletas_disponibles=0,
+                mano_obra=0,
+                fecha_utlima_actualizacion=datetime.now()
+            )
+        db.session.add(nuevo_costo_galleta)
         db.session.add(nueva_receta)
         db.session.commit()
 
@@ -101,6 +109,7 @@ def guardar_receta():
                     db.session.commit()
                 # Si el detalle no existe, agregarlo a la base de datos
                 else:
+
                     db.session.add(detalle)                    
             else:
                 db.session.add(detalle)
