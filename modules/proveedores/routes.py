@@ -7,10 +7,12 @@ from flask_login import login_required
 from formularios import formProveedores
 from formularios.formProveedores import ProveedorForm
 from flask import request
+from controllers.controller_login import requiere_token
 
 @proveedores.route("/crudProveedores", methods=["GET"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "inventario")
 def crud_proveedores():
     form_proveedores = formProveedores.ProveedorForm(request.form)
     
@@ -21,7 +23,8 @@ def crud_proveedores():
 
 @proveedores.route('/agregarProveedor', methods=['GET','POST'])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "inventario")
 def agregar_proveedor():
     form_proveedor = formProveedores.ProveedorForm(request.form)
     
@@ -55,7 +58,8 @@ def agregar_proveedor():
 
 @proveedores.route('/seleccionarProveedor', methods=['GET', 'POST'])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "inventario")
 def seleccionar_proveedor():
     id = request.form['id']  # Usar corchetes para acceder al valor del campo 'id' en el formulario
     originalForm = ProveedorForm()
@@ -72,7 +76,8 @@ def seleccionar_proveedor():
 
 @proveedores.route('/eliminarProveedor', methods=['POST'])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "inventario")
 def eliminar_proveedor():
     id = request.form['id']
     proveedor = Proveedor.query.get_or_404(id)
