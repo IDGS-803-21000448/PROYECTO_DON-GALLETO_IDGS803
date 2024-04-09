@@ -426,13 +426,13 @@
                  var celdaSaboresMulti = nuevaFila.insertCell(8);
                  var celdaCantidadGalletas = nuevaFila.insertCell(9);
                  celdaSaboresMulti.innerText = JSON.stringify(sabores);
-                 celdaSaboresMulti.style = "display: block";
+                 celdaSaboresMulti.style = "display: none";
                  celdaGalleta.innerHTML = 0;
-                 celdaGalleta.style = "display: block";
+                 celdaGalleta.style = "display: none";
                  celdaReceta.innerHTML = '';
-                 celdaReceta.style = "display: block";
+                 celdaReceta.style = "display: none";
                  celdaCantidadGalletas.innerHTML = 0;
-                 celdaCantidadGalletas.style = "display: block";
+                 celdaCantidadGalletas.style = "display: none";
 
                 precioRaw = 0.0;
                 sabores.forEach((sabor) => {
@@ -653,13 +653,13 @@
                 var celdaSaboresMulti = nuevaFila.insertCell(8);
                 var celdaCantidadGalletas = nuevaFila.insertCell(9);
                 celdaCantidadGalletas.innerHTML = cantidadGalletas;
-                celdaCantidadGalletas.style = "display: block";
+                celdaCantidadGalletas.style = "display: none";
                 celdaSaboresMulti.innerText = '';
-                celdaSaboresMulti.style = "display: block";
+                celdaSaboresMulti.style = "display: none";
                 celdaGalleta.innerHTML = receta;
-                celdaGalleta.style = "display: block";
+                celdaGalleta.style = "display: none";
                 celdaReceta.innerHTML = costoId;
-                celdaReceta.style = "display: block";
+                celdaReceta.style = "display: none";
 
                 // Agregar valores a las celdas
                 if (tipoVenta === 'paquete') {
