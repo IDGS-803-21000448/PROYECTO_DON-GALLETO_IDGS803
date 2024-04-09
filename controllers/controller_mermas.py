@@ -93,7 +93,7 @@ def verificarCaducidadesGalletas():
                 insertarMermaGalleta(produccion)
                 insertarAlertas(nombre, descripcion, True)
 
-            elif dias_para_caducar >= 10 and produccion.galletas_disponibles != 0:
+            elif dias_para_caducar >= 12 and produccion.galletas_disponibles != 0:
 
                 nombre = f"Tienes galletas {produccion.receta.nombre} por caducar"
                 descripcion = (f"Hay {produccion.galletas_disponibles} galletas de {produccion.receta.nombre}  que estan a "

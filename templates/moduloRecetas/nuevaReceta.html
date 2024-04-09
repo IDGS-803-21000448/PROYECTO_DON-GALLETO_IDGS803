@@ -47,7 +47,7 @@
                             <div class="col-sm-4 form-group">
                             </div>
                             <div class="col-sm-4 form-group">
-                                {{ render_field(formReceta.imagen, class="custom-file-input", id="imagen_input", onchange="mostrarNombreImagen(this)") }}
+                                {{ render_field(formReceta.imagen, class="custom-file-input", id="imagen_input", onchange="mostrarNombreImagen(this)", accept="image/png") }}
                                 <label class="custom-file-label" for="imagen_input" id="nombre_imagen_label">Elegir imagen</label>
                             </div>
                             <div class="col-sm-4 form-group text-center">
@@ -123,8 +123,8 @@
                                             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                                 <thead>
                                                     <tr>
+                                                        <th>ID</th>
                                                         <th>Ingrediente</th>
-                                                        <th>Cantidad</th>
                                                         <th>Unidad de Medida</th>
                                                         <th>Porcentaje de Merma</th>
                                                         <th>Acción</th>

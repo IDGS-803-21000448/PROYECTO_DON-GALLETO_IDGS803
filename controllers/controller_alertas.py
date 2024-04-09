@@ -56,7 +56,7 @@ def verificarCantidadesGalletas():
     try:
         for receta in recetas:
 
-            if receta.Costo_Galleta.galletas_disponibles < 60:
+            if receta.Costo_Galleta.galletas_disponibles < receta.num_galletas:
 
                 insertarAlertas("Alerta por Cantidad", f"Se esta a punto de terminar la galleta de "
                                                        f"{receta.nombre} solo hay {receta.Costo_Galleta.galletas_disponibles } galletas"

@@ -7,10 +7,12 @@ from flask_login import login_required, current_user
 from datetime import datetime, date
 from sqlalchemy import asc
 from controllers.controller_materia_prima import actualizar_cantidades_tipo
+from controllers.controller_login import requiere_token
 
 @produccion.route("/produccion", methods=["GET"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "produccion")
 def vista_produccion():
     recetas = Receta.query.filter_by(estatus=1).all()
     solicitudes = Produccion.query.filter_by(estatus='solicitud').all()
@@ -24,7 +26,8 @@ def vista_produccion():
 
 @produccion.route('/solicitarProduccion', methods=['POST'])
 @login_required
-@requiere_rol('admin')
+@requiere_token
+@requiere_rol('admin', "produccion")
 def solicitar_produccion():
     # Se recupera el id de la solicitud y la receta
     id_solicitud = request.form['solicitud_id']
@@ -123,7 +126,8 @@ def convertir_unidades(cantidad, unidad_origen, unidad_destino):
 
 @produccion.route("/postergarProduccion", methods=["POST"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "produccion")
 def postergar_produccion():
     id_solicitud = request.form['solicitud_id']
 
@@ -140,7 +144,8 @@ def postergar_produccion():
 
 @produccion.route("/terminarProduccion", methods=["POST"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "produccion")
 def terminar_produccion():
     id_solicitud = request.form['solicitud_id']
     receta_id = request.form['receta_id']
@@ -199,7 +204,9 @@ def terminar_produccion():
 from sqlalchemy import asc
 
 @produccion.route("/cancelarProduccion", methods=["POST"])
-@requiere_rol("admin")
+@login_required
+@requiere_token
+@requiere_rol("admin", "produccion")
 def cancelar_produccion():
     id_solicitud = request.form['solicitud_id']
     receta_id = request.form['receta_id']
@@ -243,7 +250,7 @@ def cancelar_produccion():
 @produccion.route("/agregarMerma", methods=["POST"])
 @login_required
 @requiere_token
-@requiere_rol("admin")
+@requiere_rol("admin", "produccion")
 def agregar_merma():
     id_solicitud = request.form['solicitud_id']
     receta_id = request.form['receta_id']
@@ -290,7 +297,9 @@ def agregar_merma():
     
 
 @produccion.route("/cancelarSolicitud", methods=["POST"])
-@requiere_rol("admin")
+@login_required
+@requiere_token
+@requiere_rol("admin", "produccion")
 def cancelar_solicitud():
     id_solicitud = request.form['solicitud_id']
 

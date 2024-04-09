@@ -10,9 +10,9 @@ from controllers.controller_login import requiere_rol, requiere_token
 from flask_login import login_required
 
 @compras.route("/moduloCompras", methods=["GET"])
-#@login_required
-#@requiere_token
-#@requiere_rol("admin")
+@login_required
+@requiere_token
+@requiere_rol("admin", "inventario")
 def modulo_compras():
     form_compras = formCompras.CompraForm()
     tipo_materias = models.Tipo_Materia.query.filter_by(estatus=1).all()
@@ -23,6 +23,9 @@ def modulo_compras():
 
 
 @compras.route("/agregarCompra", methods=["POST"])
+@login_required
+@requiere_token
+@requiere_rol("admin", "inventario")
 def agregar_compra():
     form_compras = formCompras.CompraForm(request.form)
     proveedores = models.Proveedor.query.filter_by(estatus=1).all()
@@ -82,6 +85,9 @@ def agregar_compra():
 
 
 @compras.route('/seleccionarCompra', methods=['GET', 'POST'])
+@login_required
+@requiere_token
+@requiere_rol("admin", "inventario")
 def seleccionar_compra():
     id = request.form['id']
     form_compras = formCompras.CompraForm()
@@ -107,6 +113,9 @@ def seleccionar_compra():
                            materias_primas=tipo_materias, proveedores=proveedores, compras=listado_compras)
 
 @compras.route('/eliminarCompra', methods=['POST'])
+@login_required
+@requiere_token
+@requiere_rol("admin", "inventario")
 def eliminar_compra():
     id = request.form['id']
     compra = models.MateriaPrima.query.get_or_404(id)

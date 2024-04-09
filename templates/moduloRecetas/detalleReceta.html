@@ -48,9 +48,9 @@
                             <div class="col-sm-4 form-group">
                             </div>
                             <div class="col-sm-4 form-group">
-                                {{ render_field(formReceta.imagen, class="custom-file-input", id="imagen_input", onchange="mostrarImagenSeleccionada(this)") }}
+                                {{ render_field(formReceta.imagen, class="custom-file-input", id="imagen_input", onchange="mostrarImagenSeleccionada(this)", accept="image/png") }}
                                 <label class="custom-file-label" for="imagen_input" id="nombre_imagen_label">Elegir imagen</label>
-                            </div>
+                            </div>                            
                             <div class="col-sm-4 form-group text-center">
                                 <img id="imagen_preview" src="data:image/png;base64,{{ receta.imagen }}" alt="Vista previa de la imagen" class="img-fluid" style="height: 100px; width: 100px">
                             </div>

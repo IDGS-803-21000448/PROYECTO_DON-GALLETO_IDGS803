@@ -1,10 +1,12 @@
+from datetime import datetime
 from controllers import controller_costo
 from . import recetas
-from models import Receta, MateriaPrima, RecetaDetalle, Tipo_Materia
+from models import Receta, MateriaPrima, RecetaDetalle, Tipo_Materia, CostoGalleta
 from flask import render_template, request, jsonify, url_for, redirect, flash
 from formularios import formsReceta
 from controllers.controller_login import requiere_rol
 from flask_login import login_required
+from controllers.controller_login import requiere_token
 
 from werkzeug.utils import secure_filename
 import base64
@@ -14,18 +16,23 @@ import json
 
 @recetas.route("/vistaRecetas", methods=["GET"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "produccion")
 def vista_recetas():
     recetas = Receta.query.filter_by(estatus=1).all()
     return render_template("moduloRecetas/vistaRecetas.html", recetas=recetas)
 
 @recetas.route("/crudRecetas", methods=["GET"])
+@login_required
+@requiere_token
+@requiere_rol("admin", "produccion")
 def crud_recetas():
     return render_template("moduloRecetas/crudRecetas.html")
 
 @recetas.route('/nuevaReceta', methods=['GET', 'POST'])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "produccion")
 def nueva_receta():
     formReceta = formsReceta.RecetaForm(request.form)
     #formDetalle = formsReceta.RecetaDetalleForm()
@@ -40,7 +47,8 @@ def nueva_receta():
 
 @recetas.route("/guardarReceta", methods=["POST"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "produccion")
 def guardar_receta():
     if request.method == "POST":
         # Obtener los datos del formulario de la receta
@@ -63,6 +71,13 @@ def guardar_receta():
         # Aquí puedes realizar la lógica para guardar la receta en la base de datos
         # Por ejemplo:
         nueva_receta = Receta(nombre=nombre, num_galletas=num_galletas, create_date=fecha, imagen=imagen_base64, descripcion=descripcion)
+        nuevo_costo_galleta = CostoGalleta(
+                precio=0,
+                galletas_disponibles=0,
+                mano_obra=0,
+                fecha_utlima_actualizacion=datetime.now()
+            )
+        db.session.add(nuevo_costo_galleta)
         db.session.add(nueva_receta)
         db.session.commit()
 
@@ -101,6 +116,7 @@ def guardar_receta():
                     db.session.commit()
                 # Si el detalle no existe, agregarlo a la base de datos
                 else:
+
                     db.session.add(detalle)                    
             else:
                 db.session.add(detalle)
@@ -117,7 +133,8 @@ def allowed_file(filename):
 
 @recetas.route("/detalleReceta", methods=["GET", "POST"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "produccion")
 def detalle_recetas():
     formReceta = formsReceta.RecetaForm(request.form)
     #formDetalle = formsReceta.RecetaDetalleForm(request.form)
@@ -166,7 +183,8 @@ def detalle_recetas():
 
 @recetas.route("/editarReceta", methods=["POST"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "produccion")
 def editar_receta():
     if request.method == "POST":
         if 'guardar_receta_btn' in request.form:
@@ -255,7 +273,8 @@ def editar_receta():
 
 @recetas.route("/eliminarReceta", methods=["POST"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "produccion")
 def eliminar_receta():
     if request.method == "POST":
         print(request.form)

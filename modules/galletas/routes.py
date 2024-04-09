@@ -13,7 +13,7 @@ cantidades = []
 @galletas.route("/costoGalleta", methods=["GET"])
 @login_required
 @requiere_token
-@requiere_rol("admin")
+@requiere_rol("admin", "venta")
 def costo_galleta():
     cantidades = []
     galletas = Receta.query.filter_by(estatus=1).all()
@@ -36,7 +36,8 @@ def costo_galleta():
 
 @galletas.route("/modificarPrecioPagina", methods=["GET", "POST"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "venta")
 def detalle_costo():
     galleta_id = request.form.get('id')
     galleta = Receta.query.filter_by(id=galleta_id).first()
@@ -53,7 +54,8 @@ def detalle_costo():
 
 @galletas.route("/actualizarPrecio", methods=["GET", "POST"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "venta")
 def actualizar_precio():
     galleta_id = request.form.get('id')
     form = formCosto.CalculoCompraForm()
@@ -90,7 +92,8 @@ def actualizar_precio():
 
 @galletas.route("/detalleCosto", methods=["POST"])
 @login_required
-@requiere_rol("admin")
+@requiere_token
+@requiere_rol("admin", "venta")
 def detalles_costo():
     #Obtenemos los id de los ingredientes de la materia, estos id se envian desde el frontend
     id_materia_lista = request.form.getlist('id_materia[]')
