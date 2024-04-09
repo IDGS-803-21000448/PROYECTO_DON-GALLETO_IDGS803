@@ -12,6 +12,7 @@ from controllers.controller_login import requiere_rol
 from flask_login import login_required, current_user
 import datetime
 import math
+from reportlab.pdfbase.pdfmetrics import stringWidth
 
 ventas_array = []
 
@@ -348,12 +349,30 @@ def generar_ticket():
 
     # Detalles de la Compra
     y = 8.2 * inch
+    ancho_maximo_sabor = 1.5 * inch  # Define el ancho máximo para el texto del sabor
+    espaciado_lineas = 0.15 * inch   # Define el espaciado entre las líneas del detalle del sabor
+
     for detalle in detalles:
-        p.drawString(0.5 * inch, y, f"{detalle.cantidad} {detalle.tipo_venta}")
-        p.drawString(2 * inch, y, f"{detalle.sabor}")  # Asumiendo que hay un nombre en el producto
-        p.drawString(3.5 * inch, y, f"${detalle.precio_unitario:.2f}")
-        p.drawString(5.5 * inch, y, f"${detalle.subtotal:.2f}")
-        y -= 0.3 * inch
+        if detalle.subtotal != 0:
+            # Dibujar cantidad y tipo de venta
+            p.drawString(0.5 * inch, y, f"{detalle.cantidad} {detalle.tipo_venta}")
+
+            # Ajustar y dibujar el texto del sabor
+            lineas_sabor = ajustar_texto(detalle.sabor, p._fontname, p._fontsize, ancho_maximo_sabor)
+            linea_count = len(lineas_sabor)
+            for i, linea in enumerate(lineas_sabor):
+                p.drawString(2 * inch, y, linea)
+                # No ajustamos 'y' después de la última línea para alinear los precios con la primera línea de sabor
+                if i < linea_count - 1:
+                    y -= espaciado_lineas
+
+            # Dibujar precio unitario y subtotal
+            # Asumimos que los precios se alinean con la primera línea del sabor
+            p.drawString(3.5 * inch, y, f"${detalle.precio_unitario:.2f}")
+            p.drawString(5.5 * inch, y, f"${detalle.subtotal:.2f}")
+            
+            # Restablecemos 'y' para el siguiente producto teniendo en cuenta todas las líneas del sabor añadidas
+            y -= (0.3 * inch + (espaciado_lineas * (linea_count - 1)))
 
     # Línea de separación antes del total
     p.line(0.5 * inch, y + 0.15 * inch, 7.5 * inch, y + 0.15 * inch)
@@ -485,3 +504,22 @@ def registrar_salidas():
     return redirect(url_for("ventas.modulo_venta") + f"?turno_id={turnoLocalizado.id}")
 
 
+def ajustar_texto(texto, fuente, tamano_fuente, ancho_maximo):
+    palabras = texto.split()
+    lineas = []
+    linea_actual = ''
+    for palabra in palabras:
+        # Verificar si agregar la siguiente palabra excede el ancho máximo
+        test_linea = linea_actual + ' ' + palabra if linea_actual else palabra
+        ancho_linea = stringWidth(test_linea, fuente, tamano_fuente)
+        if ancho_linea <= ancho_maximo:
+            # Si no excede, agregar la palabra a la línea actual
+            linea_actual = test_linea
+        else:
+            # Si excede, guardar la línea actual y empezar una nueva
+            lineas.append(linea_actual)
+            linea_actual = palabra
+    # Asegurarse de agregar la última línea
+    if linea_actual:
+        lineas.append(linea_actual)
+    return lineas
