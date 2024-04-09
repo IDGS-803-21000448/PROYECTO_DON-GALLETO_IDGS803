@@ -188,8 +188,10 @@ class DetalleVenta(db.Model):
     tipo_venta = db.Column(db.String(50), nullable=False)
     precio_unitario = db.Column(db.Float, nullable=False)
     cantidad = db.Column(db.Integer, nullable=False)
+    cantidad_galletas = db.Column(db.Integer, nullable=False)
     subtotal = db.Column(db.Float, nullable=False)
     venta_id = db.Column(db.Integer, db.ForeignKey('venta.id'), nullable=False)
+    receta_id = db.Column(db.Integer, db.ForeignKey('recetas.id'), nullable=False)
 
 class CostoGalleta(db.Model):
     __tablename__ = 'costoGalletas'
