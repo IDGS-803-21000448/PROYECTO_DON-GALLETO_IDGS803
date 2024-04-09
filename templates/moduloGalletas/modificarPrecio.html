@@ -97,11 +97,11 @@
                 <div class="row justify-content-center mt-4">
                     <div class="col-lg-6 text-center">
                         <form id="formActualizar" action="{{ url_for('galletas.detalles_costo') }}" method="POST">
-                            <div class="form-group text-center mb-3">
+                            <!-- <div class="form-group text-center mb-3">
                                 {{ render_field(form.precio_mano_obra, class="form-control", placeholder="Mano de obra") }}
-                            </div>
+                            </div> -->
                             <input type="hidden" name="id" value="{{ id }}">
-                            <h4>El costo actual de mano de obra es: ${{ mano_obra}}</h4>
+                            <!-- <h4>El costo actual de mano de obra es: ${{ mano_obra}}</h4> -->
                             {% for galleta in galletas %}
                                 <input type="hidden" name="id_materia[]" value="{{ galleta.id_materia }}">
                             {% endfor %}

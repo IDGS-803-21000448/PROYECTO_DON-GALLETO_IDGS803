@@ -257,6 +257,7 @@
             var costoId = parseInt(dataDepurada[1]);
             var precioUnitario = parseFloat(dataDepurada[2]);
             var stock = parseInt(dataDepurada[3]);
+            console.log(stock);
             var receta = parseInt(dataDepurada[4]);
             let subtotal = 0;
 
@@ -304,7 +305,7 @@
                     var cells = celdas[i].getElementsByTagName('td');
                     var currentCostoId = parseInt(cells[6].innerText);
                     if (currentCostoId === costoId) {
-                        //cantGalletasTabla += parseInt(cells[4].innerText / cells[3].innerText); 
+                        cantGalletasTabla += parseInt(cells[4].innerText / cells[3].innerText); 
     
                         if ( tipoVenta === 'gramos') {
                             cantGalletasTabla += Math.ceil(parseInt(cells[0].innerText / 30));
@@ -462,6 +463,17 @@
                 e.preventDefault();
                 var fila = e.target.closest('tr');
                 fila.remove();
+                var tabla = document.getElementById('tabla_productos').getElementsByTagName('tbody')[0];
+                let rows = tabla.getElementsByTagName('tr');
+                let total = 0;
+
+                for (let i = 0; i < rows.length; i++) {
+                    // Get the cells in the current row
+                    let cells = rows[i].getElementsByTagName('td');
+                    total += parseFloat(cells[4].innerText.replace('$', ''));
+                }
+
+                document.getElementById('totalVenta').innerHTML = total;
             }
         });
     });
