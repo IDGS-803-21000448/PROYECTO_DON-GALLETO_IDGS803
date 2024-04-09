@@ -122,27 +122,15 @@ def realizar_venta():
                 ventas_agrupadas[id_galleta] = {'cantidad': 0, 'subtotal': 0, 'sabor': f'{venta_data.get("sabor")}', 'precio_unitario': f'{venta_data.get("precio_unitario")}', 'tipoVenta': f'{venta_data.get("tipoVenta")}'}
             ventas_agrupadas[id_galleta]['cantidad'] += float(venta_data.get('cantidad'))
             ventas_agrupadas[id_galleta]['subtotal'] += float(venta_data.get('subtotal').replace('$', ''))
-
+        print(f"VENTAS AGRUPADAS: {ventas_agrupadas}")
         #validar si hay galletas disponibles segun la cantidad de en ventas_agrupadas
         for id_galleta, datos in ventas_agrupadas.items():
 
             id_costo = id_galleta
+            print(f"ID_GALLETA: {id_galleta}")
 
-            if id_costo is None:
-                id_costo = 0
-                precio = float(datos.get('precio_unitario'))
-                subtotal = float(datos.get('subtotal'))
-                saboresMultiPaqueteEv = datos.get('saboresMulti')
-
-                for sabor in saboresMultiPaqueteEv:
-                    cantidadVendida = sabor.get('cantidad')
-                    cantidadStock = CostoGalleta.query.filter_by(id=int(sabor.get('idCosto'))).first().galletas_disponibles
-                    print(cantidadStock)
-                    if cantidadVendida >= cantidadStock:
-                        flash(f'No hay sufucientes galletas de {sabor.get("sabor")} en stock', 'error')
-                        respuesta = {'mensaje': 'Stock', 'galleta': f'{sabor.get("sabor")}'}
-                        return jsonify(respuesta)
-            else:
+            if id_costo is not None:
+            
                 precio = float(datos.get('precio_unitario'))
                 subtotal = float(datos.get('subtotal'))
 
