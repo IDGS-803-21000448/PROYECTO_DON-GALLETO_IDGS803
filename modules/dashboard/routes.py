@@ -28,7 +28,10 @@ def dashboard():
         lastSession = None
     alertas = Alerta.query.filter_by(estatus = 0).all()
     session['countAlertas'] = len(alertas)
-    return render_template("moduloDashboard/dashboard.html", lastSession=lastSession, costos_galletas=costos_galletas, menor_costo=receta_menor_costo, merma_mayor=mermas_mayor, merma_porcentaje = merma_porcentaje, datos_presentaciones = datos_presentaciones)
+    return render_template("moduloDashboard/dashboard.html", lastSession=lastSession, costos_galletas=costos_galletas,
+                           menor_costo=receta_menor_costo, merma_mayor=mermas_mayor,
+                           merma_porcentaje = merma_porcentaje, 
+                           datos_presentaciones = datos_presentaciones)
 
 
 def obtenerPresentación():
@@ -182,3 +185,4 @@ def convertirCantidades(tipo1, tipo2, cantidad):
     elif(tipo1 == "kg" or tipo1 == "l") and (tipo2 == "pz"):
         cantidad = cantidad * 0.050
     return cantidad
+
