@@ -99,6 +99,7 @@ def realizar_venta():
 
     if datos and 'ventas' in datos and isinstance(datos['ventas'], list) and len(datos['ventas']) > 0:
         lista_ventas = datos['ventas']
+        print(lista_ventas)
         id_venta_insertada = None
         primer_venta = lista_ventas[0]
         total_str = str(primer_venta.get('total'))

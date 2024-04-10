@@ -184,7 +184,7 @@ class Venta(db.Model):
 class DetalleVenta(db.Model):
     __tablename__ = 'detalle_venta'
     id = db.Column(db.Integer, primary_key=True)
-    sabor = db.Column(db.String(50), nullable=False)
+    sabor = db.Column(db.String(255), nullable=False)
     tipo_venta = db.Column(db.String(50), nullable=False)
     precio_unitario = db.Column(db.Float, nullable=False)
     cantidad = db.Column(db.Float, nullable=False)
