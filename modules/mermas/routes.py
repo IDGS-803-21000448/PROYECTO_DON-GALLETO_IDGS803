@@ -211,6 +211,8 @@ def seleccionar_merma():
     if request.method == "POST":
         if tipo_merma == "materiaPrima":
             merma = MermaMateriaPrima.query.get_or_404(id)
+            materia = MateriaPrima.query.get_or_404(merma.materia_prima_id)
+            nombre = materia.tipo_materia.nombre
             form = tipoMermaForm()
             mermas = MermaMateriaPrima.query.filter_by(estatus=1)
             originalForm.tipo_merma.data = "materiaPrima"
@@ -226,12 +228,16 @@ def seleccionar_merma():
             materiasPrimas = []
             merma = MemraGalleta.query.get_or_404(id)
 
+            produccion = Produccion.query.get_or_404(merma.produccion_id)
+            nombre = produccion.receta.nombre
+
         originalForm.id.data = merma.id
         originalForm.materia_prima_id.data = merma.materia_prima_id if tipo_merma == "materiaPrima" else merma.produccion_id
         originalForm.tipo.data = merma.tipo
         originalForm.cantidad.data = merma.cantidad
         originalForm.descripcion.data = merma.descripcion
         originalForm.fecha.data = merma.fecha
+        originalForm.nombre.data = nombre
 
         flash("Merma Seleccionada", "success")
         return render_template('moduloMermas/crudMermas.html', mermas=mermas, form=originalForm,
