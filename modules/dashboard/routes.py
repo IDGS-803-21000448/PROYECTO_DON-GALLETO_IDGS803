@@ -5,7 +5,7 @@ from . import dashboard
 from flask_login import login_required, current_user
 from controllers.controller_login import requiere_token
 from models import LogLogin, Alerta, CostoGalleta, Receta, RecetaDetalle, MateriaPrima, MemraGalleta, db, Produccion, \
-    DetalleVenta
+    DetalleVenta, Proveedor
 
 receta_menor_costo = None
 costo_menor = float('inf')
@@ -21,7 +21,8 @@ def dashboard():
     costos_galletas = obtenerCostos()
     datos_presentaciones = obtenerPresentación()
     galletas_vendias = obtenerGalletasMasVendidas()
-    print(galletas_vendias)
+    proveedores_por_lote = obtener_proveedores_por_lote()
+    #print(galletas_vendias)
     # obtener el segundo ultimo log de inicio de sesion correcto del usuario
     if len(logs) > 1:
         # regresar lastSession en formato dd/mm/yyyy hh:mm:ss
@@ -30,7 +31,7 @@ def dashboard():
         lastSession = None
     alertas = Alerta.query.filter_by(estatus = 0).all()
     session['countAlertas'] = len(alertas)
-    return render_template("moduloDashboard/dashboard.html", lastSession=lastSession, costos_galletas=costos_galletas, menor_costo=receta_menor_costo, merma_mayor=mermas_mayor, merma_porcentaje = merma_porcentaje, datos_presentaciones = datos_presentaciones, galletas_vendias = galletas_vendias)
+    return render_template("moduloDashboard/dashboard.html", lastSession=lastSession, costos_galletas=costos_galletas, menor_costo=receta_menor_costo, merma_mayor=mermas_mayor, merma_porcentaje = merma_porcentaje, datos_presentaciones = datos_presentaciones, galletas_vendias = galletas_vendias, proveedores_por_lote = proveedores_por_lote)
 
 
 def obtenerPresentación():
@@ -208,4 +209,30 @@ def obtenerGalletasMasVendidas():
 
     return galletas_mas_vendidas
     
+
+def obtener_proveedores_por_lote():
+    # producciones = Produccion.query.all()
+    producciones = Produccion.query.filter_by(estatus='terminada').all()
+    lista_proveedores_por_lote = []
+
+    for produccion in producciones:
+        proveedores_lote = set()  # Usamos un conjunto para evitar duplicados de proveedores en un mismo lote
+        
+        receta_detalles = RecetaDetalle.query.filter_by(receta_id=produccion.receta_id).all()
+        
+        for receta_detalle in receta_detalles:
+            materia_prima = MateriaPrima.query.filter_by(id=receta_detalle.tipo_materia_id).first()
+            
+            if materia_prima:
+                proveedor = Proveedor.query.filter_by(id=materia_prima.id_proveedor).first()
+                
+                if proveedor:
+                    proveedores_lote.add(proveedor.nombre)  # Agregar el nombre del proveedor al conjunto
+        
+        lista_proveedores_por_lote.append({
+            'id_produccion': produccion.id,
+            'lote': produccion.lote,
+            'proveedores': list(proveedores_lote)  # Convertir el conjunto a una lista para poder ser serializado
+        })
     
+    return lista_proveedores_por_lote
