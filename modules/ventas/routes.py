@@ -494,6 +494,10 @@ def registrar_salidas():
             flash("El turno ya se cerro")
             return redirect(url_for("ventas.modulo_venta") + f"?turno_id={turnoLocalizado.id}")
         
+        if turnoLocalizado.fondo_caja < form_salida.cantidad.data:
+            flash("No cuentas con fondos suficientes")
+            return redirect(url_for("ventas.modulo_venta") + f"?turno_id={turnoLocalizado.id}")
+        
         # Registrar salida
         salida = Salidas(id_turno=turnoLocalizado.id, fecha=datetime.datetime.now(), justificacion=form_salida.justificacion.data, cantidad=form_salida.cantidad.data)
         db.session.add(salida)
