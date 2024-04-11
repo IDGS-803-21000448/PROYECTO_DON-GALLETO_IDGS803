@@ -499,10 +499,17 @@ def registrar_salidas():
             flash("No cuentas con fondos suficientes")
             return redirect(url_for("ventas.modulo_venta") + f"?turno_id={turnoLocalizado.id}")
         
+        # Verificar si la cantidad de la salida es negativa
+        if form_salida.cantidad.data < 0:
+            flash("La cantidad de la salida no puede ser negativa")
+            return redirect(url_for("ventas.modulo_venta") + f"?turno_id={turnoLocalizado.id}")
+        
         # Registrar salida
         salida = Salidas(id_turno=turnoLocalizado.id, fecha=datetime.datetime.now(), justificacion=form_salida.justificacion.data, cantidad=form_salida.cantidad.data)
         db.session.add(salida)
-        db.session.commit()
+        db.session.commit()    
+    else:
+        flash("Los campos no son validos, procura registrar cantidades positivas mayores a $10.0 y una descripcion")
 
     return redirect(url_for("ventas.modulo_venta") + f"?turno_id={turnoLocalizado.id}")
 

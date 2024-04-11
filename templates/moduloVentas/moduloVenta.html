@@ -323,11 +323,20 @@
 
             var sabor = dataDepurada[0].replace(/'/g, '');
 
-            if (cantidad === '') {
+            if (cantidad === '' || cantidad == 0) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
                     text: 'Es necesario llenar el campo Cantidad.'
+                });
+                return;
+            }
+
+            if (cantidad < 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'La cantidad no puede ser negativa.'
                 });
                 return;
             }

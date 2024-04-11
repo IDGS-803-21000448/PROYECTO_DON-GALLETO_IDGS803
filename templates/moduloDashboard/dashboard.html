@@ -5,7 +5,7 @@
 {% from "_macros.html" import render_field %}
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-6 mb-4">
         <h2 class="h2 mb-2 text-gray"><strong>¡Bienvenido {{current_user.nombre}}!</strong></h2>
         {% if lastSession%}
             <h4 class="h4 mb-2 text-gray">Tu última sesión fue el {{lastSession}}</h4>
@@ -14,88 +14,120 @@
         {% endif %}
     </div>
 </div>
-        <div class="row">
-            <div class="card shadow mb-4 col-12">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold">Costo de Producción por Galleta</h6>
-                </div>
-                <div class="card-body">
-                    <canvas id="myChartCostoGalleta"></canvas>
-                    <h3 class="text-center" id="mejorGalleta">La galleta con mejor rendimiento económico es: {{ menor_costo }}</h3>
-                </div>
-            </div>
+<div class="container-fluid">
+    <!-- Primera fila con 2 gráficas -->
+    <div class="row justify-content-center mb-4">
+      <!-- Costo de Producción por Galleta -->
+      <div class="col-lg-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+          <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Costo de Producción por Galleta</h6>
+          </div>
+          <div class="card-body">
+            <canvas id="myChartCostoGalleta"></canvas>
+            <h3 class="text-center mt-4" id="mejorGalleta">La galleta con mejor rendimiento económico es: {{ menor_costo }}</h3>
+          </div>
         </div>
-
-        <div class="row">
-            <div class="card shadow mb-4 col-6">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold">Galleta con mayor merma</h6>
-                </div>
-                <div class="card-body">
-                    <canvas id="myChartMermaCantidad"></canvas>
-                </div>
-            </div>
-         <div class="card shadow mb-4 col-6">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold">Galleta con mayor porcentaje de merma</h6>
-                </div>
-                <div class="card-body">
-                    <canvas id="myChartMermaPorcentaje"></canvas>
-                </div>
-            </div>
+      </div>
+  
+      <!-- Galleta con mayor merma -->
+      <div class="col-lg-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+          <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-success">Galleta con mayor merma</h6>
+          </div>
+          <div class="card-body">
+            <canvas id="myChartMermaCantidad"></canvas>
+          </div>
         </div>
-
-        <div class="row">
-            <div class="card shadow mb-4 col-6">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold">Presentación mas vendida</h6>
-                </div>
-                <div class="card-body">
-                    <canvas id="myChartPresentaciones"></canvas>
-                </div>
-            </div>
-            <div class="card shadow mb-4 col-6">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold">Galleta mas vendida</h6>
-                </div>
-                <div class="card-body">
-                    <canvas id="myChartGalletasVendidas"></canvas>
-                </div>
-            </div>
-
+      </div>
+    </div>
+  
+    <!-- Segunda fila con 3 gráficas -->
+    <div class="row justify-content-center">
+      <!-- Galleta con mayor porcentaje de merma -->
+      <div class="col-lg-4 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+          <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-warning">Galleta con mayor porcentaje de merma</h6>
+          </div>
+          <div class="card-body">
+            <canvas id="myChartMermaPorcentaje"></canvas>
+          </div>
         </div>
-
-        <div class="card shadow mb-4" id="spacesTable">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold">Proveedores por lotes</h6>
-            </div>
-            <div class="card-body">
-                <table class="table table-striped table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th>ID de Producción</th>
-                            <th>Lote</th>
-                            <th>Proveedores</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for lote in proveedores_por_lote %}
-                        <tr>
-                            <td>{{ lote.id_produccion }}</td>
-                            <td>{{ lote.lote }}</td>
-                            <td>
-                                <ul>
-                                    {% for proveedor in lote.proveedores %}
-                                    <li>{{ proveedor }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+      </div>
+  
+      <!-- Presentación más vendida -->
+      <div class="col-lg-4 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+          <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-info">Presentación más vendida</h6>
+          </div>
+          <div class="card-body">
+            <canvas id="myChartPresentaciones"></canvas>
+          </div>
         </div>
+      </div>
+  
+      <!-- Galleta más vendida -->
+      <div class="col-lg-4 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+          <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-danger">Galleta más vendida</h6>
+          </div>
+          <div class="card-body">
+            <canvas id="myChartGalletasVendidas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+        <!-- Añade este estilo dentro de tu etiqueta <head> o en tu archivo CSS -->
+<style>
+    .scrollable-table {
+        max-height: 400px; /* Ajusta este valor según necesites */
+        overflow-y: auto;
+        display: block;
+    }
+</style>
+
+<div class="card justify-content-center mb-4" id="spacesTable">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold">Proveedores por lotes</h6>
+    </div>
+    <div class="card-body">
+        <!-- Contenedor scrollable para la tabla -->
+        <div class="scrollable-table">
+            <table class="table table-striped table-bordered table-hover">
+                <thead class="thead-dark"> <!-- Mejora visual en el encabezado de la tabla -->
+                    <tr>
+                        <th>ID de Producción</th>
+                        <th>Lote</th>
+                        <th>Proveedores</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Suponiendo que tienes una estructura de control para llenar la tabla -->
+                    {% for lote in proveedores_por_lote %}
+                    <tr>
+                        <td>{{ lote.id_produccion }}</td>
+                        <td>{{ lote.lote }}</td>
+                        <td>
+                            <ul>
+                                {% for proveedor in lote.proveedores %}
+                                <li>{{ proveedor }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 
         <script>
             // Producción Anual
