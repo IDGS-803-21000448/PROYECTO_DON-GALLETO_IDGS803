@@ -133,7 +133,7 @@ def agregar_nueva_merma():
                 materia_prima = MateriaPrima.query.get_or_404(form.materia_prima_id.data)
 
 
-                if materia_prima.cantidad < form.cantidad.data:
+                if materia_prima.cantidad_disponible < form.cantidad.data:
                     flash("No se puede agregar una merma mayor a la cantidad existente.", "danger")
                     formTipo = tipoMermaForm()
                     mermas = MermaMateriaPrima.query.filter_by(estatus=1)

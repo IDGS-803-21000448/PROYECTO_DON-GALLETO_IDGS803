@@ -73,6 +73,9 @@ def seleccionar_materia():
 def eliminar_materia():
     id = request.form['id']
     materia = Tipo_Materia.query.get_or_404(id)
+    if materia.cantidad_disponible > 0:
+        flash("No se puede eliminar una materia prima con inventario activo")
+        return redirect(url_for('materiaPrima.modulo_materia_prima'))
     materia.estatus = 0
     db.session.commit()
     flash('Materia Prima eliminada correctamente', 'success')

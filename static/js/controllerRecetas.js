@@ -53,22 +53,37 @@ function addIngrediente() {
     cantidad = document.getElementById('cantidad_input').value;
     porcentaje_merma = document.getElementById('porcentaje_merma_input').value;
     unidad_medida = document.getElementById('unidad_medida_input').value;
+    if(parseFloat(cantidad)<=0){
+        Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Necesita cantidad ser mayor a 0'
+        });
+    }
+    else if(parseFloat(porcentaje_merma)<=0){
+        Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Necesita procentaje de merma necesita ser mayor a 0'
+        });
+    }
+    else {
+        let valores = materia_prima.slice(1, -1).split(',').map(value => value.trim());
 
-    let valores = materia_prima.slice(1, -1).split(',').map(value => value.trim());
+        let id = parseInt(valores[0]);
+        let nombre = valores[1].slice(1, -1);
 
-    let id = parseInt(valores[0]);
-    let nombre = valores[1].slice(1, -1);
+        nueva_materia_prima = {
+            'ingrediente_id': id,
+            'ingrediente': nombre,
+            'cantidad': cantidad,
+            'unidad_medida': unidad_medida,
+            'porcentaje_merma': parseFloat(porcentaje_merma)
+        };
 
-    nueva_materia_prima = {
-        'ingrediente_id': id,
-        'ingrediente': nombre,
-        'cantidad': cantidad,
-        'unidad_medida': unidad_medida,
-        'porcentaje_merma': parseFloat(porcentaje_merma)
-    };
-    
-    ingredientes.push(nueva_materia_prima);
-    document.getElementById('ingredientes').value = JSON.stringify(ingredientes);
-    console.log(document.getElementById('ingredientes').value);
-    loadIngredientes();
+        ingredientes.push(nueva_materia_prima);
+        document.getElementById('ingredientes').value = JSON.stringify(ingredientes);
+        console.log(document.getElementById('ingredientes').value);
+        loadIngredientes();
+    }
 }
