@@ -119,6 +119,11 @@ def seleccionar_compra():
 def eliminar_compra():
     id = request.form['id']
     compra = models.MateriaPrima.query.get_or_404(id)
+
+    if compra.cantidad_disponible != compra.cantidad_compra:
+        flash("No se puede eliminar una compra de un lote ya usado")
+        return redirect(url_for('compras.modulo_compras'))
+
     materia = models.Tipo_Materia.query.get_or_404(compra.id_tipo_materia)
 
     materia.cantidad_disponible -= convertirCantidades(materia.tipo, compra.tipo,
