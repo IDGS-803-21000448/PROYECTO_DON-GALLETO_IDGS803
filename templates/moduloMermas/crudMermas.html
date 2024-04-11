@@ -126,45 +126,47 @@
         <h6 class="m-0 font-weight-bold">Listado de mermas</h6>
     </div>
     <div class="card-body">
-        <table class="table">
-            <thead>
-            <tr class="text-center">
-                <th>ID</th>
-                <th>Materia Prima</th>
-                <th>Tipo</th>
-                <th>Cantidad</th>
-                <th>Descripción</th>
-                <th>Fecha</th>
-                <th>Acciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for merma in mermas %}
+        <div class="scrollable-table" style="overflow: auto; max-height: 400px;">
+            <table class="table">
+                <thead>
                 <tr class="text-center">
-                    <td>{{ merma.id }}</td>
-                     {% if form.tipo_merma.data == "materiaPrima" %}
-                        <td>{{ merma.materia_prima.tipo_materia.nombre }}</td>
-                    {% endif %}
-                    {% if form.tipo_merma.data == "galletas" %}
-                        <td>{{ merma.produccion.receta.nombre }}</td>
-                    {% endif %}
-                    <td>{{ merma.tipo }}</td>
-                    <td>{{ merma.cantidad }}</td>
-                    <td>{{ merma.descripcion }}</td>
-                    <td>{{ merma.fecha.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                    <td>
-                        <form action="{{ url_for('mermas.seleccionar_merma')}}" method="post" class="d-inline">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                            <input type="hidden" name="id" value="{{ merma.id }}">
-                            <input type="hidden" name="tipo_merma" value="{{ form.tipo_merma.data }}">
-                            <button type="submit" class="btn btn-warning btn-sm">Editar</button>
-                        </form>
-                        <button type="button" data-id = "{{ merma.id }}"  data-tipo = "{{ form.tipo_merma.data }}" class="btn btn-danger btn-sm mt-1 eliminarMerma" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
-                    </td>
+                    <th>ID</th>
+                    <th>Materia Prima</th>
+                    <th>Tipo</th>
+                    <th>Cantidad</th>
+                    <th>Descripción</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for merma in mermas %}
+                    <tr class="text-center">
+                        <td>{{ merma.id }}</td>
+                        {% if form.tipo_merma.data == "materiaPrima" %}
+                            <td>{{ merma.materia_prima.tipo_materia.nombre }}</td>
+                        {% endif %}
+                        {% if form.tipo_merma.data == "galletas" %}
+                            <td>{{ merma.produccion.receta.nombre }}</td>
+                        {% endif %}
+                        <td>{{ merma.tipo }}</td>
+                        <td>{{ merma.cantidad }}</td>
+                        <td>{{ merma.descripcion }}</td>
+                        <td>{{ merma.fecha.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td>
+                            <form action="{{ url_for('mermas.seleccionar_merma')}}" method="post" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <input type="hidden" name="id" value="{{ merma.id }}">
+                                <input type="hidden" name="tipo_merma" value="{{ form.tipo_merma.data }}">
+                                <button type="submit" class="btn btn-warning btn-sm">Editar</button>
+                            </form>
+                            <button type="button" data-id = "{{ merma.id }}"  data-tipo = "{{ form.tipo_merma.data }}" class="btn btn-danger btn-sm mt-1 eliminarMerma" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 

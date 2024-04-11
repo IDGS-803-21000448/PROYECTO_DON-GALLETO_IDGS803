@@ -85,43 +85,45 @@
         <h6 class="m-0 font-weight-bold">Listado de compras</h6>
     </div>
     <div class="card-body">
-        <div class="row mb-3">
-            <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar...">
-            <table id="proveedorTable" class="table table-striped">
-                <thead>
-                    <tr class="text-center">
-                        <th>Nombre</th>
-                        <th>Proveedor</th>
-                        <th>Precio</th>
-                        <th>Fecha</th>
-                        <th>Lote</th>
-                        <th>Cantidad Compra</th>
-                        <th>Cantidad Disponible</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for compra in compras %}
-                    <tr class="text-center">
-                        <td>{{ compra.tipo_materia.nombre }}</td>
-                        <td>{{ compra.proveedor.nombre_vendedor }}</td>
-                        <td>{{ compra.precio_compra }}</td>
-                        <td>{{ compra.create_date }}</td>
-                        <td>{{ compra['lote'] }}</td>
-                        <td>{{ compra['cantidad_compra'] }}</td>
-                        <td>{{ compra['cantidad_disponible'] }}</td>
-                        <td>
-                            <form action="{{url_for('compras.seleccionar_compra')}}" method="post" class="d-inline">
-                                <input type="hidden" name="id" value="{{compra.id}}" />
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                                <button type="submit" class="btn btn-warning btn-sm">Editar</button>
-                            </form>
-                            <button id="eliminarCompra" data-id="{{compra.id}}" class="btn btn-danger btn-sm mt-1" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="scrollable-table" style="overflow: auto; max-height: 400px;">
+            <div class="row mb-3">
+                <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar...">
+                <table id="proveedorTable" class="table table-striped">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Nombre</th>
+                            <th>Proveedor</th>
+                            <th>Precio</th>
+                            <th>Fecha</th>
+                            <th>Lote</th>
+                            <th>Cantidad Compra</th>
+                            <th>Cantidad Disponible</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for compra in compras %}
+                        <tr class="text-center">
+                            <td>{{ compra.tipo_materia.nombre }}</td>
+                            <td>{{ compra.proveedor.nombre_vendedor }}</td>
+                            <td>{{ compra.precio_compra }}</td>
+                            <td>{{ compra.create_date }}</td>
+                            <td>{{ compra['lote'] }}</td>
+                            <td>{{ compra['cantidad_compra'] }}</td>
+                            <td>{{ compra['cantidad_disponible'] }}</td>
+                            <td>
+                                <form action="{{url_for('compras.seleccionar_compra')}}" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="{{compra.id}}" />
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                    <button type="submit" class="btn btn-warning btn-sm">Editar</button>
+                                </form>
+                                <button id="eliminarCompra" data-id="{{compra.id}}" class="btn btn-danger btn-sm mt-1" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

@@ -49,37 +49,39 @@
         <h6 class="m-0 font-weight-bold">Listado de proveedores</h6>
     </div>
     <div class="card-body">
-        <div class="row mb-3">
-            <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar...">
-            <table id="proveedorTable" class="table table-striped">
-                <thead>
-                    <tr class="text-center">
-                        <th>Nombre</th>
-                        <th>Dirección</th>
-                        <th>Telefono</th>
-                        <th>Nombre del Vendedor</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for proveedor in proveedores %}
-                    <tr class="text-center">
-                        <td>{{ proveedor['nombre'] }}</td>
-                        <td>{{ proveedor['direccion'] }}</td>
-                        <td>{{ proveedor['telefono'] }}</td>
-                        <td>{{ proveedor['nombre_vendedor'] }}</td>
-                        <td>
-                        <form action="{{url_for('proveedores.seleccionar_proveedor')}}" method="post" class="d-inline">
-                            <input type="hidden" name="id" value="{{proveedor.id}}" />
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                            <button type="submit" class="btn btn-warning">Editar</button>
-                        </form>
-                        <button id="eliminarProveedor" data-id="{{proveedor.id}}" class="btn btn-danger" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="scrollable-table" style="overflow: auto; max-height: 400px;">
+            <div class="row mb-3">
+                <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar...">
+                <table id="proveedorTable" class="table table-striped">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Nombre</th>
+                            <th>Dirección</th>
+                            <th>Telefono</th>
+                            <th>Nombre del Vendedor</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for proveedor in proveedores %}
+                        <tr class="text-center">
+                            <td>{{ proveedor['nombre'] }}</td>
+                            <td>{{ proveedor['direccion'] }}</td>
+                            <td>{{ proveedor['telefono'] }}</td>
+                            <td>{{ proveedor['nombre_vendedor'] }}</td>
+                            <td>
+                            <form action="{{url_for('proveedores.seleccionar_proveedor')}}" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="{{proveedor.id}}" />
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <button type="submit" class="btn btn-warning">Editar</button>
+                            </form>
+                            <button id="eliminarProveedor" data-id="{{proveedor.id}}" class="btn btn-danger" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

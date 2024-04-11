@@ -75,36 +75,38 @@
 <!-- Tabla de todas las solicitudes -->
 <div class="card shadow mb-4 mt-5" id="spacesTable">
     <div class="card-body">
-        <div class="row mt-4">
-            <div class="col-md-12">
-                <h2 class="h5 mb-2 text-gray"><i class="fas fa-table"></i> Todas las Solicitudes</h2>
-                <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar...">
-                <table class="table table-striped table-bordered table-hover" id="solicitudesTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Receta</th>
-                            <th>Fecha de Solicitud</th>
-                            <th>Lote</th>
-                            <th>Estatus</th>
-                            <th>Empleado</th>
-                            <th>Empleado produccion</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for solicitud in solicitudes %}
-                        <tr>
-                            <td>{{ solicitud.id }}</td>
-                            <td>{{ solicitud.receta.nombre }}</td>
-                            <td>{{ solicitud.fecha_solicitud }}</td>
-                            <td>{{ solicitud.lote }}</td>
-                            <td>{{ solicitud.estatus }}</td>
-                            <td>{{ solicitud.empleadoSolicitante }}</td>
-                            <td>{{ solicitud.empleadoProduccion }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+        <div class="scrollable-table" style="overflow: auto; max-height: 400px;">
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h2 class="h5 mb-2 text-gray"><i class="fas fa-table"></i> Todas las Solicitudes</h2>
+                    <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar...">
+                    <table class="table table-striped table-bordered table-hover" id="solicitudesTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Receta</th>
+                                <th>Fecha de Solicitud</th>
+                                <th>Lote</th>
+                                <th>Estatus</th>
+                                <th>Empleado</th>
+                                <th>Empleado produccion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for solicitud in solicitudes %}
+                            <tr>
+                                <td>{{ solicitud.id }}</td>
+                                <td>{{ solicitud.receta.nombre }}</td>
+                                <td>{{ solicitud.fecha_solicitud }}</td>
+                                <td>{{ solicitud.lote }}</td>
+                                <td>{{ solicitud.estatus }}</td>
+                                <td>{{ solicitud.empleadoSolicitante }}</td>
+                                <td>{{ solicitud.empleadoProduccion }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

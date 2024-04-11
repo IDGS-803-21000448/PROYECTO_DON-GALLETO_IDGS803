@@ -55,40 +55,42 @@
         <h6 class="m-0 font-weight-bold">Listado de usuarios</h6>
     </div>
     <div class="card-body">
-        <div class="row mb-3">
-        <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar...">
-        <table id="userTable" class="table table-striped">
-            <thead>
-            <tr class="text-center">
-                <th>Nombre</th>
-                <th>Puesto</th>
-                <th>Rol</th>
-                <!-- <th>Estatus</th> -->
-                <th>Acciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for user in users %}
-            <tr class="text-center">
-                <td>{{ user['nombre'] }}</td>
-                <td>{{ user['puesto'] }}</td>
-                <td>{{ user['rol'] }}</td>
-                <!-- <td>{{ user['estatus'] }}</td> -->
-                <td>
-                
-                {% if user.id != current_user.id %}
-                    <form action="{{ url_for('usuarios.seleccionar_usuario') }}" method="post" class="d-inline">
-                        <input type="hidden" name="id" value="{{user.id}}" />
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                        <button type="submit" class="btn btn-warning">Editar</button>
-                    </form>
-                    <button id="eliminarUsuario" data-id="{{user.id}}" class="btn btn-danger" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
-                {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        <div class="scrollable-table" style="overflow: auto; max-height: 400px;">
+            <div class="row mb-3">
+                <input type="text" id="searchInput" class="form-control mb-3" placeholder="Buscar...">
+                <table id="userTable" class="table table-striped">
+                    <thead>
+                    <tr class="text-center">
+                        <th>Nombre</th>
+                        <th>Puesto</th>
+                        <th>Rol</th>
+                        <!-- <th>Estatus</th> -->
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for user in users %}
+                    <tr class="text-center">
+                        <td>{{ user['nombre'] }}</td>
+                        <td>{{ user['puesto'] }}</td>
+                        <td>{{ user['rol'] }}</td>
+                        <!-- <td>{{ user['estatus'] }}</td> -->
+                        <td>
+                        
+                        {% if user.id != current_user.id %}
+                            <form action="{{ url_for('usuarios.seleccionar_usuario') }}" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="{{user.id}}" />
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                <button type="submit" class="btn btn-warning">Editar</button>
+                            </form>
+                            <button id="eliminarUsuario" data-id="{{user.id}}" class="btn btn-danger" data-toggle="modal" data-target="#modalConfirmacion">Eliminar</button>
+                        {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
