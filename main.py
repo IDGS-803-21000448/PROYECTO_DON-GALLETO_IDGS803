@@ -62,6 +62,10 @@ def page_not_found(e):
 #def handle_attribute_error(e):
 #    return render_template('errorScreen.html', error=e), 500
 
+# @app.errorhandler(UnboundLocalError)
+# def handle_attribute_error(e):
+#     return render_template('errorScreen.html', error=e), 500
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id)) 

@@ -7,7 +7,7 @@ from controllers.controller_login import requiere_token
 from models import LogLogin, Alerta, CostoGalleta, Receta, RecetaDetalle, MateriaPrima, MemraGalleta, db, Produccion, \
     DetalleVenta, Proveedor
 
-receta_menor_costo = None
+receta_mayor_ganancia = None
 costo_menor = float('inf')
 
 @dashboard.route("/dashboard", methods=["GET"])
@@ -22,7 +22,6 @@ def dashboard():
     datos_presentaciones = obtenerPresentación()
     galletas_vendias = obtenerGalletasMasVendidas()
     proveedores_por_lote = obtener_proveedores_por_lote()
-    #print(galletas_vendias)
     # obtener el segundo ultimo log de inicio de sesion correcto del usuario
     if len(logs) > 1:
         # regresar lastSession en formato dd/mm/yyyy hh:mm:ss
@@ -31,7 +30,7 @@ def dashboard():
         lastSession = None
     alertas = Alerta.query.filter_by(estatus = 0).all()
     session['countAlertas'] = len(alertas)
-    return render_template("moduloDashboard/dashboard.html", lastSession=lastSession, costos_galletas=costos_galletas, menor_costo=receta_menor_costo, merma_mayor=mermas_mayor, merma_porcentaje = merma_porcentaje, datos_presentaciones = datos_presentaciones, galletas_vendias = galletas_vendias, proveedores_por_lote = proveedores_por_lote)
+    return render_template("moduloDashboard/dashboard.html", lastSession=lastSession, costos_galletas=costos_galletas, menor_costo=receta_mayor_ganancia, merma_mayor=mermas_mayor, merma_porcentaje = merma_porcentaje, datos_presentaciones = datos_presentaciones, galletas_vendias = galletas_vendias, proveedores_por_lote = proveedores_por_lote)
 
 
 def obtenerPresentación():
@@ -99,9 +98,10 @@ def obtenerMermaPorcentaje():
     return resultados_serializables
 
 def obtenerCostos():
-    global receta_menor_costo, costo_menor
+    global receta_mayor_ganancia, costo_menor
     # Lista para almacenar los costos de recetas
     costos_recetas = []
+    ganancia_mayor = 0
 
     # Obtenemos todas las recetas con estatus 1
     recetas = Receta.query.filter_by(estatus=1).all()
@@ -160,13 +160,20 @@ def obtenerCostos():
 
         # Calcular el costo promedio de la receta
         costo_receta = round(suma_costos / cantidad_materias, 2)
+
+        # Calcular la ganancia esperada por cada receta
+        precio_pz = costos.precio
+        galletas_por_receta = receta.num_galletas
+        ganancia_esperada = precio_pz * galletas_por_receta
+        ganancia = ganancia_esperada - costo_receta
+
+        # Actualizar la receta de mayor ganancia si corresponde
+        if ganancia > ganancia_mayor:
+            receta_mayor_ganancia = receta.nombre
+            ganancia_mayor = ganancia
+
         # Guardar el costo de la receta junto con su nombre en la lista
         costos_recetas.append((receta.nombre, costo_receta))
-
-        # Actualizar la receta de menor costo si corresponde
-        if costo_receta < costo_menor:
-            receta_menor_costo = receta.nombre
-            costo_menor = costo_receta
 
     return costos_recetas
 
