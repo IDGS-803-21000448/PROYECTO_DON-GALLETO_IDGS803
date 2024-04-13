@@ -130,8 +130,7 @@ def realizar_venta():
             id_costo = id_galleta
             print(f"ID_GALLETA: {id_galleta}")
 
-            if id_costo is not None:
-            
+            if id_costo is not None:            
                 precio = float(datos.get('precio_unitario'))
                 subtotal = float(datos.get('subtotal'))
 

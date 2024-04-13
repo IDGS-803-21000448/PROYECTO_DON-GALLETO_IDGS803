@@ -77,7 +77,7 @@
                         <!-- <td>{{ user['estatus'] }}</td> -->
                         <td>
                         
-                        {% if user.id != current_user.id %}
+                        {% if user.rol != 'admin' %}
                             <form action="{{ url_for('usuarios.seleccionar_usuario') }}" method="post" class="d-inline">
                                 <input type="hidden" name="id" value="{{user.id}}" />
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
