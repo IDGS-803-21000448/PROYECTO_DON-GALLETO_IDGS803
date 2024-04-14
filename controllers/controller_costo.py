@@ -67,11 +67,56 @@ def actualizar_costos():
         # Insertar los costos calculados
         insertar_costos(cantidad_materias, suma_costos, receta.id, costos.mano_obra)
 
+def actualizar_costos_por_id(receta_id):
+    # Obtener los detalles de la receta
+    detalles_receta = RecetaDetalle.query.filter_by(receta_id=receta_id).all()
+    # Obtener los IDs de los ingredientes de la receta seleccionada
+    ids_ingredientes = [detalle.tipo_materia_id for detalle in detalles_receta]
+    # Obtener los costos de la receta y sus detalles
+    costos = models.CostoGalleta.query.filter_by(id=receta_id).first()
+
+    # Inicializar variables
+    suma_costos = 0
+    cantidad_materias = 0
+
+    # Realizar la consulta de Materias Prima para cada ID de ingrediente
+    for id_ingrediente in ids_ingredientes:
+        # Obtener las materias primas que corresponden al ID de ingrediente
+        materias = MateriaPrima.query.filter_by(id_tipo_materia=id_ingrediente, estatus=1).all()
+
+        # Si las materias primas existen
+        if materias:
+            # Obtener el total de precio de la materia
+            total_precio_materia = sum(m.precio_compra for m in materias)
+            # Obtener el total de cantidades de la materia
+            cantidad_materias += len(materias)
+
+            # Puede haber varias compras de la misma materia
+            for materia in materias:
+                # Obtenemos el detalle de receta de la receta que estamos iterando
+                detalles_receta = RecetaDetalle.query.filter_by(receta_id=receta_id, tipo_materia_id=id_ingrediente).first()
+                # print("DATOS AUTOMATICO")
+                # print(f"Materia tipo: {materia.tipo}, Medida de la receta: {detalles_receta.unidad_medida}, cantidad de la galleta: {detalles_receta.cantidad_necesaria}")
+                cantidad_materia = convertirCantidades(materia.tipo, detalles_receta.unidad_medida, detalles_receta.cantidad_necesaria)
+
+                # Calcular el precio por kilogramo/litro
+                precio_por_kg = total_precio_materia / cantidad_materia
+
+                # Calcular el costo de los ingredientes
+                costo_ingredientes = ((cantidad_materia * precio_por_kg)) / materia.cantidad_compra
+
+                # Agregar el costo de la materia a la suma de costos
+                suma_costos += costo_ingredientes
+
+    # Insertar los costos calculados
+    insertar_costos(cantidad_materias, suma_costos, receta_id, costos.mano_obra)
+
 def insertar_costos(cantidad_materias, suma_costos, receta_id, costo_mano_obra):
     # Verificamos que haya materias primas
+    rec = Receta.query.get(receta_id)
     if cantidad_materias > 0:
         # Calcular el promedio del total de todos los ingredientes entre la cantidad de ingredientes registrados
-        promedio_costos = suma_costos / cantidad_materias
+        promedio_costos = suma_costos / rec.num_galletas
         # Redondear el promedio del costo al siguiente numero entero, se multiplica por 0.2 para darle una ganancia del 20%
         precio_galleta = math.ceil(promedio_costos * 0.2)
 

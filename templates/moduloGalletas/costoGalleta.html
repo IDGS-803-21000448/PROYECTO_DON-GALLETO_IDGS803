@@ -44,10 +44,61 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="col-md-12 text-center">
+                        <!-- Agregar un ID al botón para identificarlo -->
+                        <button type="button" class="btn btn-warning" id="btnAbrirModal">Actualizar precios</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+    <!-- Modal de confirmación (oculto por defecto) -->
+    <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="materiaPrimaModalLabel" aria-hidden="true" role="dialog">
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-body">
+                    <h1 class="card-title text-center">Confirmar actualización</h1>
+                    <p class="card-text text-center">Estás a punto de actualizar los precios</p>
+                    <div class="text-center">
+                        <form action="{{ url_for('galletas.act_precios')}}" method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <button type="submit" class="btn btn-success">Actualizar</button>
+                        </form>
+                        <button type="button" id="closeModalConfirmacion" class="closeModalConfirmacion btn btn-danger">
+                            Cancelar
+                        </button>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Script para abrir el modal al hacer clic en el botón -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var modalConfirmacion = document.getElementById('modalConfirmacion');
+        var closeModalConfirmacion = document.getElementById('closeModalConfirmacion');
+        var confirmarEliminarBtn = document.getElementById('confirmarEliminarBtn');
+
+        btnAbrirModal.addEventListener('click', function () {
+            modalConfirmacion.classList.add('show');
+            modalConfirmacion.style.display = 'block';
+            modalConfirmacion.setAttribute('aria-modal', 'true');
+        });
+
+        closeModalConfirmacion.addEventListener('click', function () {
+            modalConfirmacion.classList.remove('show');
+            modalConfirmacion.style.display = 'none';
+            modalConfirmacion.removeAttribute('aria-modal');
+        });
+    });
+</script>
 
 {% endblock %}

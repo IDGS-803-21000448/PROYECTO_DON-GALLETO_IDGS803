@@ -1,4 +1,4 @@
-from flask import render_template, request, flash, redirect, url_for, flash
+from flask import render_template, request, flash, redirect, url_for, flash, jsonify
 from . import galletas
 from controllers.controller_login import requiere_rol, requiere_token
 from flask_login import login_required
@@ -7,6 +7,7 @@ from formularios import formCosto
 import math
 from datetime import datetime
 from sqlalchemy import desc
+from controllers.controller_costo import actualizar_costos
 
 cantidades = []
 
@@ -213,3 +214,15 @@ def convertirCantidades(tipo1, tipo2, cantidad):
         cantidad = cantidad * 0.050
 
     return cantidad
+
+
+@galletas.route("/act_precios", methods=["POST"])
+@login_required
+@requiere_token
+@requiere_rol("admin", "venta")
+def act_precios():
+    try:
+        actualizar_costos()
+        return redirect(url_for("galletas.costo_galleta")), 302
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
