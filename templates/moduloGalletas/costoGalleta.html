@@ -45,8 +45,11 @@
                         </table>
                     </div>
                     <div class="col-md-12 text-center">
-                        <!-- Agregar un ID al botón para identificarlo -->
-                        <button type="button" class="btn btn-warning" id="btnAbrirModal">Actualizar precios</button>
+                        <button type="button" class="btn btn-warning mb-2" id="btnAbrirModal">Actualizar precios</button>
+                        <form id="formVerSugeridos" action="/verSugeridos" method="POST">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <button type="submit" class="btn btn-primary">Ver precios sugeridos</button>
+                        </form>
                     </div>
                 </div>
             </div>
