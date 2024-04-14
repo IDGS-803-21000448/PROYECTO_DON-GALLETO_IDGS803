@@ -233,11 +233,12 @@ def editar_receta():
             db.session.add(nuevaAlerta)
             db.session.commit()
 
-            last_receta = Receta.query.order_by(Receta.id.desc()).first()
+            #last_receta = Receta.query.order_by(Receta.id.desc()).first()
 
             # Obtener el detalle de la receta guardada
-            lastDetalles = RecetaDetalle.query.filter_by(receta_id=last_receta.id).all()
+            #lastDetalles = RecetaDetalle.query.filter_by(receta_id=last_receta.id).all()
 
+            lastDetalles = RecetaDetalle.query.filter_by(receta_id=receta_id).all()
             #verificar si lastDetalles tiene elementos, si tiene datos realizar lo siguiente
             if lastDetalles:
                 # Verificar si en el ingredientesJson no hay un id de ingrediente registrado en el lastDetalles, si es asi debe eliminarlo de la base de datos donde el id de receta y el id de materia prima coincidan
@@ -249,7 +250,7 @@ def editar_receta():
             # Crear los detalles de la receta
             for ingrediente in ingredientesJson:
                 detalle = RecetaDetalle(
-                    receta_id=last_receta.id,
+                    receta_id=receta_id,
                     tipo_materia_id=ingrediente['ingrediente_id'],
                     cantidad_necesaria=ingrediente['cantidad'],
                     unidad_medida=ingrediente['unidad_medida'],
