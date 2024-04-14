@@ -225,6 +225,12 @@ def editar_receta():
             receta.num_galletas = num_galletas
             receta.create_date = fecha
             receta.descripcion = descripcion
+            nuevaAlerta = Alerta(
+            nombre="Modificación de receta",
+            descripcion="Se hizo una modificación de receta, los precios podrían haber cambiado.",
+            estatus=0
+            )      
+            db.session.add(nuevaAlerta)
             db.session.commit()
 
             last_receta = Receta.query.order_by(Receta.id.desc()).first()
