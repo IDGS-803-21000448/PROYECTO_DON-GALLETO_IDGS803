@@ -117,29 +117,30 @@
                     <tr>
                         <th>ID de Producción</th>
                         <th>Lote</th>
-                        <th>Proveedores</th>
+                        <th>Proveedor</th>
+                        <th>Ingrediente</th>
                     </tr>
                 </thead>
                 <tbody>
                     <!-- Suponiendo que tienes una estructura de control para llenar la tabla -->
                     {% for lote in proveedores_por_lote %}
-                    <tr>
-                        <td>{{ lote.id_produccion }}</td>
-                        <td>{{ lote.lote }}</td>
-                        <td>
-                            <ul>
-                                {% for proveedor in lote.proveedores %}
-                                <li>{{ proveedor }}</li>
-                                {% endfor %}
-                            </ul>
-                        </td>
-                    </tr>
+                        {% for proveedor, ingrediente in lote.proveedores %}
+                            <tr>
+                                {% if loop.first %}
+                                    <td rowspan="{{ loop.length }}">{{ lote.id_produccion }}</td>
+                                    <td rowspan="{{ loop.length }}">{{ lote.lote }}</td>
+                                {% endif %}
+                                <td>{{ proveedor }}</td>
+                                <td>{{ ingrediente }}</td>
+                            </tr>
+                        {% endfor %}
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
 
 
         <script>

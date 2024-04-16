@@ -5,7 +5,7 @@ from . import dashboard
 from flask_login import login_required, current_user
 from controllers.controller_login import requiere_token
 from models import LogLogin, Alerta, CostoGalleta, Receta, RecetaDetalle, MateriaPrima, MemraGalleta, db, Produccion, \
-    DetalleVenta, Proveedor, Venta, Salidas, Turnos
+    DetalleVenta, Proveedor, Venta, Salidas, Turnos, Tipo_Materia
 import json
 from datetime import datetime, timedelta
 from sqlalchemy import func
@@ -225,7 +225,6 @@ def obtenerGalletasMasVendidas():
     
 
 def obtener_proveedores_por_lote():
-    # producciones = Produccion.query.all()
     producciones = Produccion.query.filter_by(estatus='terminada').all()
     lista_proveedores_por_lote = []
 
@@ -241,7 +240,9 @@ def obtener_proveedores_por_lote():
                 proveedor = Proveedor.query.filter_by(id=materia_prima.id_proveedor).first()
                 
                 if proveedor:
-                    proveedores_lote.add(proveedor.nombre)  # Agregar el nombre del proveedor al conjunto
+                    ingrediente = Tipo_Materia.query.filter_by(id=materia_prima.id_tipo_materia).first()
+                    if ingrediente:
+                        proveedores_lote.add((proveedor.nombre, ingrediente.nombre))  # Tupla (nombre_proveedor, nombre_ingrediente)
         
         lista_proveedores_por_lote.append({
             'id_produccion': produccion.id,
@@ -281,8 +282,6 @@ def ventas_salidas_por_semana():
         ventas_por_semana[dia_semana]['salidas_totales'] += turno.salidas_totales
         ventas_por_semana[dia_semana]['fondo_caja'] = turno.fondo_caja
         ventas_por_semana[dia_semana]['venta_total'] += turno.venta_total
-
-    print("Ventas por semana:", ventas_por_semana)
 
     return ventas_por_semana
     
