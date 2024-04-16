@@ -5,7 +5,13 @@ from . import dashboard
 from flask_login import login_required, current_user
 from controllers.controller_login import requiere_token
 from models import LogLogin, Alerta, CostoGalleta, Receta, RecetaDetalle, MateriaPrima, MemraGalleta, db, Produccion, \
-    DetalleVenta, Proveedor
+    DetalleVenta, Proveedor, Venta, Salidas, Turnos
+import json
+from datetime import datetime, timedelta
+from sqlalchemy import func
+
+from collections import OrderedDict
+from sqlalchemy.orm import sessionmaker
 
 receta_mayor_ganancia = None
 costo_menor = float('inf')
@@ -22,6 +28,7 @@ def dashboard():
     datos_presentaciones = obtenerPresentación()
     galletas_vendias = obtenerGalletasMasVendidas()
     proveedores_por_lote = obtener_proveedores_por_lote()
+    ventas_salidas = ventas_salidas_por_semana()
     # obtener el segundo ultimo log de inicio de sesion correcto del usuario
     if len(logs) > 1:
         # regresar lastSession en formato dd/mm/yyyy hh:mm:ss
@@ -30,7 +37,7 @@ def dashboard():
         lastSession = None
     alertas = Alerta.query.filter_by(estatus = 0).all()
     session['countAlertas'] = len(alertas)
-    return render_template("moduloDashboard/dashboard.html", lastSession=lastSession, costos_galletas=costos_galletas, menor_costo=receta_mayor_ganancia, merma_mayor=mermas_mayor, merma_porcentaje = merma_porcentaje, datos_presentaciones = datos_presentaciones, galletas_vendias = galletas_vendias, proveedores_por_lote = proveedores_por_lote)
+    return render_template("moduloDashboard/dashboard.html", lastSession=lastSession, costos_galletas=costos_galletas, menor_costo=receta_mayor_ganancia, merma_mayor=mermas_mayor, merma_porcentaje = merma_porcentaje, datos_presentaciones = datos_presentaciones, galletas_vendias = galletas_vendias, proveedores_por_lote = proveedores_por_lote, ventas_salidas = ventas_salidas)
 
 
 def obtenerPresentación():
@@ -243,3 +250,41 @@ def obtener_proveedores_por_lote():
         })
     
     return lista_proveedores_por_lote
+
+def ventas_salidas_por_semana():    
+    # Obtener la fecha y hora actual
+    current_datetime = datetime.now()
+
+    # Establecer el primer día de la semana (0=Monday, 6=Sunday)
+    first_week_day = 0  # Cambiar esto según sea necesario
+
+    # Calcular el inicio de la semana basado en el día de inicio elegido
+    days_to_start = (current_datetime.weekday() - first_week_day) % 7
+    start_of_week = current_datetime - timedelta(days=days_to_start)
+    start_of_week = start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # Calcular el fin de la semana como seis días después del inicio
+    end_of_week = start_of_week + timedelta(days=6)
+    end_of_week = end_of_week.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+    # Obtener los turnos de la semana actual
+    turnos = Turnos.query.filter(Turnos.fecha.between(start_of_week, end_of_week)).all()
+
+    # Diccionario ordenado para almacenar las ventas y salidas por día de la semana
+    dias = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    ventas_por_semana = {dia: {'total_final': 0, 'salidas_totales': 0, 'fondo_caja': 0, 'venta_total': 0} for dia in dias}
+
+    # Verificar los turnos y agruparlos por día de la semana y sumar total_final y salidas_totales
+    for turno in turnos:
+        dia_semana = turno.fecha.strftime('%A')
+        ventas_por_semana[dia_semana]['total_final'] += turno.total_final
+        ventas_por_semana[dia_semana]['salidas_totales'] += turno.salidas_totales
+        ventas_por_semana[dia_semana]['fondo_caja'] = turno.fondo_caja
+        ventas_por_semana[dia_semana]['venta_total'] += turno.venta_total
+
+    print("Ventas por semana:", ventas_por_semana)
+
+    return ventas_por_semana
+    
+   
+    
