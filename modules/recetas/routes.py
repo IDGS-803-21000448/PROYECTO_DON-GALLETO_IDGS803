@@ -1,7 +1,7 @@
 from datetime import datetime
 from controllers import controller_costo
 from . import recetas
-from models import Receta, MateriaPrima, RecetaDetalle, Tipo_Materia, CostoGalleta
+from models import Receta, MateriaPrima, RecetaDetalle, Tipo_Materia, CostoGalleta, Alerta
 from flask import render_template, request, jsonify, url_for, redirect, flash
 from formularios import formsReceta
 from controllers.controller_login import requiere_rol
@@ -61,7 +61,6 @@ def guardar_receta():
         # Obtener los ingredientes
         ingredientesRaw = request.form['ingredientes']
         ingredientesJson = json.loads(ingredientesRaw)
-        print(ingredientesJson)
 
         if imagen and allowed_file(imagen.filename):
             filename = secure_filename(imagen.filename)
@@ -116,13 +115,16 @@ def guardar_receta():
                     db.session.commit()
                 # Si el detalle no existe, agregarlo a la base de datos
                 else:
-
                     db.session.add(detalle)                    
             else:
                 db.session.add(detalle)
                 db.session.commit()
+
+        # Llamar a actualizar_costos_por_id solo si se está insertando una nueva receta
+        print(f'last_receta.id {last_receta.id}')
+        controller_costo.actualizar_costos_por_id(last_receta.id)
+
         # Redirigir a la página de vista de recetas después de guardar la receta
-        controller_costo.actualizar_costos()
         return redirect(url_for('recetas.vista_recetas'))
 
     return render_template("404.html"), 404
@@ -196,7 +198,6 @@ def editar_receta():
             descripcion = request.form['descripcion']
             ingredientesRaw = request.form['ingredientes']
             ingredientesJson = json.loads(ingredientesRaw)
-            print(f'ingredientes json  {ingredientesJson} ')
 
             # Verificar si se seleccionó una nueva imagen
             if 'imagen' in request.files:
@@ -224,13 +225,20 @@ def editar_receta():
             receta.num_galletas = num_galletas
             receta.create_date = fecha
             receta.descripcion = descripcion
+            nuevaAlerta = Alerta(
+            nombre="Modificación de receta",
+            descripcion="Se hizo una modificación de receta, los precios podrían haber cambiado.",
+            estatus=0
+            )      
+            db.session.add(nuevaAlerta)
             db.session.commit()
 
-            last_receta = Receta.query.order_by(Receta.id.desc()).first()
+            #last_receta = Receta.query.order_by(Receta.id.desc()).first()
 
             # Obtener el detalle de la receta guardada
-            lastDetalles = RecetaDetalle.query.filter_by(receta_id=last_receta.id).all()
+            #lastDetalles = RecetaDetalle.query.filter_by(receta_id=last_receta.id).all()
 
+            lastDetalles = RecetaDetalle.query.filter_by(receta_id=receta_id).all()
             #verificar si lastDetalles tiene elementos, si tiene datos realizar lo siguiente
             if lastDetalles:
                 # Verificar si en el ingredientesJson no hay un id de ingrediente registrado en el lastDetalles, si es asi debe eliminarlo de la base de datos donde el id de receta y el id de materia prima coincidan
@@ -242,7 +250,7 @@ def editar_receta():
             # Crear los detalles de la receta
             for ingrediente in ingredientesJson:
                 detalle = RecetaDetalle(
-                    receta_id=last_receta.id,
+                    receta_id=receta_id,
                     tipo_materia_id=ingrediente['ingrediente_id'],
                     cantidad_necesaria=ingrediente['cantidad'],
                     unidad_medida=ingrediente['unidad_medida'],
@@ -258,7 +266,7 @@ def editar_receta():
                         existe.cantidad_necesaria = ingrediente['cantidad']
                         existe.unidad_medida = ingrediente['unidad_medida']
                         existe.merma_porcentaje = ingrediente['porcentaje_merma']
-                        db.session.commit()
+                        db.session.commit()      
                     # Si el detalle no existe, agregarlo a la base de datos
                     else:
                         db.session.add(detalle)     
@@ -266,8 +274,6 @@ def editar_receta():
                 else:
                     db.session.add(detalle)
                     db.session.commit()
-
-        controller_costo.actualizar_costos()
         return redirect(url_for('recetas.vista_recetas'))
     return render_template("404.html"), 404
 

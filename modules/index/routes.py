@@ -11,7 +11,6 @@ from . import index
 @requiere_token
 def index():
     print(f"USUARIO: {current_user}")
-    controller_costo.actualizar_costos()
     controller_mermas.verificarCaducidades()
     controller_mermas.verificarCaducidadesGalletas()
     controller_alertas.verificarCantidades()

@@ -57,6 +57,12 @@ def agregar_compra():
             )
 
             db.session.add(nueva_compra)
+            nuevaAlerta = models.Alerta(
+            nombre = "Compra nueva",
+            descripcion = f"Se hizo una compra, los precios podrían haber cambiado.",
+            estatus = 0
+            )   
+            db.session.add(nuevaAlerta)
         else:
 
             compra = models.MateriaPrima.query.get_or_404(form_compras.id.data)
@@ -76,6 +82,12 @@ def agregar_compra():
             compra.create_date = form_compras.fecha.data
             compra.fecha_caducidad = form_compras.fecha_caducidad.data
             compra.lote = form_compras.lote.data
+            nuevaAlerta = models.Alerta(
+            nombre = "Modificación de compra",
+            descripcion = f"Se hizo una modificación de compra, los precios podrían haber cambiado.",
+            estatus = 0
+            )   
+            db.session.add(nuevaAlerta)
         db.session.commit()
         actualizar_cantidades_tipo()
         return redirect(url_for('compras.modulo_compras'))
@@ -129,6 +141,12 @@ def eliminar_compra():
     materia.cantidad_disponible -= convertirCantidades(materia.tipo, compra.tipo,
                                                        compra.cantidad_disponible)
     compra.estatus = 0
+    nuevaAlerta = models.Alerta(
+            nombre = "Compra eliminada",
+            descripcion = f"Se eliminó una compra, los precios podrían haber cambiado.",
+            estatus = 0
+            )   
+    db.session.add(nuevaAlerta)
     db.session.commit()
     actualizar_cantidades_tipo()
     flash('Materia Prima eliminada correctamente', 'success')

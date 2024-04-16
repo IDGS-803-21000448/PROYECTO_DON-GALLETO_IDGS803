@@ -3,11 +3,6 @@ from datetime import date
 import models
 from models import db
 
-
-def obtenerAlertas():
-
-    return alertas
-
 def insertarAlertas(nombre, descripcion, merma = False):
     nuevaAlerta = models.Alerta(
             nombre = f"{nombre}",
