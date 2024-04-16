@@ -5,7 +5,7 @@ from . import dashboard
 from flask_login import login_required, current_user
 from controllers.controller_login import requiere_token
 from models import LogLogin, Alerta, CostoGalleta, Receta, RecetaDetalle, MateriaPrima, MemraGalleta, db, Produccion, \
-    DetalleVenta, Proveedor
+    DetalleVenta, Proveedor, Tipo_Materia
 
 receta_mayor_ganancia = None
 costo_menor = float('inf')
@@ -218,7 +218,6 @@ def obtenerGalletasMasVendidas():
     
 
 def obtener_proveedores_por_lote():
-    # producciones = Produccion.query.all()
     producciones = Produccion.query.filter_by(estatus='terminada').all()
     lista_proveedores_por_lote = []
 
@@ -234,7 +233,9 @@ def obtener_proveedores_por_lote():
                 proveedor = Proveedor.query.filter_by(id=materia_prima.id_proveedor).first()
                 
                 if proveedor:
-                    proveedores_lote.add(proveedor.nombre)  # Agregar el nombre del proveedor al conjunto
+                    ingrediente = Tipo_Materia.query.filter_by(id=materia_prima.id_tipo_materia).first()
+                    if ingrediente:
+                        proveedores_lote.add((proveedor.nombre, ingrediente.nombre))  # Tupla (nombre_proveedor, nombre_ingrediente)
         
         lista_proveedores_por_lote.append({
             'id_produccion': produccion.id,
@@ -243,3 +244,4 @@ def obtener_proveedores_por_lote():
         })
     
     return lista_proveedores_por_lote
+
