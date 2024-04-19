@@ -56,41 +56,51 @@ def solicitar_produccion():
 
         # Convertir la cantidad necesaria a la unidad de medida de la primera materia prima disponible
         cantidad_restante = convertir_unidades(cantidad_necesaria, unidad_origen, materias_primas_disponibles[0].tipo)
+        ids_materias = []
+        # Si hay un porcentaje de merma, calcularlo
+
 
         # Recorrer las materias primas disponibles hasta encontrar suficiente cantidad
         for materia_prima in materias_primas_disponibles:
             cantidad_disponible = convertir_unidades(materia_prima.cantidad_disponible,
                                                      materia_prima.tipo, materia_prima.tipo)
-
+            ids_materias.append(materia_prima.id)
             # Si la cantidad disponible es suficiente, actualizar y salir del bucle
             if cantidad_disponible >= cantidad_restante:
                 materia_prima.cantidad_disponible -= cantidad_restante
                 insumos_suficientes = True  # Actualizar la bandera
+
                 break
             else:
                 # Si no es suficiente, consumir toda la cantidad disponible y actualizar cantidad restante
                 cantidad_restante -= cantidad_disponible
                 materia_prima.cantidad_disponible = 0
 
+
         # Si no hay suficientes insumos para algún detalle de receta, mostrar mensaje de error y redireccionar
         if not insumos_suficientes:
             flash(f'No hay suficiente cantidad de materia prima para el detalle de receta {detalle.id}.', 'error')
             return redirect(url_for("produccion_blueprint.vista_produccion"))
 
+
         # Si hay suficientes insumos, procesar el porcentaje de merma
+        merma_porcentaje = 0
         if detalle.merma_porcentaje and detalle.merma_porcentaje != 0:
             porcentaje = detalle.merma_porcentaje / 100
             merma_porcentaje = detalle.cantidad_necesaria * porcentaje
-            
-            nueva_merma = MermaMateriaPrima(
-                materia_prima_id=detalle.tipo_materia_id,
-                cantidad=merma_porcentaje,
-                descripcion=f'Merma producida por {detalle.merma_porcentaje}% de la receta con id {receta_id}',
-                tipo=detalle.unidad_medida,  # investigar qué dato va en esta variable
-                fecha=datetime.now(),
-                estatus=1
-            )
-            db.session.add(nueva_merma)
+            merma_porcentaje = merma_porcentaje/len(ids_materias)
+
+        if merma_porcentaje != 0:
+            for mmateria_id in ids_materias:
+                    nueva_merma = MermaMateriaPrima(
+                        materia_prima_id=mmateria_id,
+                        cantidad=merma_porcentaje,
+                        descripcion=f'Merma producida por {detalle.merma_porcentaje}% por producción de la receta de {receta.nombre}',
+                        tipo=detalle.unidad_medida,  # investigar qué dato va en esta variable
+                        fecha=datetime.now(),
+                        estatus=1
+                    )
+                    db.session.add(nueva_merma)
             
         # Actualizar la cantidad disponible de la materia prima
         tipo_materia = Tipo_Materia.query.get(detalle.tipo_materia_id)
@@ -293,9 +303,9 @@ def agregar_merma():
             cantidad_a_merma = detalle.cantidad_necesaria
             
             tipo_materia = Tipo_Materia.query.get(detalle.tipo_materia_id)
-            
+            materiaref = MateriaPrima.query.filter_by(id_tipo_materia = tipo_materia.id).all()
             nueva_merma = MermaMateriaPrima(
-                materia_prima_id=detalle.tipo_materia_id,
+                materia_prima_id=materiaref[0].id,
                 cantidad = cantidad_a_merma,
                 descripcion = f' {tipo_materia.nombre} enviado a merma por la solicitud de la receta con id {receta_id}',
                 tipo = detalle.unidad_medida, # investigar qué dato va en esta variable
