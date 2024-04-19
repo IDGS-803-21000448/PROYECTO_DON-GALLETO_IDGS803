@@ -5,7 +5,7 @@ from flask_admin.contrib.sqla import ModelView
 from config import DevelopmentConfig
 from models import db
 from modules import (galletas, index, proveedores, usuarios, recetas, dashboard, inventarios, alertas, produccion,
-                     mermas, ventas, compras, login, materiaPrima,solicitudProduccion, stock)
+                    mermas, ventas, compras, login, materiaPrima,solicitudProduccion, stock)
 from models import *
 import flask_login as fl
 from flask_cors import CORS
@@ -50,17 +50,17 @@ app.register_blueprint(stock.stock)
 def page_not_found(e):
     return render_template('404.html'),404
 
-#@app.errorhandler(ZeroDivisionError)
-#def handle_zero_division_error(e):
-#    return render_template('errorScreen.html', error=e), 500
+# @app.errorhandler(ZeroDivisionError)
+# def handle_zero_division_error(e):
+#     return render_template('errorScreen.html', error=e), 500
 
-#@app.errorhandler(500)
-#def page_not_found(e):
-#    return render_template('errorScreen.html'),500
+# @app.errorhandler(500)
+# def page_not_found(e):
+#     return render_template('errorScreen.html'),500
 
-#@app.errorhandler(AttributeError)
-#def handle_attribute_error(e):
-#    return render_template('errorScreen.html', error=e), 500
+# @app.errorhandler(AttributeError)
+# def handle_attribute_error(e):
+#     return render_template('errorScreen.html', error=e), 500
 
 # @app.errorhandler(UnboundLocalError)
 # def handle_attribute_error(e):

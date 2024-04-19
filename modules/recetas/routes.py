@@ -80,7 +80,11 @@ def guardar_receta():
         db.session.add(nueva_receta)
         db.session.commit()
 
+        # Obtener el ID del nuevo costo de galleta
+        id_precio = nuevo_costo_galleta.id
         last_receta = Receta.query.order_by(Receta.id.desc()).first()
+        last_receta.id_precio = id_precio
+        db.session.commit()
 
         # Obtener el detalle de la receta guardada
         lastDetalles = RecetaDetalle.query.filter_by(receta_id=last_receta.id).all()
@@ -121,7 +125,6 @@ def guardar_receta():
                 db.session.commit()
 
         # Llamar a actualizar_costos_por_id solo si se está insertando una nueva receta
-        print(f'last_receta.id {last_receta.id}')
         controller_costo.actualizar_costos_por_id(last_receta.id)
 
         # Redirigir a la página de vista de recetas después de guardar la receta

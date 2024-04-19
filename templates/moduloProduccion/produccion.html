@@ -173,22 +173,22 @@
                             <td>{{ solicitud.receta.nombre }}</td>
                             <td>{{ solicitud.fecha_solicitud }}</td>
                             <td>
-                                <form id="formProcesar" action="{{url_for('produccion_blueprint.solicitar_produccion')}}" method="post" class="d-inline">
+                                <form id="formProcesar{{solicitud.id}}" action="{{url_for('produccion_blueprint.solicitar_produccion')}}" method="post" class="d-inline">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                     <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
                                     <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
-                                    <button id="procesarBtn" type="button" class="btn btn-success" onclick="gestionarProcesar()" >Procesar</button>
+                                    <button id="procesarBtn{{solicitud.id}}" type="button" class="btn btn-success" onclick="gestionarProcesar({{solicitud.id}})" >Procesar</button>
                                 </form>
-                                <form id="formCancelarSolicitud" action="{{url_for('produccion_blueprint.cancelar_solicitud')}}" method="post" class="d-inline">
+                                <form id="formCancelarSolicitud{{solicitud.id}}"  action="{{url_for('produccion_blueprint.cancelar_solicitud')}}" method="post" class="d-inline">
+                                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                                  <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
+                                  <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
+                                  <button id="cancelarSolicitudBtn{{solicitud.id}}" type="button" class="btn btn-danger" onclick="gestionarCancelarSolicitud({{solicitud.id}})">Cancelar</button>
+                              </form>                                                           
+                                <form id="formPostergarSolicitud{{solicitud.id}}" action="{{url_for('produccion_blueprint.postergar_produccion')}}" method="post" class="d-inline">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                                    <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
                                     <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
-                                    <button id="cancelarSolicitudBtn" type="button" class="btn btn-danger" onclick="gestionarCancelarSolicitud()">Cancelar</button>
-                                </form>
-                                <form id="formPostergarSolicitud" action="{{url_for('produccion_blueprint.postergar_produccion')}}" method="post" class="d-inline">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                                    <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
-                                    <button id="postergarSolicitudBtn" type="button" class="btn btn-warning" onclick="gestionarPostergarSolicitud()">Postergar</button>
+                                    <button id="postergarSolicitudBtn{{solicitud.id}}" type="button" class="btn btn-warning" onclick="gestionarPostergarSolicitud({{solicitud.id}})">Postergar</button>
                                 </form>
                             </td>
                         </tr>
@@ -222,23 +222,23 @@
                             <td>{{ solicitud.receta.nombre }}</td>
                             <td>{{ solicitud.fecha_solicitud }}</td>
                             <td>
-                                <form id="formTerminarProduccion" action="{{url_for('produccion_blueprint.terminar_produccion')}}" method="post" class="d-inline">
+                                <form id="formTerminarProduccion{{solicitud.id}}" action="{{url_for('produccion_blueprint.terminar_produccion')}}" method="post" class="d-inline">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                     <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
                                     <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
-                                    <button id="terminarProduccionBtn" type="button" class="btn btn-success" onclick="gestionarTerminarProduccion()" >Terminar</button>
+                                    <button id="terminarProduccionBtn{{solicitud.id}}" type="button" class="btn btn-success" onclick="gestionarTerminarProduccion({{solicitud.id}})" >Terminar</button>
                                 </form>
-                                <form id="formCancelarProduccion" action="{{url_for('produccion_blueprint.cancelar_produccion')}}" method="post" class="d-inline">
+                                <form id="formCancelarProduccion{{solicitud.id}}" action="{{url_for('produccion_blueprint.cancelar_produccion')}}" method="post" class="d-inline">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                     <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
                                     <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
-                                    <button id="cancelarProduccionBtn" type="button" class="btn btn-danger" onclick="gestionarCancelarProduccion()">Cancelar</button>
+                                    <button id="cancelarProduccionBtn{{solicitud.id}}" type="button" class="btn btn-danger" onclick="gestionarCancelarProduccion({{solicitud.id}})">Cancelar</button>
                                 </form>
-                                <form id="formMandarAMerma" action="{{url_for('produccion_blueprint.agregar_merma')}}" method="post" class="d-inline">
+                                <form id="formMandarAMerma{{solicitud.id}}" action="{{url_for('produccion_blueprint.agregar_merma')}}" method="post" class="d-inline">
                                   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                   <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
                                   <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
-                                  <button id="mandarAMermaBtn" type="button" class="btn btn-warning" onclick="gestionarAgregarMerma()">Mandar a merma</button>
+                                  <button id="mandarAMermaBtn{{solicitud.id}}" type="button" class="btn btn-warning" onclick="gestionarAgregarMerma({{solicitud.id}})">Mandar a merma</button>
                               </form>
                             </td>
                         </tr>
@@ -272,17 +272,17 @@
                             <td>{{ solicitud.receta.nombre }}</td>
                             <td>{{ solicitud.fecha_solicitud }}</td>
                             <td>
-                                <form id="formProdPostergar" action="{{url_for('produccion_blueprint.solicitar_produccion')}}" method="post" class="d-inline">
+                                <form id="formProdPostergar{{solicitud.id}}" action="{{url_for('produccion_blueprint.solicitar_produccion')}}" method="post" class="d-inline">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                     <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
                                     <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
-                                    <button id="prodPostergarBtn" type="button" class="btn btn-success" onclick="gestionarProduccionPostergada()">Procesar</button>
+                                    <button id="prodPostergarBtn{{solicitud.id}}" type="button" class="btn btn-success" onclick="gestionarProduccionPostergada({{solicitud.id}})">Procesar</button>
                                 </form>
-                                <form id="formCancelarPostergar" action="{{url_for('produccion_blueprint.cancelar_solicitud')}}" method="post" class="d-inline">
+                                <form id="formCancelarPostergar{{solicitud.id}}" action="{{url_for('produccion_blueprint.cancelar_solicitud')}}" method="post" class="d-inline">
                                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                     <input type="hidden" name="receta_id" value="{{solicitud.receta_id}}">
                                     <input type="hidden" name="solicitud_id" value="{{solicitud.id}}">
-                                    <button id="cancelarPostergarBtn" type="button" class="btn btn-danger" onclick="gestionarCancelarProduccionPostergada()" >Cancelar</button>
+                                    <button id="cancelarPostergarBtn{{solicitud.id}}" type="button" class="btn btn-danger" onclick="gestionarCancelarProduccionPostergada({{solicitud.id}})" >Cancelar</button>
                                 </form>
                             </td>
                         </tr>

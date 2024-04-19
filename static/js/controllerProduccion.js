@@ -107,9 +107,9 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
 
-  function gestionarProcesar() {
+  function gestionarProcesar(solicitud_id) {
     let modalProcesar = document.getElementById("modalProcesar");
-    let btnProcesar = document.getElementById("procesarBtn");
+    let btnProcesar = document.getElementById("procesarBtn" + solicitud_id);
     let confirmarProcesarBtn = document.getElementById("confirmarBtnProcesar");
     let cancelarProcesarBtn = document.getElementById("cancelarBtnProcesar");
     let spanProcesar = document.getElementsByClassName("closeProcesar")[0];
@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function confirmarProcesamiento() {
-        let form = document.getElementById("formProcesar");
+        let form = document.getElementById("formProcesar" + solicitud_id);
         form.submit();
         cerrarModalProcesar();
     }
@@ -149,9 +149,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
 //fin de seccion de procesar --------------------------------------------------
 
-function gestionarCancelarSolicitud() {
+function gestionarCancelarSolicitud(solicitud_id) {
+    console.log(solicitud_id);
     let modalCancelarSolicitud = document.getElementById("modalCancelarSolicitud");
-    let btnCancelarSolicitud = document.getElementById("cancelarSolicitudBtn");
+    let btnCancelarSolicitud = document.getElementById("cancelarSolicitudBtn" + solicitud_id);
     let confirmarCancelarSolicitudBtn = document.getElementById("confirmarBtnCancelarSolicitud");
     let cancelarCancelarSolicitudBtn = document.getElementById("cancelarBtnCancelarSolicitud");
     let spanCancelarSolicitud = document.getElementsByClassName("closeCancelarSolicitud")[0];
@@ -177,7 +178,7 @@ function gestionarCancelarSolicitud() {
     }
 
     function confirmarCancelacionSolicitud() {
-        let form = document.getElementById("formCancelarSolicitud");
+        let form = document.getElementById("formCancelarSolicitud"+ solicitud_id);
         form.submit();
         cerrarModalCancelarSolicitud();
     }
@@ -191,9 +192,9 @@ function gestionarCancelarSolicitud() {
 
 
 //fin de seccion Cancelar solicitud------------------------------------------------
-function gestionarPostergarSolicitud() {
+function gestionarPostergarSolicitud(solicitud_id) {
     let modalPostergarSolicitud = document.getElementById("modalPostergarSolicitud");
-    let btnPostergarSolicitud = document.getElementById("postergarSolicitudBtn");
+    let btnPostergarSolicitud = document.getElementById("postergarSolicitudBtn" + solicitud_id);
     let confirmarPostergarSolicitudBtn = document.getElementById("confirmarBtnPostergarSolicitud");
     let cancelarPostergarSolicitudBtn = document.getElementById("cancelarBtnPostergarSolicitud");
     let spanPostergarSolicitud = document.getElementsByClassName("closePostergarSolicitud")[0];
@@ -219,7 +220,7 @@ function gestionarPostergarSolicitud() {
     }
 
     function confirmarPostergacion() {
-        let form = document.getElementById("formPostergarSolicitud");
+        let form = document.getElementById("formPostergarSolicitud" + solicitud_id);
         form.submit();
         cerrarModalPostergar();
     }
@@ -233,9 +234,9 @@ function gestionarPostergarSolicitud() {
 
 //fin de seccion postergar solicitud------------------------------------------------
 
-function gestionarTerminarProduccion() {
+function gestionarTerminarProduccion(solicitud_id) {
     let modalTerminarProduccion = document.getElementById("modalTerminarProduccion");
-    let btnTerminarProduccion = document.getElementById("terminarProduccionBtn");
+    let btnTerminarProduccion = document.getElementById("terminarProduccionBtn" + solicitud_id);
     let confirmarTerminarProduccionBtn = document.getElementById("confirmarBtnTerminarProduccion");
     let cancelarTerminarProduccionBtn = document.getElementById("cancelarBtnTerminarProduccion");
     let spanTerminarProduccion = document.getElementsByClassName("closeTerminarProduccion")[0];
@@ -261,7 +262,7 @@ function gestionarTerminarProduccion() {
     }
 
     function confirmarTerminar() {
-        let form = document.getElementById("formTerminarProduccion");
+        let form = document.getElementById("formTerminarProduccion" + solicitud_id);
         form.submit();
         cerrarModalTerminarProduccion();
     }
@@ -275,9 +276,9 @@ function gestionarTerminarProduccion() {
 
 //fin de seccion Terminar produccion------------------------------------------------
 
-function gestionarCancelarProduccion() {
+function gestionarCancelarProduccion(solicitud_id) {
     let modalCancelarProduccion = document.getElementById("modalCancelarProduccion");
-    let btnCancelarProduccion = document.getElementById("cancelarProduccionBtn");
+    let btnCancelarProduccion = document.getElementById("cancelarProduccionBtn" + solicitud_id);
     let confirmarCancelarProduccionBtn = document.getElementById("confirmarBtnCancelarProduccion");
     let cancelarCancelarProduccionBtn = document.getElementById("cancelarBtnCancelarProduccion");
     let spanCancelarProduccion = document.getElementsByClassName("closeCancelarProduccion")[0];
@@ -303,7 +304,7 @@ function gestionarCancelarProduccion() {
     }
 
     function confirmarCancelacionProduccion() {
-        let form = document.getElementById("formCancelarProduccion");
+        let form = document.getElementById("formCancelarProduccion" + solicitud_id);
         form.submit();
         cerrarModalCancelarProduccion();
     }
@@ -318,9 +319,9 @@ function gestionarCancelarProduccion() {
 
 //fin de seccion cancelar produccion------------------------------------------------  
 
-function gestionarProduccionPostergada() {
+function gestionarProduccionPostergada(solicitud_id) {
     let modalProdPostergar = document.getElementById("modalProcesarProduccionPostergada");
-    let btnProdPostergar = document.getElementById("prodPostergarBtn");
+    let btnProdPostergar = document.getElementById("prodPostergarBtn" + solicitud_id);
     let confirmarProdPostergarBtn = document.getElementById("confirmarBtnProducirPostergada");
     let cancelarProdPostergarBtn = document.getElementById("cancelarBtnProducirPostergada");
     let spanProdPostergar = document.getElementsByClassName("closeProcesarPostergada")[0];
@@ -346,15 +347,15 @@ function gestionarProduccionPostergada() {
     }
 
     confirmarProdPostergarBtn.onclick = function () {
-        let form = document.getElementById("formProdPostergar");
+        let form = document.getElementById("formProdPostergar" + solicitud_id);
         form.submit();
         cerrarModalProdPostergar();
     }
 }
 
-function gestionarCancelarProduccionPostergada() {
+function gestionarCancelarProduccionPostergada(solicitud_id) {
     let modalCancelarPostergar = document.getElementById("modalCancelarProduccionPostergada");
-    let btnCancelarPostergar = document.getElementById("cancelarPostergarBtn");
+    let btnCancelarPostergar = document.getElementById("cancelarPostergarBtn" + solicitud_id);
     let confirmarCancelarPostergarBtn = document.getElementById("confirmarBtnCancelarPostergada");
     let cancelarCancelarPostergarBtn = document.getElementById("cancelarBtnCancelarPostergada");
     let spanCancelarPostergar = document.getElementsByClassName("closeCancelarPostergada")[0];
@@ -380,15 +381,15 @@ function gestionarCancelarProduccionPostergada() {
     }
 
     confirmarCancelarPostergarBtn.onclick = function () {
-        let form = document.getElementById("formCancelarPostergar");
+        let form = document.getElementById("formCancelarPostergar" + solicitud_id);
         form.submit();
         cerrarModalCancelarPostergar();
     }
 }
 
-function gestionarAgregarMerma() {
+function gestionarAgregarMerma(solicitud_id) {
   let modalAgregarMerma = document.getElementById("modalAgregarMerma");
-  let btnAgregarMerma = document.getElementById("mandarAMermaBtn");
+  let btnAgregarMerma = document.getElementById("mandarAMermaBtn" + solicitud_id);
   let confirmarAgregarMermaBtn = document.getElementById("confirmarBtnAgregarMerma");
   let cancelarAgregarMerma = document.getElementById("cancelarBtnAgregarMerma");
   let spanAgregarMerma = document.getElementsByClassName("closeAgregarMerma")[0];
@@ -414,7 +415,7 @@ function gestionarAgregarMerma() {
   }
 
   function confirmarAgregarMerma() {
-      let form = document.getElementById("formMandarAMerma");
+      let form = document.getElementById("formMandarAMerma" + solicitud_id);
       form.submit();
       cerrarModalAgregarMerma();
   }

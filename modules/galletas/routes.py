@@ -1,4 +1,5 @@
 from flask import render_template, request, flash, redirect, url_for, flash, jsonify
+from modules.dashboard.routes import obtenerCostos
 from . import galletas
 from controllers.controller_login import requiere_rol, requiere_token
 from flask_login import login_required
@@ -7,7 +8,7 @@ from formularios import formCosto
 import math
 from datetime import datetime
 from sqlalchemy import desc
-from controllers.controller_costo import actualizar_costos, verCostosSugerencias
+from controllers.controller_costo import actualizar_costos
 
 cantidades = []
 
@@ -227,23 +228,31 @@ def act_precios():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+import math
+
 @galletas.route("/verSugeridos", methods=["POST"])
 @login_required
 @requiere_token
 @requiere_rol("admin", "venta")
 def verSugeridos():
     try:
-        costos_sugeridos = verCostosSugerencias()
         galletas = Receta.query.filter_by(estatus=1).all()
-        
+        costos_Receta = obtenerCostos()
+        costos_modificados = {}
+        for receta in costos_Receta:
+            cantidad_galletas = receta[3]
+            costo_modificado = list(receta)
+            costo_modificado[2] = math.ceil(costo_modificado[2] * 1.20 / cantidad_galletas)
+            costos_modificados[receta[0]] = tuple(costo_modificado)
         galletas_arreglo = []
-        for galleta, precio in zip(galletas, costos_sugeridos):
+        for galleta in galletas:
             galleta_info = {
                 'id': galleta.id,
                 'nombre': galleta.nombre,
-                'precio': precio
+                'precio': costos_modificados[galleta.id][2]
             }
             galletas_arreglo.append(galleta_info)
         return render_template("moduloGalletas/precioSugerido.html", galletas=galletas_arreglo)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return print(e)
+

@@ -117,7 +117,9 @@
                                                 {{ formReceta.porcentaje_merma.label(class="form-label", id="porcentaje_merma_label") }}
                                                 {{ render_field(formReceta.porcentaje_merma, class="form-control", id="porcentaje_merma_input") }}
                                             </div>
-                                            <a type="button" id="agregar" name="agregar" value="Agregar" class="btn btn-success mb-3" onclick="addIngrediente()"><i class="fas fa-solid fa-plus"></i> Agregar</a>
+                                            <div class="col-sm-12 text-center">
+                                                <a type="button" id="agregar" name="agregar" value="Agregar" class="btn btn-success mb-3" onclick="addIngrediente()"><i class="fas fa-solid fa-plus"></i> Agregar</a>
+                                            </div>
                                         </div>
                                         <div class="table-responsive">
                                             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
