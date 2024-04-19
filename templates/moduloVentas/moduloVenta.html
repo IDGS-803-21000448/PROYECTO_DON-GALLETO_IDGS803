@@ -451,12 +451,12 @@
                 var subtotalPaquete = '';
                 if (paqueteMulti == 1){
                     subtotalPaquete = '$' + ((parseFloat(precioRaw * 0.9).toFixed(2)) * cantidad);
-                    celdaPrecio.innerHTML = (parseFloat(precioRaw * 0.9).toFixed(2));
+                    celdaPrecio.innerHTML = Math.ceil(parseFloat(precioRaw * 0.9).toFixed(2));
                 }
 
                 if (paqueteMulti == 2){
                     subtotalPaquete = '$' + ((parseFloat(precioRaw * 0.85).toFixed(2)) * cantidad);
-                    celdaPrecio.innerHTML = (parseFloat(precioRaw * 0.85).toFixed(2));
+                    celdaPrecio.innerHTML = Math.ceil(parseFloat(precioRaw * 0.85).toFixed(2));
                 }                
 
                 paquete = document.getElementById('paquete').value;
@@ -499,7 +499,7 @@
                     total += parseFloat(cells[4].innerText.replace('$', ''));
                 }
 
-                document.getElementById('totalVenta').innerHTML = total;
+                document.getElementById('totalVenta').innerHTML = Math.ceil(total);
             }else{
 
                 var costoId = parseInt(dataDepurada[1]);
@@ -712,7 +712,7 @@
                     total += parseFloat(cells[4].innerText.replace('$', ''));
                 }
 
-                document.getElementById('totalVenta').innerHTML = total;
+                document.getElementById('totalVenta').innerHTML = Math.ceil(total);
 
             }
         });
@@ -733,7 +733,7 @@
                     total += parseFloat(cells[4].innerText.replace('$', ''));
                 }
 
-                document.getElementById('totalVenta').innerHTML = total;
+                document.getElementById('totalVenta').innerHTML = Math.ceil(total);
             }
         });
 
