@@ -84,9 +84,10 @@ def get_sabores():
     galletas = Receta.query.filter_by(estatus=1).all()
     sabores = []
     for receta in galletas:
+        print(receta.id_precio)
         precio = CostoGalleta.query.filter_by(id=receta.id_precio).first()
         sabores.append(((receta.nombre, precio.id, precio.precio, precio.galletas_disponibles, receta.id), receta.nombre))
-    
+
     print(sabores)
     return sabores
 
