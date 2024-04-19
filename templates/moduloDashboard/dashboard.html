@@ -171,10 +171,10 @@
              // Costo de Producción por Galleta
             var costos_galletas = JSON.parse('{{ costos_galletas|tojson|safe }}');
             var nombres_galletas = costos_galletas.map(function(galleta) {
-                return galleta[0];
+                return galleta[1];
             });
             var precios_galletas = costos_galletas.map(function(galleta) {
-                return galleta[1];
+                return galleta[2];
             });
 
             var ctxCostoGalleta = document.getElementById('myChartCostoGalleta').getContext('2d');

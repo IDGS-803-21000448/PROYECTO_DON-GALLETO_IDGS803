@@ -121,7 +121,6 @@ def guardar_receta():
                 db.session.commit()
 
         # Llamar a actualizar_costos_por_id solo si se está insertando una nueva receta
-        print(f'last_receta.id {last_receta.id}')
         controller_costo.actualizar_costos_por_id(last_receta.id)
 
         # Redirigir a la página de vista de recetas después de guardar la receta

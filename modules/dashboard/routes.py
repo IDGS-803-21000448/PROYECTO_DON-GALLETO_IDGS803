@@ -180,8 +180,9 @@ def obtenerCostos():
             ganancia_mayor = ganancia
 
         # Guardar el costo de la receta junto con su nombre en la lista
-        costos_recetas.append((receta.nombre, costo_receta))
+        costos_recetas.append((receta.id, receta.nombre, costo_receta, receta.num_galletas))
 
+    print(f"COSTOS DE RECETA {costos_recetas}")
     return costos_recetas
 
 def convertirCantidades(tipo1, tipo2, cantidad):
