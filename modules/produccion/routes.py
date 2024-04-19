@@ -77,6 +77,26 @@ def solicitar_produccion():
             flash(f'No hay suficiente cantidad de materia prima para el detalle de receta {detalle.id}.', 'error')
             return redirect(url_for("produccion_blueprint.vista_produccion"))
 
+        # Si hay suficientes insumos, procesar el porcentaje de merma
+        if detalle.merma_porcentaje and detalle.merma_porcentaje != 0:
+            porcentaje = detalle.merma_porcentaje / 100
+            merma_porcentaje = detalle.cantidad_necesaria * porcentaje
+            
+            nueva_merma = MermaMateriaPrima(
+                materia_prima_id=detalle.tipo_materia_id,
+                cantidad=merma_porcentaje,
+                descripcion=f'Merma producida por {detalle.merma_porcentaje}% de la receta con id {receta_id}',
+                tipo=detalle.unidad_medida,  # investigar qué dato va en esta variable
+                fecha=datetime.now(),
+                estatus=1
+            )
+            db.session.add(nueva_merma)
+            
+        # Actualizar la cantidad disponible de la materia prima
+        tipo_materia = Tipo_Materia.query.get(detalle.tipo_materia_id)
+        cantidad_a_restar = convertir_unidades(detalle.cantidad_necesaria, detalle.unidad_medida, tipo_materia.tipo)
+        tipo_materia.cantidad_disponible -= cantidad_a_restar
+
     # Si se completó la iteración sin problemas, entonces todos los detalles de receta tienen suficientes insumos
     # Procesar la solicitud completa
     try:
@@ -90,6 +110,7 @@ def solicitar_produccion():
         #current_app.logger.error(f'Error al procesar la solicitud de producción: {str(e)}')
 
     return redirect(url_for("produccion_blueprint.vista_produccion"))
+
 
 
     
@@ -162,27 +183,27 @@ def terminar_produccion():
     receta = Receta.query.get(receta_id)
     
     costo_galleta = CostoGalleta.query.filter_by(id = receta.id_precio).first()
-    for detalle in detalles_receta:
-        if not detalle.merma_porcentaje or detalle.merma_porcentaje == 0:
-                print("no hay porcentaje de merma")
-        else:
-            porcentaje = detalle.merma_porcentaje / 100
+    # for detalle in detalles_receta:
+    #     if not detalle.merma_porcentaje or detalle.merma_porcentaje == 0:
+    #             print("no hay porcentaje de merma")
+    #     else:
+    #         porcentaje = detalle.merma_porcentaje / 100
             
-            merma_porcentaje = (detalle.cantidad_necesaria * porcentaje)
+    #         merma_porcentaje = (detalle.cantidad_necesaria * porcentaje)
             
-            nueva_merma = MermaMateriaPrima(
-                materia_prima_id=detalle.tipo_materia_id,
-                cantidad = merma_porcentaje,
-                descripcion = f'Merma producida por {detalle.merma_porcentaje}% de la receta con id {receta_id}',
-                tipo = detalle.unidad_medida, # investigar qué dato va en esta variable
-                fecha = datetime.now(),
-                estatus = 1
-            )
-            db.session.add(nueva_merma)
+    #         nueva_merma = MermaMateriaPrima(
+    #             materia_prima_id=detalle.tipo_materia_id,
+    #             cantidad = merma_porcentaje,
+    #             descripcion = f'Merma producida por {detalle.merma_porcentaje}% de la receta con id {receta_id}',
+    #             tipo = detalle.unidad_medida, # investigar qué dato va en esta variable
+    #             fecha = datetime.now(),
+    #             estatus = 1
+    #         )
+    #         db.session.add(nueva_merma)
         
-        tipo_materia = Tipo_Materia.query.get(detalle.tipo_materia_id)
-        cantidad_a_restar = convertir_unidades(detalle.cantidad_necesaria, detalle.unidad_medida, tipo_materia.tipo)
-        tipo_materia.cantidad_disponible -= cantidad_a_restar
+    #     tipo_materia = Tipo_Materia.query.get(detalle.tipo_materia_id)
+    #     cantidad_a_restar = convertir_unidades(detalle.cantidad_necesaria, detalle.unidad_medida, tipo_materia.tipo)
+    #     tipo_materia.cantidad_disponible -= cantidad_a_restar
         
         
     # Actualizar stock de las galletas
