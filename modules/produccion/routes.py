@@ -23,7 +23,6 @@ def vista_produccion():
     return render_template("moduloProduccion/produccion.html", recetas=recetas, solicitudes=solicitudes, solicitudes_en_proceso=solicitudes_en_proceso, 
                            solicitudes_canceladas=solicitudes_canceladas, solicitudes_postergadas=solicitudes_postergadas)
 
-
 @produccion.route('/solicitarProduccion', methods=['POST'])
 @login_required
 @requiere_token
@@ -38,16 +37,15 @@ def solicitar_produccion():
     solicitud.estatus = 'proceso'
     solicitud.empleadoProduccion = current_user.nombre
 
-    
     # Recuperar los detalles de la receta
     detalles_receta = RecetaDetalle.query.filter_by(receta_id=receta_id).all()
     
     receta = Receta.query.get(receta_id)
-        
 
     # Actualizar las cantidades de materia prima
     for detalle in detalles_receta:
-        
+        # Bandera para verificar si se encontraron suficientes insumos para este detalle
+        insumos_suficientes = False
         
         cantidad_necesaria = detalle.cantidad_necesaria
         unidad_origen = detalle.unidad_medida
@@ -67,21 +65,20 @@ def solicitar_produccion():
             # Si la cantidad disponible es suficiente, actualizar y salir del bucle
             if cantidad_disponible >= cantidad_restante:
                 materia_prima.cantidad_disponible -= cantidad_restante
+                insumos_suficientes = True  # Actualizar la bandera
                 break
             else:
                 # Si no es suficiente, consumir toda la cantidad disponible y actualizar cantidad restante
                 cantidad_restante -= cantidad_disponible
                 materia_prima.cantidad_disponible = 0
 
-        # Manejar caso donde no hay suficiente materia prima
-        if cantidad_restante > 0:
-            #flash(f'No hay suficiente cantidad de materia prima para el detalle de receta {detalle.id}.', 'error')
-            continue
+        # Si no hay suficientes insumos para algún detalle de receta, mostrar mensaje de error y redireccionar
+        if not insumos_suficientes:
+            flash(f'No hay suficiente cantidad de materia prima para el detalle de receta {detalle.id}.', 'error')
+            return redirect(url_for("produccion_blueprint.vista_produccion"))
 
-    # Actualizar stock de las galletas
-    
-
-    # Realizar el commit de todas las actualizaciones de la materia prima
+    # Si se completó la iteración sin problemas, entonces todos los detalles de receta tienen suficientes insumos
+    # Procesar la solicitud completa
     try:
         db.session.commit()
         actualizar_cantidades_tipo()
@@ -93,6 +90,8 @@ def solicitar_produccion():
         #current_app.logger.error(f'Error al procesar la solicitud de producción: {str(e)}')
 
     return redirect(url_for("produccion_blueprint.vista_produccion"))
+
+
     
 
 
@@ -302,6 +301,8 @@ def agregar_merma():
 @requiere_rol("admin", "produccion")
 def cancelar_solicitud():
     id_solicitud = request.form['solicitud_id']
+    
+    print(f"Solicitud a cancelar: {id_solicitud}")
 
     solicitud = Produccion.query.get(id_solicitud)
     
