@@ -95,7 +95,7 @@ def agregar_nueva_merma():
             else:
 
                 receta = Produccion.query.get_or_404(form.materia_prima_id.data)
-
+                form.cantidad.data = int(form.cantidad.data)
                 cantidad = convertirCantidadaPz(form.tipo.data, form.cantidad.data)
 
                 if receta.galletas_disponibles < cantidad:
@@ -177,6 +177,7 @@ def agregar_nueva_merma():
                     db.session.commit()
                 receta = Produccion.query.get_or_404(form.materia_prima_id.data)
 
+                form.cantidad.data = int(form.cantidad.data)
                 cantidad = convertirCantidadaPz(form.tipo.data, form.cantidad.data)
                 if receta.galletas_disponibles < cantidad:
                     flash("No se puede agregar una merma mayor a la cantidad existente.", "danger")
