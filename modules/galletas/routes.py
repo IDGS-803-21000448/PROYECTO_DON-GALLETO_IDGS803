@@ -8,7 +8,7 @@ from formularios import formCosto
 import math
 from datetime import datetime
 from sqlalchemy import desc
-from controllers.controller_costo import actualizar_costos
+from controllers.controller_costo import actualizar_costos, actualizar_costos_por_id
 
 cantidades = []
 
@@ -88,7 +88,6 @@ def actualizar_precio():
             }
             cantidades.append(detalle.cantidad_necesaria)
             galletas_det.append(detalle_con_nombre)
-            print(f"ID Receta: {detalle_con_nombre['id_receta']}, ID Materia: {detalle_con_nombre['id_materia']}, Ingrediente: {detalle_con_nombre['ingrediente']}, Cantidad: {detalle_con_nombre['cantidad']}, Medida: {detalle_con_nombre['medida']}")
 
     return render_template("moduloGalletas/modificarPrecio.html", galletas=galletas_det, nombre_galleta=nombre_galleta, id=galleta_id, form=form, mano_obra=mano_obra)
 
@@ -228,7 +227,21 @@ def act_precios():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-import math
+@galletas.route("/act_individual", methods=["POST"])
+@login_required
+@requiere_token
+@requiere_rol("admin", "venta")
+def act_individual():
+    try:
+        id_receta = request.form.get('id')
+
+        if id_receta is not None:
+            actualizar_costos_por_id(int(id_receta))
+            return redirect(url_for("galletas.costo_galleta"))
+        else:
+            return print({"error": "ID de receta no proporcionado"}), 400
+    except Exception as e:
+        return print({"error": str(e)}), 500
 
 @galletas.route("/verSugeridos", methods=["POST"])
 @login_required
