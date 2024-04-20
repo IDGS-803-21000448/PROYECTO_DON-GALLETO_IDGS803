@@ -33,11 +33,8 @@
                                         <td>{{ galleta.nombre }}</td>
                                         <td>{{ galleta.precio }}</td>
                                         <td>
-                                            <form action="{{ url_for('galletas.actualizar_precio') }}" method="POST">
-                                                <input type="hidden" name="id" value="{{ galleta.id }}">
-                                                <button type="submit" class="btn btn-sm btn-primary">Ver detalle</button>
-                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-                                            </form>
+                                            <input type="hidden" name="id" value="{{ galleta.id }}">
+                                            <button type="submit" class="btn btn-sm btn-primary modificarPrecioBtn" data-id="{{ galleta.id }}">Modificar precio</button>
                                         </td>                                        
                                     </tr>
                                 {% endfor %}
@@ -64,7 +61,7 @@
                 <div class="col-md-6 offset-md-3">
                 <div class="card">
                     <div class="card-body">
-                    <h1 class="card-title text-center">Confirmar actualización</h1>
+                    <h1 class="card-title text-center">Confirmar actualización de TODOS los precios</h1>
                     <p class="card-text text-center">Estás a punto de actualizar los precios</p>
                     <div class="text-center">
                         <form action="{{ url_for('galletas.act_precios')}}" method="post" class="d-inline">
@@ -72,6 +69,31 @@
                             <button type="submit" class="btn btn-success">Actualizar</button>
                         </form>
                         <button type="button" id="closeModalConfirmacion" class="closeModalConfirmacion btn btn-danger">
+                            Cancelar
+                        </button>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalConf" tabindex="-1" aria-labelledby="materiaPrimaModalLabel" aria-hidden="true" role="dialog">
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-body">
+                    <h1 class="card-title text-center">Confirmar actualización de precio</h1>
+                    <p class="card-text text-center">Estás a punto de actualizar este precio.</p>
+                    <div class="text-center">
+                        <form action="{{ url_for('galletas.act_individual')}}" method="post" class="d-inline" id="formActIndividual">
+                            <input type="hidden" name="id" value="">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                            <button type="submit" class="btn btn-success">Actualizar</button>
+                        </form>
+                        <button type="button" id="closeModalConf" class="closeModalConf btn btn-danger">
                             Cancelar
                         </button>
                     </div>
@@ -100,6 +122,28 @@
             modalConfirmacion.classList.remove('show');
             modalConfirmacion.style.display = 'none';
             modalConfirmacion.removeAttribute('aria-modal');
+        });
+
+        var modalConf = document.getElementById('modalConf');
+        var closeModalConf = document.getElementById('closeModalConf');
+        var modificarPrecioBtns = document.querySelectorAll('.modificarPrecioBtn');
+    
+        modificarPrecioBtns.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                modalConf.classList.add('show');
+                modalConf.style.display = 'block';
+                modalConf.setAttribute('aria-modal', 'true');
+
+                var idGalleta = btn.getAttribute('data-id');
+                var form = document.getElementById('formActIndividual');
+                form.querySelector('input[name="id"]').value = idGalleta;
+            });
+        });
+    
+        closeModalConf.addEventListener('click', function () {
+            modalConf.classList.remove('show');
+            modalConf.style.display = 'none';
+            modalConf.removeAttribute('aria-modal');
         });
     });
 </script>
