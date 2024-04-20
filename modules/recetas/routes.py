@@ -76,6 +76,8 @@ def guardar_receta():
                 mano_obra=0,
                 fecha_utlima_actualizacion=datetime.now()
             )
+        
+        
         db.session.add(nuevo_costo_galleta)
         db.session.add(nueva_receta)
         db.session.commit()
